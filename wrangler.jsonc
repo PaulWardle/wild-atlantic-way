@@ -1,0 +1,13 @@
+{
+  // Cloudflare Workers static-assets config for this Vite SPA.
+  // The build (`npm run build`) outputs to ./dist; Wrangler uploads it as a
+  // static-assets-only Worker (no server code). `single-page-application`
+  // serves index.html for any unknown path so client routing/deep links work.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "wild-atlantic-way",
+  "compatibility_date": "2025-06-01",
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "single-page-application"
+  }
+}
