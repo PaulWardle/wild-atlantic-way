@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { c, font } from '../theme'
 import { useStore } from '../store/StoreProvider'
 import { tripData } from '../data/tripData'
@@ -11,6 +11,8 @@ import { useMap } from '../hooks/useMap'
 import { MapSVG, MapLegend } from '../components/MapSVG'
 import { Slider } from '../components/Slider'
 import { Dropdown } from '../components/ui'
+import { PhotoInput } from '../components/PhotoInput'
+import { PhotoView } from '../components/PhotoView'
 
 const meta = tripData.meta
 
@@ -109,9 +111,33 @@ export function Home() {
     loc: (trackStops[u.si] || { label: '' }).label || '',
     when: relTime(u.ts),
     note: u.note || '',
+    photo: u.photo,
   })
   const liveFeed = updates.slice(1).map(pingRow) // brother "earlier pings"
   const allPings = updates.map(pingRow) // guest "today the brothers have been"
+
+  // ---- photo gallery (all trip photos, newest first) ----
+  const gallery: { url: string; caption: string; when: string; ts: number }[] = []
+  updates.forEach((u) => { if (u.photo) gallery.push({ url: u.photo, caption: (trackStops[u.si] || { label: 'On the road' }).label || 'On the road', when: relTime(u.ts), ts: u.ts }) })
+  ;(store.notes || []).forEach((n) => { if (n.photo) gallery.push({ url: n.photo, caption: n.author ? `${n.author} · ${n.tag}` : n.tag, when: relTime(n.ts), ts: n.ts }) })
+  posts.forEach((p) => { if (p.photo) gallery.push({ url: p.photo, caption: p.name, when: relTime(p.ts), ts: p.ts }) })
+  gallery.sort((a, b) => b.ts - a.ts)
+  const [galIdx, setGalIdx] = useState(0)
+  useEffect(() => {
+    if (gallery.length < 2) return
+    const t = window.setInterval(() => setGalIdx((i) => i + 1), 4000)
+    return () => window.clearInterval(t)
+  }, [gallery.length])
+
+  const [locFile, setLocFile] = useState<File | null>(null)
+  const [locBusy, setLocBusy] = useState(false)
+  const doPostHere = async () => {
+    if (locBusy) return
+    setLocBusy(true)
+    await postHere(locFile)
+    setLocFile(null)
+    setLocBusy(false)
+  }
 
   const postList = posts.slice(0, 12).map((p) => {
     const m = reasonMeta[p.reason] || reasonMeta.Comment
@@ -261,6 +287,7 @@ export function Home() {
                 <div style={{ fontFamily: font.display, fontWeight: 700, fontSize: 21, textTransform: 'uppercase', color: c.ink, lineHeight: 1.02, letterSpacing: '.01em' }}>{liveArea}</div>
               </div>
               {liveNote && <div style={{ marginTop: 8, fontFamily: font.serif, fontSize: 13.5, color: c.inkBody2, lineHeight: 1.5 }}>“{liveNote}”</div>}
+              {updates[0]?.photo && <PhotoView url={updates[0].photo} maxHeight={220} />}
             </div>
             {updates.length > 1 && (
               <div style={{ margin: '11px 14px 0', borderTop: `1px dashed ${c.line}`, paddingTop: 9 }}>
@@ -296,6 +323,7 @@ export function Home() {
                   <div style={{ fontFamily: font.display, fontWeight: 600, fontSize: 13.5, textTransform: 'uppercase', color: c.ink, lineHeight: 1.15, letterSpacing: '.01em' }}>{u.loc}</div>
                   <div style={{ fontFamily: font.mono, fontSize: 8, color: c.inkFaintest, marginTop: 1 }}>{u.when}</div>
                   {u.note && <div style={{ fontFamily: font.serif, fontSize: 12.5, color: c.inkMuted, lineHeight: 1.45, marginTop: 2 }}>“{u.note}”</div>}
+                  {u.photo && <PhotoView url={u.photo} maxHeight={180} />}
                 </div>
               </div>
             ))}
@@ -334,14 +362,16 @@ export function Home() {
                 outline: 'none',
               }}
             />
+            <PhotoInput file={locFile} onPick={setLocFile} onClear={() => setLocFile(null)} disabled={locBusy} />
             <button
-              onClick={postHere}
+              onClick={doPostHere}
+              disabled={locBusy}
               style={{
                 width: '100%',
                 marginTop: 9,
                 border: `1.5px solid ${c.ink}`,
                 borderRadius: 8,
-                background: c.rust,
+                background: locBusy ? c.inkFainter : c.rust,
                 color: '#f6ecd6',
                 padding: 12,
                 textAlign: 'center',
@@ -352,7 +382,7 @@ export function Home() {
                 letterSpacing: '.06em',
               }}
             >
-              ⚑ We are here
+              {locBusy ? 'Posting…' : '⚑ We are here'}
             </button>
             {liveActive && (
               <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 10 }}>
@@ -364,6 +394,35 @@ export function Home() {
           </div>
         )}
       </div>
+
+      {/* photo gallery */}
+      {gallery.length > 0 && (
+        <div style={{ margin: '12px 16px 0', border: `1.5px solid ${c.ink}`, borderRadius: 10, overflow: 'hidden', background: c.paper }}>
+          <CardHeader
+            icon={
+              <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke={c.paper} strokeWidth={1.8} strokeLinejoin="round" strokeLinecap="round">
+                <path d="M3 8 a2 2 0 0 1 2-2 h2 l1.5-2 h5 L20 6 h1 a2 2 0 0 1 2 2 v9 a2 2 0 0 1-2 2 H4 a2 2 0 0 1-2-2 Z" />
+                <circle cx="12.5" cy="12.5" r="3.3" />
+              </svg>
+            }
+            title="The gallery"
+            right={<span style={{ fontFamily: font.mono, fontSize: 9, letterSpacing: '.06em', color: c.gold, whiteSpace: 'nowrap' }}>{gallery.length + (gallery.length === 1 ? ' photo' : ' photos')}</span>}
+          />
+          <Slider
+            idx={galIdx}
+            onDot={setGalIdx}
+            slides={gallery.map((g, i) => (
+              <div key={i} style={{ position: 'relative' }}>
+                <img src={g.url} alt={g.caption} loading="lazy" style={{ width: '100%', display: 'block', maxHeight: 320, objectFit: 'cover' }} />
+                <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, background: 'linear-gradient(transparent, rgba(20,16,10,.78))', padding: '26px 14px 10px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: 8 }}>
+                  <span style={{ fontFamily: font.display, fontWeight: 700, fontSize: 15, color: c.cream, textTransform: 'uppercase', letterSpacing: '.01em', lineHeight: 1.1 }}>{g.caption}</span>
+                  <span style={{ fontFamily: font.mono, fontSize: 8.5, color: c.gold, whiteSpace: 'nowrap' }}>{g.when}</span>
+                </div>
+              </div>
+            ))}
+          />
+        </div>
+      )}
 
       {/* postbox carousel */}
       <div style={{ margin: '12px 16px 0', border: `1.5px solid ${c.ink}`, borderRadius: 10, overflow: 'hidden', background: c.paper }}>

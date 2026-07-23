@@ -1,8 +1,11 @@
+import { useState } from 'react'
 import { c, font } from '../theme'
 import { useStore } from '../store/StoreProvider'
 import { reasonList, reasonMeta } from '../lib/tags'
 import { relTime } from '../lib/time'
 import { Kicker, ScreenTitle, Lede, Dropdown } from '../components/ui'
+import { PhotoInput } from '../components/PhotoInput'
+import { PhotoView } from '../components/PhotoView'
 
 export function Postbox() {
   const s = useStore()
@@ -24,6 +27,16 @@ export function Postbox() {
     toggleDD,
     closeDD,
   } = s
+
+  const [file, setFile] = useState<File | null>(null)
+  const [busy, setBusy] = useState(false)
+  const doSubmit = async () => {
+    if (busy) return
+    setBusy(true)
+    await submitPost(file)
+    setFile(null)
+    setBusy(false)
+  }
 
   const posts = store.posts || []
   const postList = posts.map((p) => {
@@ -70,12 +83,15 @@ export function Postbox() {
             style={{ width: '100%', border: `1.5px solid ${c.ink}`, borderRadius: 7, background: c.inputBg, padding: '10px 12px', fontFamily: font.serif, fontSize: 13.5, color: c.inkSoft, outline: 'none', resize: 'none', lineHeight: 1.5 }}
           />
 
+          <PhotoInput file={file} onPick={setFile} onClear={() => setFile(null)} disabled={busy} />
+
           {postErr && <div style={{ fontFamily: font.mono, fontSize: 9, letterSpacing: '.04em', color: c.rust, marginTop: 8 }}>Add your name and a message first.</div>}
           <button
-            onClick={submitPost}
-            style={{ width: '100%', marginTop: 10, border: `1.5px solid ${c.ink}`, borderRadius: 8, background: c.rust, color: '#f6ecd6', padding: 12, textAlign: 'center', fontFamily: font.display, fontWeight: 700, fontSize: 14, textTransform: 'uppercase', letterSpacing: '.06em' }}
+            onClick={doSubmit}
+            disabled={busy}
+            style={{ width: '100%', marginTop: 10, border: `1.5px solid ${c.ink}`, borderRadius: 8, background: busy ? c.inkFainter : c.rust, color: '#f6ecd6', padding: 12, textAlign: 'center', fontFamily: font.display, fontWeight: 700, fontSize: 14, textTransform: 'uppercase', letterSpacing: '.06em' }}
           >
-            Pin it to the board
+            {busy ? 'Sending…' : 'Pin it to the board'}
           </button>
         </div>
       )}
@@ -110,6 +126,7 @@ export function Postbox() {
                 </b>{' '}
                 {p.msg}
               </div>
+              {p.photo && <PhotoView url={p.photo} maxHeight={240} />}
             </div>
           ))}
         </>

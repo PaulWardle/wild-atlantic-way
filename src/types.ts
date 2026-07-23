@@ -211,14 +211,16 @@ export interface Post {
   reason: string
   msg: string
   ts: number
+  photo?: string // public URL of an attached photo
   pending?: boolean
 }
 
-/** "We are here" location ping. `si` = index into the north→south trackStops list. */
+/** "We are here" location ping. `si` = index into the trip-order journey list. */
 export interface Update {
   si: number
   note: string
   ts: number
+  photo?: string
   pending?: boolean
 }
 
@@ -229,6 +231,7 @@ export interface Note {
   tag: string
   date: number | string // trip-day epoch ms, or 'today' resolved at write time
   ts: number
+  photo?: string
   pending?: boolean
 }
 

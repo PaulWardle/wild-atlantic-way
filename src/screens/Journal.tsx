@@ -1,9 +1,12 @@
+import { useState } from 'react'
 import { c, font } from '../theme'
 import { useStore } from '../store/StoreProvider'
 import { tripData } from '../data/tripData'
 import { isMarkable, jTagOptions } from '../lib/tags'
 import { buildEvents, buildFeed, buildGroups } from '../lib/journal'
 import { Kicker, ScreenTitle, Lede, Dropdown } from '../components/ui'
+import { PhotoInput } from '../components/PhotoInput'
+import { PhotoView } from '../components/PhotoView'
 
 const meta = tripData.meta
 
@@ -35,6 +38,16 @@ export function Journal() {
     openDD,
     toggleDD,
   } = s
+
+  const [file, setFile] = useState<File | null>(null)
+  const [busy, setBusy] = useState(false)
+  const doAddNote = async () => {
+    if (busy) return
+    setBusy(true)
+    await addNote(file)
+    setFile(null)
+    setBusy(false)
+  }
 
   const events = buildEvents(store, tripData)
   const feed = buildFeed(events)
@@ -116,6 +129,7 @@ export function Journal() {
             {latest.hasTitle && <div style={{ fontFamily: font.display, fontWeight: 600, fontSize: 16, textTransform: 'uppercase', color: c.ink, lineHeight: 1.15, letterSpacing: '.01em' }}>{latest.title}</div>}
             {latest.hasAuthor && <div style={{ fontFamily: font.mono, fontSize: 8, fontWeight: 700, letterSpacing: '.06em', textTransform: 'uppercase', color: c.inkMuted, marginTop: 3 }}>{latest.author}</div>}
             {latest.hasBody && <div style={{ fontFamily: font.serif, fontSize: 13.5, color: c.inkBody2, lineHeight: 1.5, marginTop: 6 }}>{latest.body}</div>}
+            {latest.photo && <PhotoView url={latest.photo} maxHeight={220} />}
           </div>
         </div>
       )}
@@ -147,8 +161,9 @@ export function Journal() {
           )}
           <div style={{ fontFamily: font.mono, fontSize: 8, letterSpacing: '.14em', color: c.inkFaintest, textTransform: 'uppercase', margin: '11px 0 6px' }}>File under</div>
           <Dropdown label={jDayLabel} open={openDD === 'jday'} onToggle={() => toggleDD('jday')} options={jDayOptions.map((o) => ({ label: o.label, pick: () => selectJDay(o.val) }))} />
-          <button onClick={addNote} style={{ width: '100%', marginTop: 10, border: `1.5px solid ${c.ink}`, borderRadius: 8, background: c.ink, color: c.paper, padding: 11, textAlign: 'center', fontFamily: font.display, fontWeight: 700, fontSize: 13, textTransform: 'uppercase', letterSpacing: '.06em' }}>
-            + Add to journal
+          <PhotoInput file={file} onPick={setFile} onClear={() => setFile(null)} disabled={busy} />
+          <button onClick={doAddNote} disabled={busy} style={{ width: '100%', marginTop: 10, border: `1.5px solid ${c.ink}`, borderRadius: 8, background: busy ? c.inkFainter : c.ink, color: c.paper, padding: 11, textAlign: 'center', fontFamily: font.display, fontWeight: 700, fontSize: 13, textTransform: 'uppercase', letterSpacing: '.06em' }}>
+            {busy ? 'Saving…' : '+ Add to journal'}
           </button>
         </div>
       )}
@@ -217,6 +232,7 @@ export function Journal() {
                       <>
                         {e.hasTitle && <div style={{ fontFamily: font.display, fontWeight: 600, fontSize: 14.5, textTransform: 'uppercase', color: c.ink, lineHeight: 1.15, letterSpacing: '.01em', marginTop: 5 }}>{e.title}</div>}
                         {e.hasBody && <div style={{ fontFamily: font.serif, fontSize: 13, color: c.inkBody2, lineHeight: 1.5, marginTop: 3 }}>{e.body}</div>}
+                        {e.photo && <PhotoView url={e.photo} maxHeight={220} />}
                       </>
                     )}
                   </div>

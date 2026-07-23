@@ -113,4 +113,12 @@ textarea {
     overflow: visible !important;
     flex: none !important;
   }
+  /* Trip Book: keep photos tidy and un-split across pages. */
+  .waw-scroll img {
+    max-width: 100% !important;
+    height: auto !important;
+    max-height: 340px !important;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
 }

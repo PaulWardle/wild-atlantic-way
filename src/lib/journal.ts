@@ -21,6 +21,7 @@ export interface JEvent {
   author?: string
   tag?: string
   noteTs?: number
+  photo?: string
 }
 
 export interface FeedItem {
@@ -34,6 +35,7 @@ export interface FeedItem {
   hasBody: boolean
   author: string
   hasAuthor: boolean
+  photo?: string
 }
 
 export interface GroupEntry {
@@ -50,6 +52,7 @@ export interface GroupEntry {
   hasAuthor: boolean
   noteTs?: number
   text: string
+  photo?: string
 }
 
 export interface JGroup {
@@ -67,11 +70,11 @@ export function buildEvents(store: Store, trip: Trip): JEvent[] {
   const sig = store.sig || {}
   ;(store.updates || []).forEach((u) => {
     const st = trackStops[u.si] || { label: '' }
-    events.push({ kind: 'loc', ts: u.ts || 0, gms: u.ts || 0, label: st.label || '', note: u.note || '' })
+    events.push({ kind: 'loc', ts: u.ts || 0, gms: u.ts || 0, label: st.label || '', note: u.note || '', photo: u.photo })
   })
   ;(store.posts || []).forEach((p) => {
     const m = reasonMeta[p.reason] || reasonMeta.Comment
-    events.push({ kind: 'post', ts: p.ts || 0, gms: p.ts || 0, name: p.name, verb: m.verb, msg: p.msg, reason: p.reason })
+    events.push({ kind: 'post', ts: p.ts || 0, gms: p.ts || 0, name: p.name, verb: m.verb, msg: p.msg, reason: p.reason, photo: p.photo })
   })
   Object.keys(sig).forEach((id) => {
     const t = sig[id]
@@ -89,6 +92,7 @@ export function buildEvents(store: Store, trip: Trip): JEvent[] {
       author: n.author || '',
       tag: n.tag || 'Note',
       noteTs: n.ts,
+      photo: n.photo,
     })
   })
   return events
@@ -122,6 +126,7 @@ export function buildFeed(events: JEvent[], limit = 12): FeedItem[] {
         hasBody: !!body,
         author: isNote ? e.author || '' : '',
         hasAuthor: isNote && !!e.author,
+        photo: e.photo,
       }
     })
 }
@@ -172,6 +177,7 @@ export function buildGroups(events: JEvent[], trip: Trip): JGroup[] {
           hasAuthor: isNote && !!e.author,
           noteTs: e.noteTs,
           text: e.text || '',
+          photo: e.photo,
         }
       })
       return { key: k, gms, dayLabel: td ? 'Day ' + td.n : '', hasDay: !!td, dateLabel: fmtDate(gms), entries }

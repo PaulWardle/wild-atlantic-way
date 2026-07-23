@@ -12,6 +12,7 @@ import type { RealtimeChannel, SupabaseClient } from '@supabase/supabase-js'
 import { getSupabase } from '../lib/supabase'
 import { tripData } from '../data/tripData'
 import { journey, journeyToSig } from '../data/journey'
+import { uploadPhoto } from '../lib/photos'
 import type {
   Note,
   OutboxOp,
@@ -161,7 +162,7 @@ export interface StoreContextValue {
   draftNote: string
   setDraftI: (i: number) => void
   setDraftNote: (v: string) => void
-  postHere: () => void
+  postHere: (file?: File | null) => Promise<void>
 
   // custom dropdowns
   openDD: string | null
@@ -177,7 +178,7 @@ export interface StoreContextValue {
   setPostName: (v: string) => void
   selectReason: (r: string) => void
   setPostMsg: (v: string) => void
-  submitPost: () => void
+  submitPost: (file?: File | null) => Promise<void>
   removePost: (ts: number) => void
   clearPosts: () => void
   setPostIdx: (i: number) => void
@@ -199,7 +200,7 @@ export interface StoreContextValue {
   selectAuthor: (a: string) => void
   selectJTag: (t: string) => void
   setJTagOther: (v: string) => void
-  addNote: () => void
+  addNote: (file?: File | null) => Promise<void>
   startEditNote: (ts: number, text: string) => void
   setJEditText: (v: string) => void
   saveEditNote: () => void
@@ -406,15 +407,15 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         const next: Store = { ...storeRef.current }
         if (!p.error)
           next.posts = ((p.data || []) as Post[])
-            .map((r) => ({ name: r.name, reason: r.reason, msg: r.msg, ts: r.ts }))
+            .map((r) => ({ name: r.name, reason: r.reason, msg: r.msg, ts: r.ts, photo: r.photo }))
             .sort((a, b) => b.ts - a.ts)
         if (!l.error)
           next.updates = ((l.data || []) as Update[])
-            .map((r) => ({ si: r.si, note: r.note, ts: r.ts }))
+            .map((r) => ({ si: r.si, note: r.note, ts: r.ts, photo: r.photo }))
             .sort((a, b) => b.ts - a.ts)
         if (!n.error)
-          next.notes = ((n.data || []) as Array<{ body: string; author: string; tag: string; day: number | string; ts: number }>)
-            .map((r) => ({ text: r.body, author: r.author, tag: r.tag, date: r.day, ts: r.ts }))
+          next.notes = ((n.data || []) as Array<{ body: string; author: string; tag: string; day: number | string; ts: number; photo?: string }>)
+            .map((r) => ({ text: r.body, author: r.author, tag: r.tag, date: r.day, ts: r.ts, photo: r.photo }))
             .sort((a, b) => b.ts - a.ts)
         if (!m.error) {
           const mm: Store['marks'] = {}
@@ -448,6 +449,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
               tag: (row.tag as string) || '',
               date: (row.day as number | string) ?? (row.ts as number),
               ts: row.ts as number,
+              photo: row.photo as string | undefined,
               pending: true,
             }
             next.notes = [n, ...next.notes]
@@ -606,11 +608,11 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   // ---- mutations ----
   // Post a location ping at a given journey index (used by the cross-link too).
   const postLocationAt = useCallback(
-    (si: number, note: string) => {
-      const row: Update = { si, note: (note || '').trim(), ts: Date.now() }
+    (si: number, note: string, photo?: string) => {
+      const row: Update = { si, note: (note || '').trim(), ts: Date.now(), ...(photo ? { photo } : {}) }
       const updates = [row, ...(storeRef.current.updates || [])].slice(0, 8)
       set({ updates })
-      insertRow('locations', { si: row.si, note: row.note, ts: row.ts })
+      insertRow('locations', { si: row.si, note: row.note, ts: row.ts, ...(photo ? { photo } : {}) })
     },
     [set, insertRow],
   )
@@ -628,15 +630,19 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     [set, insertRow],
   )
 
-  const postHere = useCallback(() => {
-    const si = Math.max(0, typeof draftI === 'number' ? draftI : parseInt(String(draftI), 10) || 0)
-    postLocationAt(si, draftNote)
-    setDraftNoteState('')
-    // If this spot is one of the Signature 15 and not yet bagged, offer to bag it.
-    const label = journey[si]?.label
-    const sigId = label ? journeyToSig[label] : undefined
-    if (sigId && !storeRef.current.sig[sigId]) setLinkPrompt({ kind: 'offerBag', name: label, sigId })
-  }, [draftI, draftNote, postLocationAt])
+  const postHere = useCallback(
+    async (file?: File | null) => {
+      const si = Math.max(0, typeof draftI === 'number' ? draftI : parseInt(String(draftI), 10) || 0)
+      const photo = file ? (await uploadPhoto(file)) || undefined : undefined
+      postLocationAt(si, draftNote, photo)
+      setDraftNoteState('')
+      // If this spot is one of the Signature 15 and not yet bagged, offer to bag it.
+      const label = journey[si]?.label
+      const sigId = label ? journeyToSig[label] : undefined
+      if (sigId && !storeRef.current.sig[sigId]) setLinkPrompt({ kind: 'offerBag', name: label, sigId })
+    },
+    [draftI, draftNote, postLocationAt],
+  )
 
   const setStopMark = useCallback(
     (di: number, si: number, val: 'keep' | 'maybe' | 'cut') => {
@@ -734,22 +740,26 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     [set],
   )
 
-  const submitPost = useCallback(() => {
-    const name = (postName || '').trim()
-    const msg = (postMsg || '').trim()
-    if (!name || !msg) {
-      setPostErr(true)
-      return
-    }
-    const reason = postReason || 'Recommendation'
-    const row: Post = { name, reason, msg, ts: Date.now() }
-    const posts = [row, ...(storeRef.current.posts || [])].slice(0, 40)
-    set({ posts })
-    insertRow('posts', { name: row.name, reason: row.reason, msg: row.msg, ts: row.ts })
-    setPostMsgState('')
-    setPostErr(false)
-    setPostIdxState(0)
-  }, [postName, postMsg, postReason, set, insertRow])
+  const submitPost = useCallback(
+    async (file?: File | null) => {
+      const name = (postName || '').trim()
+      const msg = (postMsg || '').trim()
+      if (!name || !msg) {
+        setPostErr(true)
+        return
+      }
+      const reason = postReason || 'Recommendation'
+      const photo = file ? (await uploadPhoto(file)) || undefined : undefined
+      const row: Post = { name, reason, msg, ts: Date.now(), ...(photo ? { photo } : {}) }
+      const posts = [row, ...(storeRef.current.posts || [])].slice(0, 40)
+      set({ posts })
+      insertRow('posts', { name: row.name, reason: row.reason, msg: row.msg, ts: row.ts, ...(photo ? { photo } : {}) })
+      setPostMsgState('')
+      setPostErr(false)
+      setPostIdxState(0)
+    },
+    [postName, postMsg, postReason, set, insertRow],
+  )
 
   const removePost = useCallback(
     (ts: number) => {
@@ -768,21 +778,25 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     deleteAll('posts')
   }, [set, deleteAll])
 
-  const addNote = useCallback(() => {
-    const text = (jNote || '').trim()
-    if (!text) return
-    const jd = jDay ?? 'today'
-    const date = jd === 'today' ? Date.now() : (jd as number)
-    let tag = jTag || 'Update'
-    if (tag === 'Other') tag = (jTagOther || '').trim() || 'Other'
-    const author = jAuthor || 'Paul'
-    const ts = Date.now()
-    const notes: Note[] = [{ text, ts, date, author, tag }, ...(storeRef.current.notes || [])]
-    set({ notes })
-    insertRow('notes', { body: text, author, tag, day: date, ts })
-    setJNoteState('')
-    setJTagOtherState('')
-  }, [jNote, jDay, jTag, jTagOther, jAuthor, set, insertRow])
+  const addNote = useCallback(
+    async (file?: File | null) => {
+      const text = (jNote || '').trim()
+      if (!text && !file) return
+      const jd = jDay ?? 'today'
+      const date = jd === 'today' ? Date.now() : (jd as number)
+      let tag = jTag || 'Update'
+      if (tag === 'Other') tag = (jTagOther || '').trim() || 'Other'
+      const author = jAuthor || 'Paul'
+      const ts = Date.now()
+      const photo = file ? (await uploadPhoto(file)) || undefined : undefined
+      const note: Note = { text, ts, date, author, tag, ...(photo ? { photo } : {}) }
+      set({ notes: [note, ...(storeRef.current.notes || [])] })
+      insertRow('notes', { body: text, author, tag, day: date, ts, ...(photo ? { photo } : {}) })
+      setJNoteState('')
+      setJTagOtherState('')
+    },
+    [jNote, jDay, jTag, jTagOther, jAuthor, set, insertRow],
+  )
 
   const startEditNote = useCallback((ts: number, text: string) => {
     setJEditTs(ts)
