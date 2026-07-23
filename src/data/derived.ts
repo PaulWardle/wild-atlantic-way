@@ -1,6 +1,5 @@
 /* Derived-once data from the static trip content. */
-import { tripData } from './tripData'
-import { buildTrackStops } from '../lib/geo'
+import { journey } from './journey'
 
-/** North→south ordered, de-duped named points a "we are here" ping indexes into. */
-export const trackStops = buildTrackStops(tripData)
+/** The ordered trip-sequence stops a "we are here" ping indexes into (`Update.si`). */
+export const trackStops = journey

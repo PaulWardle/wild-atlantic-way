@@ -1,12 +1,12 @@
 import { useMemo } from 'react'
 import { useStore } from '../store/StoreProvider'
 import { tripData } from '../data/tripData'
-import { trackStops } from '../data/derived'
-import { computeMapGeometry, currentStop, type MapGeometry, type TrackStop } from '../lib/geo'
+import { computeMapGeometry, currentStop, type MapGeometry } from '../lib/geo'
+import type { JourneyStop } from '../data/journey'
 
 export interface MapState {
   geo: MapGeometry
-  curSt: TrackStop | null
+  curStop: JourneyStop | null
   liveActive: boolean
 }
 
@@ -14,8 +14,8 @@ export interface MapState {
 export function useMap(): MapState {
   const { store } = useStore()
   const updates = store.updates || []
-  const si = updates[0]?.si
-  const curSt = currentStop(trackStops, si)
-  const geo = useMemo(() => computeMapGeometry(tripData, curSt), [curSt])
-  return { geo, curSt, liveActive: updates.length > 0 }
+  const si = updates.length ? updates[0].si : null
+  const geo = useMemo(() => computeMapGeometry(tripData, si), [si])
+  const cur = currentStop(si ?? undefined)
+  return { geo, curStop: cur ? cur.stop : null, liveActive: updates.length > 0 }
 }

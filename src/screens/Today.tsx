@@ -1,11 +1,60 @@
 import { c, font, phaseInfo } from '../theme'
 import { useStore } from '../store/StoreProvider'
 import { tripData } from '../data/tripData'
-import { buildTags } from '../lib/tags'
 import { countdownParts } from '../lib/countdown'
-import { TagChips } from '../components/ui'
 
 const meta = tripData.meta
+
+/** One node of the Today timeline: a dot (or camp tent) + title, with the
+ * connecting line. A "maybe" is highlighted amber; skipped logistics are dimmed. */
+function TimelineRow({
+  dot,
+  title,
+  sub,
+  tent = false,
+  maybe = false,
+  dim = false,
+  hollow = false,
+  last = false,
+}: {
+  dot: string
+  title: string
+  sub?: string
+  tent?: boolean
+  maybe?: boolean
+  dim?: boolean
+  hollow?: boolean
+  last?: boolean
+}) {
+  return (
+    <div style={{ display: 'flex', gap: 11 }}>
+      <div style={{ flex: '0 0 18px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        {tent ? (
+          <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke={dot} strokeWidth={1.9} strokeLinejoin="round" style={{ marginTop: 2 }}>
+            <path d="M12 4 L21 20 H3 Z" />
+            <path d="M12 4 V20" />
+          </svg>
+        ) : (
+          <span style={{ width: 11, height: 11, borderRadius: '50%', background: hollow ? 'transparent' : dot, border: `2px solid ${dot}`, marginTop: 3, flex: '0 0 auto' }} />
+        )}
+        {!last && <div style={{ flex: 1, width: 1.5, background: c.lineSoft, marginTop: 3, minHeight: 12 }} />}
+      </div>
+      <div style={{ flex: 1, minWidth: 0, paddingBottom: last ? 2 : 14 }}>
+        {sub && <div style={{ fontFamily: font.mono, fontSize: 8, letterSpacing: '.12em', color: c.inkFaintest, textTransform: 'uppercase', marginBottom: 2 }}>{sub}</div>}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+          <span style={{ fontFamily: font.display, fontWeight: 600, fontSize: 15, color: maybe ? c.amber : dim ? c.inkFainter : c.ink, textTransform: 'uppercase', letterSpacing: '.01em', lineHeight: 1.15 }}>
+            {title}
+          </span>
+          {maybe && (
+            <span style={{ fontFamily: font.mono, fontSize: 7.5, fontWeight: 700, letterSpacing: '.08em', textTransform: 'uppercase', color: c.amber, border: `1px solid ${c.amber}`, background: c.amberPanel, borderRadius: 3, padding: '1px 5px' }}>
+              maybe
+            </span>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
 
 function CdCell({ n, label }: { n: string | number; label: string }) {
   return (
@@ -103,13 +152,12 @@ export function Today() {
   // live
   const tdy = T.days[todayIdx] || T.days[0]
   const tPi = phaseInfo(tdy.phase)
-  const summaryStops = (tdy.stops || [])
+  // The day's plan as a timeline: every stop the brothers haven't cut, in order.
+  // Cut stops drop out entirely; a "maybe" is highlighted; keeps/undecided are plain.
+  const timelineStops = (tdy.stops || [])
     .map((st, si) => ({ st, mk: marks['d' + todayIdx + 's' + si] || null }))
     .filter((x) => x.mk !== 'cut')
-    .map((x) => {
-      const tl = buildTags(x.st)
-      return { n: x.st.n, tagList: tl, hasTags: tl.length > 0, kept: x.mk === 'keep', dot: x.mk === 'keep' ? c.green : '#c9ba94', op: x.st.skip ? 0.7 : 1 }
-    })
+    .map((x) => ({ n: x.st.n, maybe: x.mk === 'maybe', skip: !!x.st.skip }))
   const highlights = (tdy.stops || [])
     .filter((st, si) => (st.tags || []).indexOf('s') >= 0 && marks['d' + todayIdx + 's' + si] !== 'cut')
     .map((st) => st.n)
@@ -139,42 +187,29 @@ export function Today() {
       )}
 
       <div style={{ padding: '16px 16px 4px' }}>
-        <div style={{ fontFamily: font.mono, fontSize: 8.5, letterSpacing: '.16em', color: c.inkFaintest, textTransform: 'uppercase', marginBottom: 10 }}>Today at a glance</div>
         {highlights.length > 0 && (
-          <div style={{ border: `1.5px solid ${c.rust}`, background: '#f7ecd6', borderRadius: 8, padding: '9px 12px', marginBottom: 13 }}>
+          <div style={{ border: `1.5px solid ${c.rust}`, background: '#f7ecd6', borderRadius: 8, padding: '9px 12px', marginBottom: 14 }}>
             <div style={{ fontFamily: font.mono, fontSize: 8, fontWeight: 700, letterSpacing: '.1em', color: c.rust, textTransform: 'uppercase', marginBottom: 3 }}>★ Don’t miss</div>
             <div style={{ fontFamily: font.display, fontWeight: 600, fontSize: 14.5, textTransform: 'uppercase', color: c.ink, lineHeight: 1.3, letterSpacing: '.01em' }}>{highlights.join('  ·  ')}</div>
           </div>
         )}
-        {summaryStops.map((ss, i) => (
-          <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 9, padding: '5px 0', opacity: ss.op }}>
-            <div style={{ flex: '0 0 auto', width: 8, height: 8, borderRadius: '50%', background: ss.dot, marginTop: 6 }} />
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontFamily: font.display, fontWeight: 600, fontSize: 14.5, color: c.ink, lineHeight: 1.15, letterSpacing: '.01em' }}>{ss.n}</div>
-              {ss.hasTags && <TagChips tags={ss.tagList} size={7.5} />}
-            </div>
-            {ss.kept && <span style={{ flex: '0 0 auto', fontFamily: font.display, fontWeight: 700, fontSize: 13, color: c.green, marginTop: 2 }}>✓</span>}
-          </div>
+        <div style={{ fontFamily: font.mono, fontSize: 8.5, letterSpacing: '.16em', color: c.inkFaintest, textTransform: 'uppercase', marginBottom: 12 }}>The day, in order</div>
+
+        <TimelineRow dot={c.rust} title="Set off" sub={`Day ${tdy.n} · ${tdy.dow}`} />
+        {timelineStops.map((s, i) => (
+          <TimelineRow
+            key={i}
+            dot={s.maybe ? c.amber : c.ink}
+            hollow={!s.maybe && s.skip}
+            title={s.n}
+            maybe={s.maybe}
+            dim={s.skip && !s.maybe}
+          />
         ))}
+        {night && <TimelineRow dot={c.green} tent title={night.primary} sub={`Tonight — ${night.area}`} last />}
       </div>
 
-      {night && (
-        <div style={{ margin: '10px 16px 0', border: `1.5px solid ${c.green}`, borderRadius: 9, background: c.greenPanel, overflow: 'hidden' }}>
-          <div style={{ background: c.green, color: c.greenPanel, padding: '6px 12px', display: 'flex', alignItems: 'center', gap: 7 }}>
-            <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke={c.greenPanel} strokeWidth={1.8} strokeLinejoin="round">
-              <path d="M12 4 L21 20 H3 Z" />
-              <path d="M12 4 V20" />
-            </svg>
-            <span style={{ fontFamily: font.mono, fontSize: 9, fontWeight: 700, letterSpacing: '.14em', textTransform: 'uppercase' }}>Tonight — {night.area}</span>
-          </div>
-          <div style={{ padding: '11px 13px' }}>
-            <div style={{ fontFamily: font.display, fontWeight: 600, fontSize: 16, textTransform: 'uppercase', color: c.ink, letterSpacing: '.01em', lineHeight: 1.1 }}>{night.primary}</div>
-            <div style={{ fontFamily: font.serif, fontSize: 13, color: '#5a5140', lineHeight: 1.5, marginTop: 6 }}>{night.note}</div>
-          </div>
-        </div>
-      )}
-
-      <div style={{ padding: '16px 16px 26px' }}>
+      <div style={{ padding: '18px 16px 26px' }}>
         <button onClick={() => nav({ screen: 'day', day: todayIdx })} style={{ width: '100%', border: `1.5px solid ${c.ink}`, borderRadius: 8, background: c.ink, color: c.paper, padding: 12, textAlign: 'center', fontFamily: font.display, fontWeight: 600, fontSize: 13, textTransform: 'uppercase', letterSpacing: '.05em' }}>
           Open the full day →
         </button>

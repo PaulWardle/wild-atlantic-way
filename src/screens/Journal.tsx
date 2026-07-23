@@ -55,7 +55,7 @@ export function Journal() {
       else if (mk === 'cut') cut++
     }),
   )
-  const hasMarks = keep + maybe + cut > 0
+  const hasMarks = keep + maybe + cut > 0 && isBrother
 
   let jDepartMs = 0
   try {

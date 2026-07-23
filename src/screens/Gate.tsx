@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { c, font } from '../theme'
 import { useStore } from '../store/StoreProvider'
 import { tripData } from '../data/tripData'
@@ -28,6 +29,7 @@ function CdCell({ n, label }: { n: string | number; label: string }) {
 export function Gate() {
   const s = useStore()
   const { nowTs, pwOpen, pwVal, pwErr, chooseBrother, chooseGuest, cancelPw, setPw, submitPw } = s
+  const [showPw, setShowPw] = useState(false)
   const meta = tripData.meta
   const cd = countdownParts(meta.depart, nowTs)
   const { geo } = useMap()
@@ -184,28 +186,64 @@ export function Gate() {
             <div style={{ fontFamily: font.mono, fontSize: 9, letterSpacing: '.16em', color: c.inkFaintest, textTransform: 'uppercase', marginBottom: 7 }}>
               Brothers only · the password
             </div>
-            <input
-              value={pwVal}
-              onChange={(e) => setPw(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') submitPw()
-              }}
-              placeholder="Password"
-              style={{
-                width: '100%',
-                border: `1.5px solid ${c.ink}`,
-                borderRadius: 8,
-                background: c.inputBg,
-                padding: '12px 13px',
-                fontFamily: font.display,
-                fontWeight: 600,
-                fontSize: 16,
-                letterSpacing: '.14em',
-                textTransform: 'uppercase',
-                color: c.ink,
-                outline: 'none',
-              }}
-            />
+            <div style={{ position: 'relative' }}>
+              <input
+                value={pwVal}
+                onChange={(e) => setPw(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') submitPw()
+                }}
+                type={showPw ? 'text' : 'password'}
+                placeholder="Password"
+                autoCapitalize="characters"
+                style={{
+                  width: '100%',
+                  border: `1.5px solid ${c.ink}`,
+                  borderRadius: 8,
+                  background: c.inputBg,
+                  padding: '12px 44px 12px 13px',
+                  fontFamily: font.display,
+                  fontWeight: 600,
+                  fontSize: 16,
+                  letterSpacing: '.14em',
+                  textTransform: 'uppercase',
+                  color: c.ink,
+                  outline: 'none',
+                }}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPw((v) => !v)}
+                aria-label={showPw ? 'Hide password' : 'Show password'}
+                style={{
+                  position: 'absolute',
+                  right: 6,
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  width: 34,
+                  height: 34,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: c.inkFainter,
+                }}
+              >
+                {showPw ? (
+                  // eye-off
+                  <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M9.9 4.24A9.1 9.1 0 0 1 12 4c5 0 9.27 3.11 11 7.5a12.4 12.4 0 0 1-2.16 3.19M6.6 6.6A12.5 12.5 0 0 0 1 11.5 12.3 12.3 0 0 0 12 19a11 11 0 0 0 5.4-1.4" />
+                    <path d="M9.9 9.9a3 3 0 0 0 4.2 4.2" />
+                    <line x1="2" y1="2" x2="22" y2="22" />
+                  </svg>
+                ) : (
+                  // eye
+                  <svg width={20} height={20} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z" />
+                    <circle cx="12" cy="12" r="3" />
+                  </svg>
+                )}
+              </button>
+            </div>
             {pwErr && (
               <div style={{ fontFamily: font.mono, fontSize: 9.5, letterSpacing: '.03em', color: c.rust, marginTop: 7 }}>
                 Not quite — try again.

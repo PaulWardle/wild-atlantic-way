@@ -93,23 +93,25 @@ export function Home() {
     jFeedSwipeStart,
     jFeedSwipeEnd,
   } = s
-  const { geo, curSt, liveActive } = useMap()
+  const { geo, curStop, liveActive } = useMap()
 
   const updates = store.updates || []
   const posts = store.posts || []
   const outbox = store.outbox || []
   const hasUnsent = outbox.length > 0
 
-  const whereHeading = isGuest ? 'Where they are' : 'Where we are'
+  const whereHeading = isGuest ? 'Where they’ve been' : 'Where we are'
   const liveHereLabel = isGuest ? 'The brothers are here' : 'We’re here'
-  const liveArea = curSt ? curSt.label : ''
+  const liveArea = curStop ? curStop.label : ''
   const liveWhen = liveActive ? relTime(updates[0].ts) : ''
   const liveNote = (updates[0] && updates[0].note) || ''
-  const liveFeed = updates.slice(1).map((u) => ({
+  const pingRow = (u: (typeof updates)[number]) => ({
     loc: (trackStops[u.si] || { label: '' }).label || '',
     when: relTime(u.ts),
     note: u.note || '',
-  }))
+  })
+  const liveFeed = updates.slice(1).map(pingRow) // brother "earlier pings"
+  const allPings = updates.map(pingRow) // guest "today the brothers have been"
 
   const postList = posts.slice(0, 12).map((p) => {
     const m = reasonMeta[p.reason] || reasonMeta.Comment
@@ -250,7 +252,8 @@ export function Home() {
           right={liveActive ? <span style={{ fontFamily: font.mono, fontSize: 9, letterSpacing: '.08em', color: c.gold }}>updated {liveWhen}</span> : undefined}
         />
 
-        {liveActive && (
+        {/* Brother: current spot + earlier pings (they post from here). */}
+        {liveActive && isBrother && (
           <>
             <div style={{ padding: '13px 14px 4px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -275,6 +278,28 @@ export function Home() {
               </div>
             )}
           </>
+        )}
+
+        {/* Guest: a recap of the day's journey (current spot is already in the banner). */}
+        {liveActive && isGuest && (
+          <div style={{ padding: '13px 14px 13px' }}>
+            <div style={{ fontFamily: font.mono, fontSize: 8, letterSpacing: '.14em', color: c.inkFaintest, textTransform: 'uppercase', marginBottom: 8 }}>
+              Today the brothers have been
+            </div>
+            {allPings.map((u, i) => (
+              <div key={i} style={{ display: 'flex', gap: 10, padding: '5px 0' }}>
+                <div style={{ flex: '0 0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                  <span style={{ width: 9, height: 9, borderRadius: '50%', background: i === 0 ? c.rust : '#c9ba94', marginTop: 3, flex: '0 0 auto' }} />
+                  {i < allPings.length - 1 && <div style={{ flex: 1, width: 1.5, background: c.lineSoft, marginTop: 2 }} />}
+                </div>
+                <div style={{ flex: 1, minWidth: 0, paddingBottom: 4 }}>
+                  <div style={{ fontFamily: font.display, fontWeight: 600, fontSize: 13.5, textTransform: 'uppercase', color: c.ink, lineHeight: 1.15, letterSpacing: '.01em' }}>{u.loc}</div>
+                  <div style={{ fontFamily: font.mono, fontSize: 8, color: c.inkFaintest, marginTop: 1 }}>{u.when}</div>
+                  {u.note && <div style={{ fontFamily: font.serif, fontSize: 12.5, color: c.inkMuted, lineHeight: 1.45, marginTop: 2 }}>“{u.note}”</div>}
+                </div>
+              </div>
+            ))}
+          </div>
         )}
 
         {!liveActive && isBrother && (
