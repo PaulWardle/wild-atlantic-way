@@ -5,6 +5,7 @@ import { AppBar } from './components/AppBar'
 import { BottomNav } from './components/BottomNav'
 import { Gate } from './screens/Gate'
 import { MapOverlay } from './screens/MapOverlay'
+import { LinkPromptModal } from './components/LinkPromptModal'
 import { Home } from './screens/Home'
 import { Days } from './screens/Days'
 import { DayDetail } from './screens/DayDetail'
@@ -173,6 +174,7 @@ export function App() {
         <BottomNav />
 
         {screen === 'map' && <MapOverlay />}
+        <LinkPromptModal />
         {!role && <Gate />}
       </div>
     </div>

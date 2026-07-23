@@ -11,6 +11,7 @@ import {
 import type { RealtimeChannel, SupabaseClient } from '@supabase/supabase-js'
 import { getSupabase } from '../lib/supabase'
 import { tripData } from '../data/tripData'
+import { journey, journeyToSig } from '../data/journey'
 import type {
   Note,
   OutboxOp,
@@ -40,6 +41,21 @@ export type Screen =
 
 const LS_KEY = 'waw2026:v1'
 const isOffline = () => typeof navigator !== 'undefined' && navigator.onLine === false
+
+/** An in-theme prompt linking a Signature bag with a "we are here" post. */
+export interface LinkPrompt {
+  kind: 'offerPost' | 'offerBag'
+  name: string
+  journeyIndex?: number
+  sigId?: string
+}
+
+// journey index for each signature id (reverse of journeyToSig)
+const sigToJourneyIndex: Record<string, number> = {}
+Object.keys(journeyToSig).forEach((label) => {
+  const idx = journey.findIndex((j) => j.label === label)
+  if (idx >= 0) sigToJourneyIndex[journeyToSig[label]] = idx
+})
 
 function emptyStore(role: Role = null): Store {
   return {
@@ -193,6 +209,11 @@ export interface StoreContextValue {
   // stop marks / signature / packing / bookings / ferries / negotiation
   setStopMark: (di: number, si: number, val: 'keep' | 'maybe' | 'cut') => void
   toggleSig: (id: string) => void
+
+  // signature ↔ location cross-link prompt
+  linkPrompt: LinkPrompt | null
+  confirmLink: () => void
+  dismissLink: () => void
   togglePack: (k: string) => void
   toggleBook: (id: string) => void
   pickFerry: (v: string) => void
@@ -359,6 +380,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [pwVal, setPwVal] = useState('')
   const [pwErr, setPwErr] = useState(false)
   const [copied, setCopied] = useState(false)
+  const [linkPrompt, setLinkPrompt] = useState<LinkPrompt | null>(null)
 
   const role = store.role
   const isBrother = role === 'brother'
@@ -582,15 +604,39 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   }, [])
 
   // ---- mutations ----
+  // Post a location ping at a given journey index (used by the cross-link too).
+  const postLocationAt = useCallback(
+    (si: number, note: string) => {
+      const row: Update = { si, note: (note || '').trim(), ts: Date.now() }
+      const updates = [row, ...(storeRef.current.updates || [])].slice(0, 8)
+      set({ updates })
+      insertRow('locations', { si: row.si, note: row.note, ts: row.ts })
+    },
+    [set, insertRow],
+  )
+
+  // Bag a Signature spot without triggering the cross-link prompt (used by the modal).
+  const bagSigSilent = useCallback(
+    (id: string) => {
+      if (storeRef.current.sig[id]) return
+      const sig = { ...storeRef.current.sig }
+      const t = Date.now()
+      sig[id] = t
+      insertRow('sig', { sid: id, ts: t })
+      set({ sig })
+    },
+    [set, insertRow],
+  )
+
   const postHere = useCallback(() => {
     const si = Math.max(0, typeof draftI === 'number' ? draftI : parseInt(String(draftI), 10) || 0)
-    const note = (draftNote || '').trim()
-    const row: Update = { si, note, ts: Date.now() }
-    const updates = [row, ...(storeRef.current.updates || [])].slice(0, 8)
-    set({ updates })
-    insertRow('locations', { si: row.si, note: row.note, ts: row.ts })
+    postLocationAt(si, draftNote)
     setDraftNoteState('')
-  }, [draftI, draftNote, set, insertRow])
+    // If this spot is one of the Signature 15 and not yet bagged, offer to bag it.
+    const label = journey[si]?.label
+    const sigId = label ? journeyToSig[label] : undefined
+    if (sigId && !storeRef.current.sig[sigId]) setLinkPrompt({ kind: 'offerBag', name: label, sigId })
+  }, [draftI, draftNote, postLocationAt])
 
   const setStopMark = useCallback(
     (di: number, si: number, val: 'keep' | 'maybe' | 'cut') => {
@@ -618,11 +664,30 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         const t = Date.now()
         sig[id] = t
         insertRow('sig', { sid: id, ts: t })
+        // Just bagged a spot with a known location — offer to post "we are here".
+        const jIdx = sigToJourneyIndex[id]
+        if (jIdx != null && storeRef.current.updates[0]?.si !== jIdx) {
+          setLinkPrompt({ kind: 'offerPost', name: journey[jIdx].label, journeyIndex: jIdx })
+        }
       }
       set({ sig })
     },
     [set, deleteRow, insertRow],
   )
+
+  const confirmLink = useCallback(() => {
+    const p = linkPrompt
+    setLinkPrompt(null)
+    if (!p) return
+    if (p.kind === 'offerPost' && p.journeyIndex != null) {
+      postLocationAt(p.journeyIndex, '')
+      setDraftIState(p.journeyIndex)
+    } else if (p.kind === 'offerBag' && p.sigId) {
+      bagSigSilent(p.sigId)
+    }
+  }, [linkPrompt, postLocationAt, bagSigSilent])
+
+  const dismissLink = useCallback(() => setLinkPrompt(null), [])
 
   const togglePack = useCallback(
     (k: string) => {
@@ -1009,6 +1074,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     removeNote,
     setStopMark,
     toggleSig,
+    linkPrompt,
+    confirmLink,
+    dismissLink,
     togglePack,
     toggleBook,
     pickFerry,
