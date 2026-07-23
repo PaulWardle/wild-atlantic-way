@@ -1,10 +1,10 @@
 /* Map projection + derived geometry for the accurate Ireland SVG.
  *
  * The coastline is real geographic data (src/data/irelandCoast.ts). The WAW route
- * is drawn as the actual coastline arc from Malin Head down the whole Atlantic/SW
- * coast to Kinsale; the lead-in is the short north-coast arc from Larne to Malin.
- * The green "completed" line follows that same coast arc up to the live position,
- * and progress is measured along the ordered `journey` (src/data/journey.ts).
+ * is drawn as one clean line through the ordered trip stops (src/data/journey.ts)
+ * — smooth, not tracing every coastal inlet — and the green "completed" portion
+ * follows that same line up to the live position. To keep the small phone map
+ * legible we label only the iconic WAW headlands, not inland/east-coast cities.
  */
 
 import type { Trip } from '../types'
@@ -49,65 +49,6 @@ function splinePath(pts: XY[], closed: boolean): string {
   return d
 }
 
-// ---- coastline ring helpers (ring is [lat, lon][]) ----
-const ring = irelandCoast
-const RN = ring.length
-
-function nearestRingIndex(lat: number, lon: number): number {
-  const cos = Math.cos((lat * Math.PI) / 180)
-  let best = 0, bd = Infinity
-  for (let i = 0; i < RN; i++) {
-    const dlat = ring[i][0] - lat
-    const dlon = (ring[i][1] - lon) * cos
-    const d = dlat * dlat + dlon * dlon
-    if (d < bd) { bd = d; best = i }
-  }
-  return best
-}
-function arcIndices(i: number, j: number, forward: boolean): number[] {
-  const out: number[] = []
-  let k = i
-  for (let guard = 0; guard <= RN; guard++) {
-    out.push(k)
-    if (k === j) break
-    k = forward ? (k + 1) % RN : (k - 1 + RN) % RN
-  }
-  return out
-}
-function avgLon(idx: number[]): number {
-  return idx.reduce((s, i) => s + ring[i][1], 0) / idx.length
-}
-function planarLen(idx: number[]): number {
-  let s = 0
-  for (let k = 1; k < idx.length; k++) {
-    const a = ring[idx[k - 1]], b = ring[idx[k]]
-    const dlat = b[0] - a[0], dlon = (b[1] - a[1]) * ecos
-    s += Math.hypot(dlat, dlon)
-  }
-  return s
-}
-/** The arc between two ring points that runs along the western (Atlantic) coast. */
-function westArc(i: number, j: number): number[] {
-  const fwd = arcIndices(i, j, true)
-  const bwd = arcIndices(i, j, false)
-  return avgLon(fwd) <= avgLon(bwd) ? fwd : bwd
-}
-/** The shorter of the two arcs between two ring points. */
-function shortArc(i: number, j: number): number[] {
-  const fwd = arcIndices(i, j, true)
-  const bwd = arcIndices(i, j, false)
-  return planarLen(fwd) <= planarLen(bwd) ? fwd : bwd
-}
-function nearestInList(list: [number, number][], lat: number, lon: number): number {
-  const cos = Math.cos((lat * Math.PI) / 180)
-  let best = 0, bd = Infinity
-  for (let i = 0; i < list.length; i++) {
-    const dlat = list[i][0] - lat, dlon = (list[i][1] - lon) * cos
-    const d = dlat * dlat + dlon * dlon
-    if (d < bd) { bd = d; best = i }
-  }
-  return best
-}
 function nearestJourneyIndex(lat: number, lon: number): number {
   const cos = Math.cos((lat * Math.PI) / 180)
   let best = 0, bd = Infinity
@@ -118,6 +59,10 @@ function nearestJourneyIndex(lat: number, lon: number): number {
   }
   return best
 }
+
+// Only the two big east-coast cities the trip never visits are dropped; every
+// WAW stop (incl. the inland ones) keeps its label.
+const DROP_CITIES = new Set(['Belfast', 'Dublin'])
 
 export type TrackStop = JourneyStop
 
@@ -178,33 +123,29 @@ const eSide: Record<string, { a: 'start' | 'middle' | 'end'; dx: number; dy: num
   tr: { a: 'start', dx: 7, dy: -5 },
 }
 
+const leadStops = journey.filter((j) => j.phase === 'lead')
+const wawStops = journey.filter((j) => j.phase === 'waw')
+const wawCoords = wawStops.map((j) => [j.lat, j.lon]) as [number, number][]
+// Lead-in ends where the WAW begins (Malin), so the two lines meet cleanly.
+const leadCoords = leadStops.concat(wawStops[0]).map((j) => [j.lat, j.lon]) as [number, number][]
+
 /** Compute all map geometry, given the current journey index (or null = not live). */
 export function computeMapGeometry(trip: Trip, si: number | null): MapGeometry {
   const G = trip.geo
   const R = trip.route
-  const M = G.malin
   const fi = G.ferryIn
   const hf = G.homeFerry
   const cur = si == null ? null : currentStop(si)
   const liveActive = !!cur
 
-  // Route arcs along the real coast.
-  const idxMalin = nearestRingIndex(M.lat, M.lon)
-  const idxKinsale = nearestRingIndex(R[9].lat, R[9].lon)
-  const idxLarne = nearestRingIndex(fi.lat, fi.lon)
-  const wawIdx = westArc(idxMalin, idxKinsale)
-  const leadIdx = shortArc(idxLarne, idxMalin)
-  const wawCoords = wawIdx.map((i) => ring[i]) as [number, number][]
-  const leadCoords = leadIdx.map((i) => ring[i]) as [number, number][]
-
-  // Green "done" — only once the WAW proper has started (Malin onwards).
+  // Green "done" — the WAW line from Malin up to (and including) the current stop.
   let eDone = ''
   if (cur && cur.stop.phase === 'waw') {
-    const k = nearestInList(wawCoords, cur.stop.lat, cur.stop.lon)
-    eDone = splinePath(toXY(wawCoords.slice(0, k + 1)), false)
+    const wIdx = cur.index - leadStops.length
+    if (wIdx >= 0) eDone = splinePath(toXY(wawCoords.slice(0, wIdx + 1)), false)
   }
 
-  // Landmark / city dots (real coords → sit on the accurate coast). "Done" = passed.
+  // Iconic headland dots + labels only (real coords → sit on the coast). "Done" = passed.
   const eMk = (p: { t: string; lat: number; lon: number; side: string; finish?: boolean }, r: number) => {
     const x = +EPX(p.lat, p.lon).toFixed(1)
     const y = +EPY(p.lat, p.lon).toFixed(1)
@@ -213,7 +154,7 @@ export function computeMapGeometry(trip: Trip, si: number | null): MapGeometry {
     return { x, y, r: p.finish ? 5.5 : r, t: (p.t || '').toUpperCase(), lx: +(x + sd.dx).toFixed(1), ly: +(y + sd.dy).toFixed(1), anchor: sd.a, done }
   }
   const landmarksRaw = (G.landmarks || []).map((p) => eMk(p, 4))
-  const citiesRaw = (G.cities || []).map((p) => eMk(p, 3.6))
+  const citiesRaw = (G.cities || []).filter((p) => !DROP_CITIES.has(p.t)).map((p) => eMk(p, 3.6))
   const eLandmarks: MapDot[] = landmarksRaw.map((m) => ({ x: m.x, y: m.y, r: m.r, fill: m.done ? '#4a7a3a' : '#8f3341' }))
   const eCities: MapDot[] = citiesRaw.map((m) => ({ x: m.x, y: m.y, r: m.r, fill: m.done ? '#4a7a3a' : '#8a7c5f' }))
   const eLabels: MapLabel[] = landmarksRaw
@@ -230,7 +171,7 @@ export function computeMapGeometry(trip: Trip, si: number | null): MapGeometry {
   return {
     eMapW,
     eMapH,
-    eIreland: splinePath(toXY(ring), true),
+    eIreland: splinePath(toXY(irelandCoast), true),
     eLead: splinePath(toXY(leadCoords), false),
     eOff: splinePath(toXY(wawCoords), false),
     eDone,

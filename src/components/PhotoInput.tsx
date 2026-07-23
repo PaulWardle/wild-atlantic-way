@@ -54,8 +54,8 @@ export function PhotoInput({
         style={{ width: '100%', marginTop: 8, border: `1.5px dashed ${c.ink}`, borderRadius: 8, background: c.inputBg, padding: '11px 12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, fontFamily: font.display, fontWeight: 600, fontSize: 12.5, textTransform: 'uppercase', letterSpacing: '.04em', color: c.ink }}
       >
         <svg width={17} height={17} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinejoin="round" strokeLinecap="round">
-          <path d="M3 8 a2 2 0 0 1 2-2 h2 l1.5-2 h5 L20 6 h1 a2 2 0 0 1 2 2 v9 a2 2 0 0 1-2 2 H4 a2 2 0 0 1-2-2 Z" />
-          <circle cx="12.5" cy="12.5" r="3.5" />
+          <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+          <circle cx="12" cy="13" r="4" />
         </svg>
         Add a photo
       </button>

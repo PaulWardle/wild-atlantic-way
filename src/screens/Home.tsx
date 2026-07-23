@@ -401,8 +401,8 @@ export function Home() {
           <CardHeader
             icon={
               <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke={c.paper} strokeWidth={1.8} strokeLinejoin="round" strokeLinecap="round">
-                <path d="M3 8 a2 2 0 0 1 2-2 h2 l1.5-2 h5 L20 6 h1 a2 2 0 0 1 2 2 v9 a2 2 0 0 1-2 2 H4 a2 2 0 0 1-2-2 Z" />
-                <circle cx="12.5" cy="12.5" r="3.3" />
+                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+                <circle cx="12" cy="13" r="3.6" />
               </svg>
             }
             title="The gallery"
