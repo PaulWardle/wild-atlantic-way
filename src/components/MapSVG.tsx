@@ -44,13 +44,14 @@ export function MapSVG({ geo, maxWidth }: { geo: MapGeometry; maxWidth?: number 
         <circle key={`c${i}`} cx={p.x} cy={p.y} r={p.r} fill={p.fill} stroke={c.paperMapFill} strokeWidth={1} />
       ))}
 
-      <path d={geo.eFerryIn} fill="none" stroke={c.inkFainter} strokeWidth={1.4} strokeDasharray="3 4" strokeLinecap="round" />
-      <path d={geo.eHome} fill="none" stroke={c.inkFainter} strokeWidth={1.4} strokeDasharray="3 4" strokeLinecap="round" />
+      <path d={geo.eFerryIn} fill="none" stroke={c.inkFainter} strokeWidth={1.3} strokeDasharray="3 4" strokeLinecap="round" />
+      <path d={geo.eHome} fill="none" stroke={c.inkFainter} strokeWidth={1.3} strokeDasharray="3 4" strokeLinecap="round" />
 
-      <path d={geo.eLead} fill="none" stroke={c.leadIn} strokeWidth={2.6} strokeDasharray="6 4" strokeLinejoin="round" strokeLinecap="round" />
-      <path d={geo.eOff} fill="none" stroke={c.rust} strokeWidth={3.2} strokeLinejoin="round" strokeLinecap="round" />
+      {/* Thin dotted route that hugs the coast, like the official WAW map. */}
+      <path d={geo.eLead} fill="none" stroke={c.leadIn} strokeWidth={1.9} strokeDasharray="0.4 4.5" strokeLinejoin="round" strokeLinecap="round" />
+      <path d={geo.eOff} fill="none" stroke={c.rust} strokeWidth={2.3} strokeDasharray="0.4 5" strokeLinejoin="round" strokeLinecap="round" />
       {geo.eLiveActive && (
-        <path d={geo.eDone} fill="none" stroke={c.greenLine} strokeWidth={3.6} strokeLinejoin="round" strokeLinecap="round" />
+        <path d={geo.eDone} fill="none" stroke={c.greenLine} strokeWidth={2.5} strokeDasharray="0.4 5" strokeLinejoin="round" strokeLinecap="round" />
       )}
 
       {geo.eLandmarks.map((p, i) => (
