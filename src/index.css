@@ -1,0 +1,116 @@
+/* Wild Atlantic Way — global styles.
+   Ported from the original single-file build's <style> block. The app is a fixed
+   phone-width column on a dark "desk" background (desktop), or full-bleed on phones. */
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: #1c1813;
+}
+
+#root {
+  min-height: 100dvh;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+}
+
+input,
+textarea {
+  font: inherit;
+}
+
+::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+@keyframes waw-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes waw-fade {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes waw-ping {
+  0% {
+    transform: scale(0.55);
+    opacity: 0.75;
+  }
+  70% {
+    transform: scale(2);
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes waw-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.25;
+  }
+}
+
+/* ---- Trip Book (PDF export via window.print) ----
+   Hides the app chrome and lays the journal out as a printable document. */
+.waw-printonly {
+  display: none;
+}
+@media print {
+  .waw-noprint {
+    display: none !important;
+  }
+  .waw-printonly {
+    display: block !important;
+  }
+  html,
+  body {
+    background: #fff !important;
+  }
+  .waw-desk {
+    display: block !important;
+    background: #fff !important;
+    padding: 0 !important;
+    min-height: 0 !important;
+  }
+  .waw-phone {
+    width: auto !important;
+    max-width: none !important;
+    height: auto !important;
+    min-height: 0 !important;
+    box-shadow: none !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    overflow: visible !important;
+  }
+  .waw-scroll {
+    height: auto !important;
+    overflow: visible !important;
+    flex: none !important;
+  }
+}
