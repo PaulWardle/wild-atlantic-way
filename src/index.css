@@ -33,6 +33,26 @@ textarea {
   font: inherit;
 }
 
+/* Keyboard focus: a clear ring for people navigating by keyboard, while a
+   pointer tap (which fires :focus but not :focus-visible) stays clean. */
+:focus-visible {
+  outline: 2.5px solid #8f3341;
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+/* Respect a reduced-motion preference: drop the entrance/ping animations. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 ::-webkit-scrollbar {
   width: 0;
   height: 0;

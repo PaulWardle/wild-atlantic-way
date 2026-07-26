@@ -321,7 +321,7 @@ export function Home() {
                 <div style={{ fontFamily: font.display, fontWeight: 700, fontSize: 21, textTransform: 'uppercase', color: c.ink, lineHeight: 1.02, letterSpacing: '.01em' }}>{liveArea}</div>
               </div>
               {liveNote && <div style={{ marginTop: 8, fontFamily: font.serif, fontSize: 13.5, color: c.inkBody2, lineHeight: 1.5 }}>“{liveNote}”</div>}
-              {updates[0]?.photo && <PhotoView url={updates[0].photo} maxHeight={220} />}
+              {updates[0]?.photo && <PhotoView url={updates[0].photo} alt={`Photo from ${liveArea}`} maxHeight={220} />}
             </div>
             {updates.length > 1 && (
               <div style={{ margin: '11px 14px 0', borderTop: `1px dashed ${c.line}`, paddingTop: 9 }}>
@@ -357,7 +357,7 @@ export function Home() {
                   <div style={{ fontFamily: font.display, fontWeight: 600, fontSize: 13.5, textTransform: 'uppercase', color: c.ink, lineHeight: 1.15, letterSpacing: '.01em' }}>{u.loc}</div>
                   <div style={{ fontFamily: font.mono, fontSize: 8, color: c.inkFaintest, marginTop: 1 }}>{u.when}</div>
                   {u.note && <div style={{ fontFamily: font.serif, fontSize: 12.5, color: c.inkMuted, lineHeight: 1.45, marginTop: 2 }}>“{u.note}”</div>}
-                  {u.photo && <PhotoView url={u.photo} maxHeight={180} />}
+                  {u.photo && <PhotoView url={u.photo} alt={`Photo from ${u.loc}`} maxHeight={180} />}
                 </div>
               </div>
             ))}

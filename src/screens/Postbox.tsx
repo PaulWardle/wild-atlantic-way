@@ -126,7 +126,7 @@ export function Postbox() {
                 </b>{' '}
                 {p.msg}
               </div>
-              {p.photo && <PhotoView url={p.photo} maxHeight={240} />}
+              {p.photo && <PhotoView url={p.photo} alt={p.name ? `Photo from ${p.name}` : 'Trip photo'} maxHeight={240} />}
             </div>
           ))}
         </>
