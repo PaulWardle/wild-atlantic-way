@@ -15,6 +15,13 @@ export interface TripMeta {
   intro: string
 }
 
+/** Route-item kind (100% WAW mode):
+ *  'waw'      — official route road segment: locked, cannot be cut
+ *  'onroute'  — stop directly on the official road: road locked, stopping optional
+ *  'extra'    — requires leaving the official line: Keep/Maybe/Cut with road impact
+ *  'transfer' — non-WAW travel (ferry legs, Larne→Muff, Kinsale→Rosslare) */
+export type StopKind = 'waw' | 'onroute' | 'extra' | 'transfer'
+
 export interface Stop {
   n: string
   d: string
@@ -22,6 +29,22 @@ export interface Stop {
   finish?: boolean
   warn?: string
   tags?: string[]
+  kind?: StopKind
+  /** True road detour impact vs staying on the line (exit→via→rejoin minus direct), miles. */
+  impactMi?: number
+  /** Extra riding minutes for that detour. */
+  impactMin?: number
+  /** Expected time spent at the stop, minutes. */
+  stopMin?: number
+  /** Detour provenance (extras only): where it leaves/rejoins the official line. */
+  exit?: string
+  rejoin?: string
+  /** Official-line road miles exit→rejoin (baseline). */
+  baseMi?: number
+  /** Road miles exit→extra→rejoin. */
+  viaMi?: number
+  /** How the road impact was measured + when (e.g. "manual road estimate · verify in Google Maps · 2026-07-26"). Absent = not yet calculated. */
+  impactSrc?: string
 }
 
 export interface Night {
@@ -30,6 +53,12 @@ export interface Night {
   note: string
   backup: string
   sellout: boolean
+  /** Road miles off the official line to reach the site (evening). */
+  deviationMi?: number
+  /** Road miles ridden backwards next morning to rejoin forward progress. */
+  retraceMi?: number
+  /** Why a retrace is accepted (e.g. "sits inside the Slea Head loop"). */
+  retraceWhy?: string
 }
 
 export interface Day {
@@ -45,6 +74,10 @@ export interface Day {
   cuts?: string[]
   stops: Stop[]
   night: Night | null
+  /** Official-route window ridden this day: [fromKm, toKm] along the KML line (Muff = 0). */
+  wawKm?: [number, number]
+  /** Non-WAW transfer miles this day (ferry approach, Kinsale→Rosslare, etc). */
+  transferMi?: number
 }
 
 export interface FerryInbound {
@@ -100,6 +133,23 @@ export interface Campsite {
   primaryNote: string
   backup: string
   sellout: boolean
+  /** Road miles off the official line to reach the site (evening). */
+  deviationMi?: number
+  /** Road miles ridden backwards next morning to rejoin forward progress. */
+  retraceMi?: number
+  /** Why a retrace is accepted (e.g. "sits inside the Slea Head loop"). */
+  retraceWhy?: string
+  // ---- verification (brother view only; never claim what isn't verified) ----
+  tents?: 'confirmed' | 'unknown'
+  bikes?: 'accepted' | 'unknown'
+  open2026?: 'covers-august' | 'unknown'
+  /** Price for 2 adults + 1 small tent, if known (e.g. "~€24 total / €12pp"). */
+  price?: string
+  checkIn?: string
+  booking?: string
+  availability?: 'booked' | 'available' | 'enquire' | 'full' | 'unknown'
+  /** Where the info came from + when checked. */
+  source?: string
 }
 
 export interface CampNotes {

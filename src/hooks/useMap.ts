@@ -3,12 +3,15 @@ import { useStore } from '../store/StoreProvider'
 import { tripData } from '../data/tripData'
 import { journey } from '../data/journey'
 import { isInIreland } from '../lib/geocode'
+import { completionAt } from '../data/wawSpine'
 import { computeMapGeometry, type CurrentPos, type MapGeometry } from '../lib/geo'
 
 export interface MapState {
   geo: MapGeometry
   curLabel: string
   liveActive: boolean
+  /** Official-route completion (0..100, one decimal) at the latest live position — null pre-Way. */
+  wawPct: number | null
 }
 
 /** Current map geometry derived from the latest location ping (exact GPS when
@@ -33,5 +36,9 @@ export function useMap(): MapState {
 
   const geo = useMemo(() => computeMapGeometry(tripData, current), [current?.lat, current?.lon])
 
-  return { geo, curLabel, liveActive: updates.length > 0 }
+  // Official completion — only meaningful once on the Way (post-Muff, in Ireland).
+  const onWay = current && u && journey[Math.max(0, Math.min(journey.length - 1, u.si | 0))]?.phase === 'waw'
+  const wawPct = onWay ? Math.round(completionAt(current.lat, current.lon) * 1000) / 10 : null
+
+  return { geo, curLabel, liveActive: updates.length > 0, wawPct }
 }

@@ -6,10 +6,11 @@
   "description": "Wild Atlantic Way — a private, mobile-first trip app for two motorcyclists riding Ireland's Wild Atlantic Way and the friends & family following along.",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "node scripts/validate-route.mjs && tsc -b && vite build",
     "preview": "vite preview",
     "typecheck": "tsc -b --noEmit",
-    "deploy": "npm run build && wrangler deploy"
+    "deploy": "npm run build && wrangler deploy",
+    "validate": "node scripts/validate-route.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.45.4",

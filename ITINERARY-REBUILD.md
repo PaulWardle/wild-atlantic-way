@@ -126,8 +126,10 @@ East out of Dingle on the N86 — **South Pole Inn, Annascaul** (Tom Crean's pub
 - Leg B: `google.com/maps/dir/Killorglin/Glenbeigh/Cahersiveen/Portmagee/Kerry+Cliffs/Waterville/Caherdaniel/Sneem/Kenmare`
 - Leg C: `google.com/maps/dir/Kenmare/Lauragh/Ardgroom/Eyeries/Dursey+Sound/Castletownbere/Adrigole`
 
-### Day 9 · Tue 18 Aug — Healy Pass sunrise → Bantry → Mizen → Drombeg → Old Head → KINSALE → run to Rosslare
-**~290 mi (of which ~130 is main-road transfer) · 06:30 → ~19:30 · camp: St Margaret's Beach, Rosslare (30 min from the port)**
+### Day 9 · Tue 18 Aug — Beara → Sheep's Head → Mizen → Baltimore → KINSALE → run to Rosslare
+**~320 mi (of which ~130 is main-road transfer) · 06:00 → ~20:00 · camp: St Margaret's Beach, Rosslare (30 min from the port)**
+
+*(100% rebuild: Sheep's Head and the Lough Hyne–Baltimore–Toe Head–Galley Head coast are now IN and locked — every remaining official mile is ridden today. Healy Pass at sunrise survives as an optional +9 mi extra from the Adrigole tent. Planned 320 mi · est. ~12h door-to-door from the app's own arithmetic; the old text below describes the sunrise spur and the finish, which are unchanged.)*
 
 **06:30: Healy Pass (spur, +16 mi round)** — the tent is at its southern foot; ride the switchbacks up to the saddle for sunrise over Glanmore Lake, back down for breakfast. The single best 45 minutes of road on the island, to yourselves. → Glengarriff (2241) → **Bantry (2242)** → Durrus → Toormore → Goleen → **★ Mizen Head (2310, spur +8 mi)** — the footbridge, Ireland's south-westernmost point → **Barleycove (2303)** → Schull (2334) → Ballydehob → Skibbereen → **Drombeg Stone Circle (2425 — 5 min off the road, free)** → Rosscarbery → Clonakilty → Timoleague (2465) → **★ Old Head of Kinsale (2484, spur +10 mi)** — viewpoint at the signal tower → **⚑ KINSALE (2504) ~15:30–16:00 — THE END OF THE WILD ATLANTIC WAY.** Finish-line photo at the marker, Charles Fort if there's 30 min, fuel. → N25 east past Cork → **Rosslare, ~19:30.** Tent, chips, alarm set for 06:15.
 
@@ -185,19 +187,21 @@ Why the change: sleeping at Kenmare makes Tuesday impossible (373 km of official
 4. **Omey Island tide table, Fri 14 Aug** — the strand is only crossable ~3h either side of low water; the short Day 5 is built to flex around it.
 5. **Sliabh Liag / Bunglass road** — shuttle-bus management has applied in recent summers; arriving before ~10:00 usually solves it (you'll be there mid-afternoon — check current rules, worst case it's the shuttle).
 
-## 5b. The complete cut ledger — every omission, why, and what restoring it costs
+## 5b. 100% WAW MODE — the ledger, superseded
 
-**Official route line not ridden (the honest accounting):**
+**This section originally listed official-line cuts. As of the 100% rebuild, THERE ARE NONE.** The app now runs in 100% WAW mode: the official line is locked end to end — Sheep's Head, the Lough Hyne–Baltimore–Toe Head–Galley Head coast, the full Mullet loop, the Rosses, Carna, Glencolmcille, Valentia — all restored and non-cuttable. A build-time validator mathematically proves the nine day-windows are contiguous, cover km 0 → 2,506.8 (100.0%), and that every campsite sits forward. The app shows live completion (`WAW x.x%`) from your GPS position against the official geometry.
 
-| Cut | Official line lost | Why | To restore |
-|---|---|---|---|
-| Sheep's Head loop | ~35 mi | Nothing from your list on it; it's the loop that makes the boat missable | +2 h on Day 9 — not possible |
-| Baltimore & Lough Hyne | ~20 mi | Same day, same reason | +1¼ h on Day 9 — the first thing back if you're early at Skibbereen |
-| Rosses pier lanes (Day 3 valve) | ~25 mi | Low headline-density; ridden by default, valve if behind | It's IN by default — only lost if you pull the valve |
-| Carna loop (Day 6 valve) | ~22 mi | Same — in by default, valve if behind | Same |
-| Mullet western lanes | ~15 mi | Spine of the peninsula ridden to Blacksod; the outer lanes add little | +45 min on Day 4 |
-| Valentia Island loop (Day 8 valve) | ~14 mi | Kerry Cliffs covers the Skellig view; in by default, first valve pulled if behind | In by default |
-| Caha Pass N71 tunnels | ~18 mi | You cross Beara at Healy Pass instead — a straight upgrade for a rider; riding both = riding Beara twice | Can't have both without +1½ h on Day 9 |
+What the old table becomes: **the extras ledger** — the only things that can now be Kept/Maybe/Cut, each with its true road impact (estimates, flagged as such, to be re-checked in Google Maps pre-trip):
+
+| Optional extra | Road impact | Note |
+|---|---|---|
+| Torr Head scenic road (pre-Muff) | +3 mi / +35 min | Time cost, not distance — single-track |
+| Fort Dunree | +4 mi / +12 min | Out-and-back off the Urris road |
+| Glenveagh / Errigal | +15 mi / +40 min | Inland R251, rejoins at Gweedore |
+| Poulnabrone dolmen | +10 mi / +25 min | Out-and-back from Ballyvaughan |
+| Healy Pass sunrise | +9 mi / +30 min | Out-and-back to the saddle from the Adrigole tent |
+| Dursey cable-car *crossing* | +0 mi / +120 min | The Sound and station are on the line; the crossing is the cost |
+| Caha N71 tunnels | n/a | Not official line — the Way crosses Beara around the coast, which you now ride in full |
 
 **Wish-list items — status of every single one:** everything from your original list is IN except these five, each with the reason:
 

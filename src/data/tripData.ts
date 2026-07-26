@@ -35,7 +35,7 @@ export const tripData: Trip = {
       "miles": "~150mi + ferry",
       "phase": "lead",
       "wawStart": true,
-      "warnBanner": "Boat runs late? Call it at Derry (~17:30): skip Torr Head, or run Muff → R238 straight to camp and take Malin Head as a 25-mile spur at dawn — tomorrow is the short day.",
+      "warnBanner": "Locked day: Larne → Muff → Stroove → Farren’s → Malin Head → Binion, all on the official line from Muff. If the boat runs late, Torr Head (optional extra) goes first; every official mile still gets ridden.",
       "stops": [
         {
           "n": "Douglas → Larne",
@@ -44,7 +44,8 @@ export const tripData: Trip = {
           "warn": "Vehicle check-in closes 45 min before — be at Douglas for 08:45.",
           "tags": [
             "logistics"
-          ]
+          ],
+          "kind": "transfer"
         },
         {
           "n": "A2 Antrim Coast Road",
@@ -52,15 +53,26 @@ export const tripData: Trip = {
           "tags": [
             "b",
             "view"
-          ]
+          ],
+          "kind": "transfer",
+          "stopMin": 0
         },
         {
           "n": "Torr Head",
-          "d": "Steep, narrow single-track loop off the A2 — Scotland only 12mi across the water. The one lead-in road worth the detour (and the first thing to drop if the boat ran late).",
+          "d": "OPTIONAL EXTRA (pre-Muff, not WAW): the Torr Head scenic road off the A2 — Scotland 12mi across the water. Barely longer in miles than the A2, but single-track and slow: +3mi / +35min riding vs staying on the A2.",
           "tags": [
             "b",
             "view"
-          ]
+          ],
+          "kind": "extra",
+          "impactMi": 3,
+          "impactMin": 35,
+          "stopMin": 10,
+          "exit": "Cushendun (A2)",
+          "rejoin": "Ballyvoy (A2)",
+          "baseMi": 9,
+          "viaMi": 12,
+          "impactSrc": "manual road estimate · verify in Google Maps before the trip · checked 26 Jul 2026"
         },
         {
           "n": "Muff — the Way begins",
@@ -69,15 +81,19 @@ export const tripData: Trip = {
             "w",
             "town",
             "attraction"
-          ]
+          ],
+          "kind": "waw",
+          "stopMin": 10
         },
         {
-          "n": "East Inishowen shore",
-          "d": "The first miles of the Way proper: Moville, Greencastle and out to Inishowen Head — the first Discovery Points fall inside the opening hour.",
+          "n": "East Inishowen shore & Stroove",
+          "d": "The first miles of the Way proper: Moville, Greencastle, Stroove lighthouse and the Warren, out to the Inishowen Head corner — the first Discovery Points fall inside the opening hour.",
           "tags": [
             "b",
             "view"
-          ]
+          ],
+          "kind": "waw",
+          "stopMin": 5
         },
         {
           "n": "Kinnagoe Bay",
@@ -85,7 +101,9 @@ export const tripData: Trip = {
           "tags": [
             "beach",
             "history"
-          ]
+          ],
+          "kind": "onroute",
+          "stopMin": 10
         },
         {
           "n": "Culdaff",
@@ -93,7 +111,9 @@ export const tripData: Trip = {
           "tags": [
             "beach",
             "town"
-          ]
+          ],
+          "kind": "onroute",
+          "stopMin": 0
         },
         {
           "n": "MALIN HEAD",
@@ -102,14 +122,18 @@ export const tripData: Trip = {
             "s",
             "w",
             "view"
-          ]
+          ],
+          "kind": "onroute",
+          "stopMin": 25
         },
         {
           "n": "Farren's Bar",
           "d": "Ireland's most northerly pub — a sticker-and-photo stop, 5 minutes off the head.",
           "tags": [
             "pub"
-          ]
+          ],
+          "kind": "onroute",
+          "stopMin": 15
         },
         {
           "n": "Doagh → Pollan Bay → camp",
@@ -117,7 +141,9 @@ export const tripData: Trip = {
           "tags": [
             "b",
             "beach"
-          ]
+          ],
+          "kind": "waw",
+          "stopMin": 0
         }
       ],
       "night": {
@@ -125,8 +151,15 @@ export const tripData: Trip = {
         "primary": "Binion Bay Camping, Clonmany",
         "note": "BOOKED ✓ — beachside at Binnion strand, just round from Tullagh Bay. Cash (€) from here on.",
         "backup": "Tullagh Bay Camping (the next bay over)",
-        "sellout": false
-      }
+        "sellout": false,
+        "deviationMi": 0.5,
+        "retraceMi": 0
+      },
+      "wawKm": [
+        0,
+        120
+      ],
+      "transferMi": 82
     },
     {
       "n": "02",
@@ -143,7 +176,9 @@ export const tripData: Trip = {
           "tags": [
             "b",
             "view"
-          ]
+          ],
+          "kind": "onroute",
+          "stopMin": 10
         },
         {
           "n": "Fort Dunree",
@@ -151,14 +186,25 @@ export const tripData: Trip = {
           "tags": [
             "history",
             "view"
-          ]
+          ],
+          "kind": "extra",
+          "impactMi": 4,
+          "impactMin": 12,
+          "stopMin": 25,
+          "exit": "Urris road (post-Mamore)",
+          "rejoin": "same (out-and-back)",
+          "baseMi": 0,
+          "viaMi": 4,
+          "impactSrc": "manual road estimate · verify in Google Maps before the trip · checked 26 Jul 2026"
         },
         {
           "n": "Round the Swilly",
-          "d": "Buncrana, Lisfannon beach, Inch Island — then the one inland dip of the whole Way: there is no bridge over Lough Swilly, so the line rounds it through Letterkenny and back out to Rathmullan. (A summer Buncrana–Rathmullan foot-and-bike ferry sometimes runs — worth checking; it saves ~25mi.)",
+          "d": "Buncrana, Lisfannon beach, Inch Island — then the one inland dip of the whole Way: no bridge over Lough Swilly, so the OFFICIAL line rounds it through Letterkenny to Rathmullan. (A summer Buncrana–Rathmullan ferry sometimes runs — ⚠️ taking it BREAKS 100% completion: 25mi of official Way unridden.)",
           "tags": [
             "b"
-          ]
+          ],
+          "kind": "waw",
+          "stopMin": 0
         },
         {
           "n": "Knockalla coast road",
@@ -166,7 +212,8 @@ export const tripData: Trip = {
           "tags": [
             "b",
             "view"
-          ]
+          ],
+          "kind": "waw"
         },
         {
           "n": "Ballymastocker Bay / Portsalon",
@@ -174,7 +221,9 @@ export const tripData: Trip = {
           "tags": [
             "beach",
             "view"
-          ]
+          ],
+          "kind": "onroute",
+          "stopMin": 15
         },
         {
           "n": "FANAD HEAD",
@@ -183,14 +232,17 @@ export const tripData: Trip = {
             "s",
             "w",
             "view"
-          ]
+          ],
+          "kind": "onroute",
+          "stopMin": 25
         },
         {
           "n": "Harry Blaney Bridge",
           "d": "Exit Fanad across Mulroy Bay on the Blaney bridge — straight onto the Rosguill peninsula.",
           "tags": [
             "b"
-          ]
+          ],
+          "kind": "waw"
         },
         {
           "n": "Atlantic Drive, Rosguill",
@@ -198,15 +250,26 @@ export const tripData: Trip = {
           "tags": [
             "b",
             "view"
-          ]
+          ],
+          "kind": "waw",
+          "stopMin": 10
         },
         {
-          "n": "Glenveagh / Errigal (optional)",
-          "d": "Inland detour if the day is flying (+30mi): castle and gardens, or Errigal and the Poisoned Glen on the R251. Not on the Way — your call.",
+          "n": "Glenveagh / Errigal",
+          "d": "OPTIONAL EXTRA (inland, not WAW): the R251 under Errigal past Glenveagh, rejoining the Way at Gweedore. Road impact: +15mi / +40min riding vs the direct N56 — plus whatever you spend at the castle.",
           "tags": [
             "attraction",
             "nature"
-          ]
+          ],
+          "kind": "extra",
+          "impactMi": 15,
+          "impactMin": 40,
+          "stopMin": 45,
+          "exit": "Dunfanaghy (N56)",
+          "rejoin": "Gweedore (N56)",
+          "baseMi": 15,
+          "viaMi": 30,
+          "impactSrc": "manual road estimate · verify in Google Maps before the trip · checked 26 Jul 2026"
         },
         {
           "n": "Dunfanaghy",
@@ -214,7 +277,9 @@ export const tripData: Trip = {
           "tags": [
             "town",
             "food"
-          ]
+          ],
+          "kind": "onroute",
+          "stopMin": 45
         }
       ],
       "night": {
@@ -222,8 +287,14 @@ export const tripData: Trip = {
         "primary": "Corcreggan Mill, Dunfanaghy",
         "note": "Quirky and biker-friendly, in an old mill.",
         "backup": "Wild Atlantic Camp, Creeslough (pods = storm insurance)",
-        "sellout": false
-      }
+        "sellout": false,
+        "deviationMi": 1.4,
+        "retraceMi": 0
+      },
+      "wawKm": [
+        120,
+        279
+      ]
     },
     {
       "n": "03",
@@ -233,7 +304,7 @@ export const tripData: Trip = {
       "tagline": "The long one — Donegal's whole west face in a day",
       "miles": "~190mi",
       "phase": "waw",
-      "warnBanner": "Longest riding day of the trip. Release valves, in order: N56 mainline through the Rosses (−25mi), skip Glencolmcille & Malin Beg (−18mi), skip Rossnowlagh (−8mi). Call each one AT the junction, not after it.",
+      "warnBanner": "Longest riding day. The official line is locked — the levers are stop time, not road: shorten Slieve League / Killybegs / Malin Beg visits if behind. Nothing official gets skipped.",
       "stops": [
         {
           "n": "Horn Head loop",
@@ -241,7 +312,9 @@ export const tripData: Trip = {
           "tags": [
             "view",
             "b"
-          ]
+          ],
+          "kind": "waw",
+          "stopMin": 15
         },
         {
           "n": "Bloody Foreland",
@@ -249,15 +322,19 @@ export const tripData: Trip = {
           "tags": [
             "w",
             "view"
-          ]
+          ],
+          "kind": "onroute",
+          "stopMin": 5
         },
         {
           "n": "The Rosses",
-          "d": "Granite, lakes and pier lanes through Gweedore and Dungloe, then Narin/Portnoo strand. (This stretch is valve #1 if time is tight — the N56 runs straight through.)",
+          "d": "Granite, lakes and pier lanes through Gweedore and Dungloe, then Narin/Portnoo strand — every lane of it official line, every lane locked.",
           "tags": [
             "b",
             "beach"
-          ]
+          ],
+          "kind": "waw",
+          "stopMin": 0
         },
         {
           "n": "Maghera & Assaranca",
@@ -265,7 +342,9 @@ export const tripData: Trip = {
           "tags": [
             "nature",
             "beach"
-          ]
+          ],
+          "kind": "onroute",
+          "stopMin": 15
         },
         {
           "n": "Glengesh Pass",
@@ -273,15 +352,19 @@ export const tripData: Trip = {
           "tags": [
             "b",
             "view"
-          ]
+          ],
+          "kind": "onroute",
+          "stopMin": 10
         },
         {
           "n": "Glencolmcille & Malin Beg",
-          "d": "Out to the Silver Strand — a perfect horseshoe of sand at the end of the road. (Valve #2 — skipping saves ~18mi.)",
+          "d": "Out to the Silver Strand — a perfect horseshoe of sand at the end of the road. The road is official line; the 170 steps down to the beach are the optional bit.",
           "tags": [
             "beach",
             "view"
-          ]
+          ],
+          "kind": "onroute",
+          "stopMin": 20
         },
         {
           "n": "SLIEVE LEAGUE / SLIABH LIAG",
@@ -290,7 +373,9 @@ export const tripData: Trip = {
             "s",
             "w",
             "view"
-          ]
+          ],
+          "kind": "onroute",
+          "stopMin": 45
         },
         {
           "n": "Killybegs",
@@ -298,15 +383,19 @@ export const tripData: Trip = {
           "tags": [
             "town",
             "food"
-          ]
+          ],
+          "kind": "onroute",
+          "stopMin": 40
         },
         {
           "n": "Donegal Bay run",
-          "d": "Donegal Town, Rossnowlagh (valve #3), Tullan Strand and Bundoran — surf country, faster roads.",
+          "d": "Donegal Town, Rossnowlagh, Tullan Strand and Bundoran — surf country, faster roads, all on the line.",
           "tags": [
             "b",
             "beach"
-          ]
+          ],
+          "kind": "waw",
+          "stopMin": 0
         },
         {
           "n": "MULLAGHMORE HEAD",
@@ -315,7 +404,9 @@ export const tripData: Trip = {
             "s",
             "w",
             "view"
-          ]
+          ],
+          "kind": "onroute",
+          "stopMin": 20
         },
         {
           "n": "Drumcliffe → Strandhill",
@@ -323,7 +414,9 @@ export const tripData: Trip = {
           "tags": [
             "history",
             "town"
-          ]
+          ],
+          "kind": "onroute",
+          "stopMin": 15
         }
       ],
       "night": {
@@ -331,8 +424,14 @@ export const tripData: Trip = {
         "primary": "Strandhill Caravan & Camping",
         "note": "On the beach, pubs walkable.",
         "backup": "Greenlands, Rosses Point",
-        "sellout": true
-      }
+        "sellout": true,
+        "deviationMi": 0.1,
+        "retraceMi": 0
+      },
+      "wawKm": [
+        279,
+        661
+      ]
     },
     {
       "n": "04",
@@ -340,9 +439,9 @@ export const tripData: Trip = {
       "date": "13 AUG",
       "title": "Downpatrick → Céide → Erris → Achill",
       "tagline": "Into the emptiest, wildest corner of the whole Way",
-      "miles": "~185mi",
+      "miles": "~200mi",
       "phase": "waw",
-      "warnBanner": "Decision point at Céide Fields ~13:30: the full Mullet/Blacksod run is the day’s big optional block — skipping it saves ~45mi and Achill still gets its full evening.",
+      "warnBanner": "Big day with the full Mullet loop restored — ~200mi, all of it official. Levers are stop lengths (Céide, Downpatrick), never the road.",
       "stops": [
         {
           "n": "The Sligo surf coast",
@@ -350,7 +449,8 @@ export const tripData: Trip = {
           "tags": [
             "beach",
             "b"
-          ]
+          ],
+          "kind": "waw"
         },
         {
           "n": "Ballina & Killala",
@@ -358,7 +458,8 @@ export const tripData: Trip = {
           "tags": [
             "town",
             "history"
-          ]
+          ],
+          "kind": "onroute"
         },
         {
           "n": "DOWNPATRICK HEAD",
@@ -367,7 +468,9 @@ export const tripData: Trip = {
             "s",
             "w",
             "view"
-          ]
+          ],
+          "kind": "onroute",
+          "stopMin": 25
         },
         {
           "n": "Céide Fields",
@@ -375,7 +478,9 @@ export const tripData: Trip = {
           "tags": [
             "attraction",
             "history"
-          ]
+          ],
+          "kind": "onroute",
+          "stopMin": 30
         },
         {
           "n": "North Mayo cliff road",
@@ -383,15 +488,18 @@ export const tripData: Trip = {
           "tags": [
             "b",
             "view"
-          ]
+          ],
+          "kind": "waw"
         },
         {
-          "n": "Blacksod lighthouse (optional)",
-          "d": "Down the Mullet to Blacksod — the lighthouse whose weather report delayed D-Day by 24 hours. The peninsula run is ~40mi there-and-back: the day’s named valve.",
+          "n": "The Mullet & Blacksod",
+          "d": "The full official loop of the Mullet — down the west side past Annagh Head and Fál Mór to Blacksod lighthouse (whose weather report delayed D-Day by 24 hours), back up to Belmullet. All official line, all locked.",
           "tags": [
             "attraction",
             "history"
-          ]
+          ],
+          "kind": "waw",
+          "stopMin": 15
         },
         {
           "n": "Ballycroy / Wild Nephin",
@@ -399,7 +507,8 @@ export const tripData: Trip = {
           "tags": [
             "nature",
             "b"
-          ]
+          ],
+          "kind": "waw"
         },
         {
           "n": "Mulranny → Achill Sound",
@@ -407,7 +516,8 @@ export const tripData: Trip = {
           "tags": [
             "view",
             "b"
-          ]
+          ],
+          "kind": "waw"
         },
         {
           "n": "Achill Atlantic Drive",
@@ -415,7 +525,9 @@ export const tripData: Trip = {
           "tags": [
             "b",
             "view"
-          ]
+          ],
+          "kind": "waw",
+          "stopMin": 10
         },
         {
           "n": "Keel",
@@ -423,7 +535,9 @@ export const tripData: Trip = {
           "tags": [
             "town",
             "beach"
-          ]
+          ],
+          "kind": "onroute",
+          "stopMin": 0
         }
       ],
       "night": {
@@ -431,8 +545,14 @@ export const tripData: Trip = {
         "primary": "Keel Sandybanks Caravan & Camping",
         "note": "On Keel beach.",
         "backup": "Seal Caves, Dugort",
-        "sellout": true
-      }
+        "sellout": true,
+        "deviationMi": 0.1,
+        "retraceMi": 0
+      },
+      "wawKm": [
+        661,
+        1045
+      ]
     },
     {
       "n": "05",
@@ -451,7 +571,9 @@ export const tripData: Trip = {
             "w",
             "beach",
             "view"
-          ]
+          ],
+          "kind": "onroute",
+          "stopMin": 25
         },
         {
           "n": "Mulranny → Newport",
@@ -459,7 +581,8 @@ export const tripData: Trip = {
           "tags": [
             "b",
             "view"
-          ]
+          ],
+          "kind": "waw"
         },
         {
           "n": "Westport",
@@ -468,7 +591,9 @@ export const tripData: Trip = {
             "town",
             "food",
             "pub"
-          ]
+          ],
+          "kind": "onroute",
+          "stopMin": 75
         },
         {
           "n": "Croagh Patrick",
@@ -476,7 +601,9 @@ export const tripData: Trip = {
           "tags": [
             "view",
             "history"
-          ]
+          ],
+          "kind": "onroute",
+          "stopMin": 10
         },
         {
           "n": "Doolough Valley",
@@ -485,7 +612,9 @@ export const tripData: Trip = {
             "w",
             "view",
             "history"
-          ]
+          ],
+          "kind": "onroute",
+          "stopMin": 10
         },
         {
           "n": "Aasleagh Falls → Leenane",
@@ -493,7 +622,8 @@ export const tripData: Trip = {
           "tags": [
             "nature",
             "view"
-          ]
+          ],
+          "kind": "onroute"
         },
         {
           "n": "KILLARY HARBOUR",
@@ -502,7 +632,9 @@ export const tripData: Trip = {
             "s",
             "w",
             "view"
-          ]
+          ],
+          "kind": "onroute",
+          "stopMin": 15
         },
         {
           "n": "Letterfrack & Connemara NP",
@@ -510,7 +642,8 @@ export const tripData: Trip = {
           "tags": [
             "nature",
             "view"
-          ]
+          ],
+          "kind": "waw"
         },
         {
           "n": "Cleggan → Omey Island",
@@ -518,7 +651,9 @@ export const tripData: Trip = {
           "tags": [
             "beach",
             "attraction"
-          ]
+          ],
+          "kind": "onroute",
+          "stopMin": 30
         }
       ],
       "night": {
@@ -526,8 +661,14 @@ export const tripData: Trip = {
         "primary": "Clifden Eco Beach, Claddaghduff",
         "note": "Tent on the machair facing Omey — one of the great pitches of Ireland.",
         "backup": "Clifden Camping & Caravan Park",
-        "sellout": true
-      }
+        "sellout": true,
+        "deviationMi": 0.8,
+        "retraceMi": 0
+      },
+      "wawKm": [
+        1045,
+        1197
+      ]
     },
     {
       "n": "06",
@@ -544,7 +685,9 @@ export const tripData: Trip = {
           "tags": [
             "b",
             "view"
-          ]
+          ],
+          "kind": "onroute",
+          "stopMin": 15
         },
         {
           "n": "DERRIGIMLAGH",
@@ -553,7 +696,9 @@ export const tripData: Trip = {
             "s",
             "w",
             "history"
-          ]
+          ],
+          "kind": "onroute",
+          "stopMin": 45
         },
         {
           "n": "Roundstone",
@@ -562,21 +707,27 @@ export const tripData: Trip = {
             "town",
             "view",
             "beach"
-          ]
+          ],
+          "kind": "onroute",
+          "stopMin": 20
         },
         {
           "n": "South Connemara shore",
-          "d": "R340/R336 through the granite-and-seaweed country — Pearse’s Cottage, Rosmuc, and the Carna loop (the day’s valve: −22mi via the N59 if the morning ran long).",
+          "d": "R340/R336 through the granite-and-seaweed country — Pearse’s Cottage, Rosmuc, the Carna loop. All official line, all locked.",
           "tags": [
             "b"
-          ]
+          ],
+          "kind": "waw",
+          "stopMin": 0
         },
         {
           "n": "Spiddal → Galway",
           "d": "Into the city with the Burren rising across the bay. Ride through — coffee at most; Saturday Galway will eat the afternoon whole.",
           "tags": [
             "town"
-          ]
+          ],
+          "kind": "waw",
+          "stopMin": 20
         },
         {
           "n": "Kinvara",
@@ -584,15 +735,26 @@ export const tripData: Trip = {
           "tags": [
             "view",
             "history"
-          ]
+          ],
+          "kind": "onroute",
+          "stopMin": 10
         },
         {
-          "n": "Ballyvaughan & Poulnabrone (optional)",
-          "d": "The Burren proper. Poulnabrone dolmen is +8mi inland on the R480 — 5,800 years old and worth it if there’s an hour spare.",
+          "n": "Poulnabrone dolmen",
+          "d": "OPTIONAL EXTRA (inland Burren): the 5,800-year-old dolmen on the R480 — out-and-back from Ballyvaughan. Road impact: +10mi / +25min riding.",
           "tags": [
             "history",
             "attraction"
-          ]
+          ],
+          "kind": "extra",
+          "impactMi": 10,
+          "impactMin": 25,
+          "stopMin": 20,
+          "exit": "Ballyvaughan (R480)",
+          "rejoin": "same (out-and-back)",
+          "baseMi": 0,
+          "viaMi": 10,
+          "impactSrc": "manual road estimate · verify in Google Maps before the trip · checked 26 Jul 2026"
         },
         {
           "n": "Black Head R477",
@@ -601,7 +763,9 @@ export const tripData: Trip = {
             "b",
             "w",
             "view"
-          ]
+          ],
+          "kind": "waw",
+          "stopMin": 5
         },
         {
           "n": "Fanore → Doolin",
@@ -609,7 +773,9 @@ export const tripData: Trip = {
           "tags": [
             "town",
             "pub"
-          ]
+          ],
+          "kind": "waw",
+          "stopMin": 0
         }
       ],
       "night": {
@@ -617,8 +783,14 @@ export const tripData: Trip = {
         "primary": "Nagle's Doolin",
         "note": "Cliffs of Moher view from the tent.",
         "backup": "O'Connors Riverside",
-        "sellout": true
-      }
+        "sellout": true,
+        "deviationMi": 0.2,
+        "retraceMi": 0
+      },
+      "wawKm": [
+        1197,
+        1487
+      ]
     },
     {
       "n": "07",
@@ -626,9 +798,9 @@ export const tripData: Trip = {
       "date": "16 AUG",
       "title": "Cliffs → Loop Head → Shannon → Conor Pass",
       "tagline": "Two counties, one ferry, one mighty pass",
-      "miles": "~195mi",
+      "miles": "~200mi",
       "phase": "waw",
-      "warnBanner": "Shannon ferry is hourly, on the half-hour from Killimer (~20 min crossing) — perfect lunch stop. Valves: N69 direct after Ballybunion (−15mi), skip the Maharees (−12mi). Loop Head is NOT a valve — it’s a Signature Point and the emptiest one on the Way.",
+      "warnBanner": "Shannon ferry is hourly on the half-hour from Killimer. The line is locked end to end — including the Maharees and the Ballybunion coast. Levers are stop lengths only.",
       "stops": [
         {
           "n": "CLIFFS OF MOHER, 08:00",
@@ -637,7 +809,9 @@ export const tripData: Trip = {
             "s",
             "w",
             "view"
-          ]
+          ],
+          "kind": "onroute",
+          "stopMin": 60
         },
         {
           "n": "Lahinch → Spanish Point",
@@ -645,7 +819,9 @@ export const tripData: Trip = {
           "tags": [
             "beach",
             "history"
-          ]
+          ],
+          "kind": "onroute",
+          "stopMin": 5
         },
         {
           "n": "Kilkee Cliffs",
@@ -653,7 +829,9 @@ export const tripData: Trip = {
           "tags": [
             "view",
             "b"
-          ]
+          ],
+          "kind": "onroute",
+          "stopMin": 15
         },
         {
           "n": "LOOP HEAD",
@@ -662,15 +840,19 @@ export const tripData: Trip = {
             "s",
             "w",
             "view"
-          ]
+          ],
+          "kind": "onroute",
+          "stopMin": 25
         },
         {
           "n": "Killimer → Tarbert ferry",
-          "d": "Across the Shannon mouth — bikes board first. Saves 85mi via Limerick.",
+          "d": "Across the Shannon mouth — hourly on the half-hour from Killimer, ~20min crossing, bikes board first. An OFFICIAL leg of the Way (the line crosses here) — and the perfect lunch stop.",
           "tags": [
             "logistics",
             "b"
-          ]
+          ],
+          "kind": "waw",
+          "stopMin": 30
         },
         {
           "n": "Ballybunion",
@@ -678,15 +860,19 @@ export const tripData: Trip = {
           "tags": [
             "beach",
             "view"
-          ]
+          ],
+          "kind": "onroute",
+          "stopMin": 15
         },
         {
           "n": "Camp → Castlegregory",
-          "d": "Onto the Dingle peninsula’s north shore under the Slieve Mish — the Maharees spit is the day’s optional detour.",
+          "d": "Onto the Dingle peninsula’s north shore under the Slieve Mish, out around the Castlegregory/Maharees spit — official line, locked.",
           "tags": [
             "b",
             "beach"
-          ]
+          ],
+          "kind": "waw",
+          "stopMin": 0
         },
         {
           "n": "CONOR PASS",
@@ -694,7 +880,9 @@ export const tripData: Trip = {
           "tags": [
             "b",
             "view"
-          ]
+          ],
+          "kind": "onroute",
+          "stopMin": 15
         },
         {
           "n": "Dingle town",
@@ -703,14 +891,18 @@ export const tripData: Trip = {
             "town",
             "pub",
             "food"
-          ]
+          ],
+          "kind": "onroute",
+          "stopMin": 60
         },
         {
           "n": "Gallarus",
           "d": "Camp beside the 1,200-year-old Gallarus Oratory — dry-stone, still watertight. Tomorrow starts with Slea Head at dawn.",
           "tags": [
             "history"
-          ]
+          ],
+          "kind": "onroute",
+          "stopMin": 10
         }
       ],
       "night": {
@@ -718,8 +910,15 @@ export const tripData: Trip = {
         "primary": "Campáil Teach an Aragail, Gallarus",
         "note": "Mid-Slea Head loop — sets up the dawn drive.",
         "backup": "Dingle town campsite",
-        "sellout": false
-      }
+        "sellout": false,
+        "deviationMi": 0.4,
+        "retraceMi": 5,
+        "retraceWhy": "sits inside the Slea Head loop — the morning loop re-passes camp; no forward-only alternative exists with a campsite on the loop. ACCEPT."
+      },
+      "wawKm": [
+        1487,
+        1868
+      ]
     },
     {
       "n": "08",
@@ -727,9 +926,9 @@ export const tripData: Trip = {
       "date": "17 AUG",
       "title": "Slea Head dawn → Ring of Kerry → Beara north",
       "tagline": "The queen stage — three peninsulas before dark",
-      "miles": "~210mi",
+      "miles": "~215mi",
       "phase": "waw",
-      "warnBanner": "Dawn start, luggage on: Slea Head clockwise at 07:00 is empty and world-class. Valves, in order: skip Valentia Island (Kerry Cliffs covers the Skelligs, −14mi), skip Ballinskelligs (−8mi). Emergency only: N70 straight Cahersiveen → Waterville (−28mi — loses the Skellig Ring).",
+      "warnBanner": "Queen stage — dawn start, luggage on, Slea Head clockwise at 07:00. The whole line is locked, Valentia included. Levers: stop lengths, and the optional Dursey cable-car crossing is NOT in the plan (2h). ~215mi.",
       "stops": [
         {
           "n": "SLEA HEAD DRIVE at dawn",
@@ -739,7 +938,9 @@ export const tripData: Trip = {
             "b",
             "w",
             "view"
-          ]
+          ],
+          "kind": "onroute",
+          "stopMin": 30
         },
         {
           "n": "Dunquin → Ballyferriter",
@@ -747,7 +948,9 @@ export const tripData: Trip = {
           "tags": [
             "view",
             "history"
-          ]
+          ],
+          "kind": "onroute",
+          "stopMin": 15
         },
         {
           "n": "South Pole Inn, Annascaul",
@@ -755,14 +958,18 @@ export const tripData: Trip = {
           "tags": [
             "pub",
             "history"
-          ]
+          ],
+          "kind": "onroute",
+          "stopMin": 10
         },
         {
           "n": "Inch Strand",
           "d": "Three miles of dune-backed sand — dead on the exit road east. Zero detour, one photo.",
           "tags": [
             "beach"
-          ]
+          ],
+          "kind": "onroute",
+          "stopMin": 5
         },
         {
           "n": "Killorglin → the N70 coast",
@@ -770,16 +977,19 @@ export const tripData: Trip = {
           "tags": [
             "b",
             "view"
-          ]
+          ],
+          "kind": "waw"
         },
         {
           "n": "Portmagee & Kerry Cliffs",
-          "d": "The Skellig viewpoint — Skellig Michael and Little Skellig off the cliffs. (Landing boats sell out months ahead and eat 5 hours; the cliffs are the honest 9-day version.) Signature Point twelve.",
+          "d": "Over the bridge onto VALENTIA ISLAND — Bray Head and Geokaun are on the official line — back through Portmagee to the Kerry Cliffs: Skellig Michael and Little Skellig off the cliffs. (Landing boats sell out months ahead; the cliffs are the 9-day version.) Signature Point twelve.",
           "tags": [
             "s",
             "w",
             "view"
-          ]
+          ],
+          "kind": "onroute",
+          "stopMin": 30
         },
         {
           "n": "Coomanaspig Pass",
@@ -787,7 +997,9 @@ export const tripData: Trip = {
           "tags": [
             "b",
             "view"
-          ]
+          ],
+          "kind": "onroute",
+          "stopMin": 10
         },
         {
           "n": "Waterville → Coomakista",
@@ -795,7 +1007,9 @@ export const tripData: Trip = {
           "tags": [
             "view",
             "town"
-          ]
+          ],
+          "kind": "onroute",
+          "stopMin": 10
         },
         {
           "n": "Derrynane, Caherdaniel",
@@ -803,7 +1017,9 @@ export const tripData: Trip = {
           "tags": [
             "beach",
             "history"
-          ]
+          ],
+          "kind": "onroute",
+          "stopMin": 15
         },
         {
           "n": "Kenmare",
@@ -812,7 +1028,9 @@ export const tripData: Trip = {
             "town",
             "food",
             "b"
-          ]
+          ],
+          "kind": "onroute",
+          "stopMin": 45
         },
         {
           "n": "DURSEY SOUND",
@@ -821,7 +1039,9 @@ export const tripData: Trip = {
             "s",
             "w",
             "view"
-          ]
+          ],
+          "kind": "onroute",
+          "stopMin": 20
         },
         {
           "n": "Castletownbere & McCarthy's Bar",
@@ -829,7 +1049,9 @@ export const tripData: Trip = {
           "tags": [
             "town",
             "pub"
-          ]
+          ],
+          "kind": "onroute",
+          "stopMin": 25
         }
       ],
       "night": {
@@ -837,109 +1059,158 @@ export const tripData: Trip = {
         "primary": "Hungry Hill Lodge & Camping, Adrigole",
         "note": "At the literal foot of the Healy Pass. Phone ahead — confirm tents and a ~20:30 arrival.",
         "backup": "Berehaven Camping, Castletownbere — anywhere on the Adrigole–Glengarriff road works",
-        "sellout": false
-      }
+        "sellout": false,
+        "deviationMi": 0.2,
+        "retraceMi": 0
+      },
+      "wawKm": [
+        1868,
+        2198
+      ]
     },
     {
       "n": "09",
       "dow": "TUE",
       "date": "18 AUG",
-      "title": "Healy Pass sunrise → Mizen → KINSALE → Rosslare",
-      "tagline": "Finish it, then run for the boat",
-      "miles": "~290mi (~130 fast transfer)",
+      "title": "Beara → Sheep’s Head → Mizen → Baltimore → KINSALE → Rosslare",
+      "tagline": "Every last official mile, the finish line, then the run for the boat",
+      "miles": "~320mi (~130 transfer)",
       "phase": "waw",
-      "warnBanner": "06:30 start — Healy Pass empty at sunrise is the payoff for yesterday. Hard valves if you leave Skibbereen after 14:00: drop the Old Head spur (−10mi/−40min) and Drombeg (−3mi) and go finish. The boat does not wait.",
+      "warnBanner": "06:00 start — the price of 100.0%. Every remaining official mile is ridden: Sheep’s Head, the Mizen, the Baltimore coast, Old Head, Kinsale. Levers are stop lengths and the optional Healy Pass dawn spur — the road itself is locked. ~13–14h door to door; it ends at a boat, not another riding day.",
       "stops": [
         {
-          "n": "HEALY PASS at sunrise",
-          "d": "The tent is at its southern foot: ride the switchbacks up to the saddle for sunrise over Glanmore Lake and back down for breakfast — 16 miles, 45 minutes, the single best road on the island, to yourselves. Its “dangerous” reputation is hugely exaggerated.",
+          "n": "Healy Pass at sunrise",
+          "kind": "extra",
+          "impactMi": 9,
+          "impactMin": 30,
+          "stopMin": 10,
           "tags": [
             "b",
             "view"
-          ]
+          ],
+          "d": "OPTIONAL EXTRA (the R574 is not official line): the tent sits at its southern foot — switchbacks up to the saddle for sunrise over Glanmore Lake and back down. Road impact: +9mi / +30min. The best half-hour of road in Ireland, if today can afford it.",
+          "exit": "Adrigole (R574)",
+          "rejoin": "same (out-and-back to the saddle)",
+          "baseMi": 0,
+          "viaMi": 9,
+          "impactSrc": "manual road estimate · verify in Google Maps before the trip · checked 26 Jul 2026"
         },
         {
           "n": "Glengarriff → Bantry",
-          "d": "Out of Beara along the harbour, Garnish Island offshore, into Bantry under Whiddy.",
+          "kind": "onroute",
+          "stopMin": 10,
           "tags": [
             "town",
             "view"
-          ]
+          ],
+          "d": "Out of Beara along the harbour, Garnish Island offshore, into Bantry under Whiddy."
         },
         {
-          "n": "Durrus → Goleen",
-          "d": "The lanes down the Mizen — last peninsula of the trip. (Sheep’s Head and Baltimore are the deliberate cuts that keep the boat safe — next time.)",
+          "n": "SHEEP'S HEAD loop",
+          "kind": "waw",
+          "stopMin": 10,
           "tags": [
-            "b"
-          ]
+            "w",
+            "b",
+            "view"
+          ],
+          "d": "The quiet peninsula — Durrus out the north side to the tip at Tooreen (Seefin viewpoint), back the south side. Official line, restored and locked: ~35mi of the emptiest riding in Cork."
         },
         {
           "n": "MIZEN HEAD",
-          "d": "Ireland’s south-westernmost point — the footbridge over the gorge, the signal station, the Fastnet out to sea. Signature Point fourteen.",
+          "kind": "onroute",
+          "stopMin": 30,
           "tags": [
             "s",
             "w",
             "view"
-          ]
+          ],
+          "d": "Ireland’s south-westernmost point — the footbridge over the gorge, the signal station, the Fastnet out to sea. Signature Point fourteen."
         },
         {
-          "n": "Barleycove",
-          "d": "The dune beach below the head — thrown up by the 1755 Lisbon-earthquake tsunami, allegedly.",
+          "n": "Barleycove → Schull",
+          "kind": "waw",
+          "stopMin": 10,
           "tags": [
-            "beach"
-          ]
+            "beach",
+            "town"
+          ],
+          "d": "The tsunami-built dunes at Barleycove, then coffee at Schull under Mount Gabriel."
         },
         {
-          "n": "Schull → Skibbereen",
-          "d": "Coffee harbour under Mount Gabriel, then the West Cork main drag. TIME CHECK at Skibbereen: 14:00 or better = all remaining stops live.",
+          "n": "Lough Hyne → BALTIMORE",
+          "kind": "waw",
+          "stopMin": 15,
           "tags": [
-            "town",
-            "food"
-          ]
+            "w",
+            "nature",
+            "town"
+          ],
+          "d": "RESTORED official line: past Lough Hyne (Ireland’s only saltwater lake) down to the Baltimore beacon, then back up through Skibbereen. TIME CHECK at Skibbereen: 14:30 or better keeps everything live."
+        },
+        {
+          "n": "Toe Head → Galley Head coast",
+          "kind": "waw",
+          "stopMin": 5,
+          "tags": [
+            "view",
+            "b"
+          ],
+          "d": "RESTORED official line: the coastal wiggle by Castletownshend, Toe Head and the Galley Head view — not the N71 shortcut."
         },
         {
           "n": "Drombeg Stone Circle",
-          "d": "Bronze-age circle five minutes off the road — free, atmospheric, aligned on the winter solstice sunset.",
+          "kind": "onroute",
+          "stopMin": 15,
           "tags": [
             "history"
-          ]
+          ],
+          "d": "Bronze-age circle five minutes off the road — free, atmospheric, aligned on the winter solstice sunset."
         },
         {
           "n": "Clonakilty → Timoleague",
-          "d": "Through Clon (Michael Collins country) past the abbey ruin on the estuary at Timoleague.",
+          "kind": "waw",
+          "stopMin": 10,
           "tags": [
             "town",
             "history"
-          ]
+          ],
+          "d": "Through Clon (Michael Collins country) past the abbey ruin on the estuary at Timoleague."
         },
         {
           "n": "OLD HEAD OF KINSALE",
-          "d": "The spur to the signal tower viewpoint — the Lusitania sank 11 miles off this head in 1915. The tip itself is a private golf course; the viewpoint is the prize. Signature Point fifteen — the set, complete.",
+          "kind": "onroute",
+          "stopMin": 20,
           "tags": [
             "s",
             "w",
             "view",
             "history"
-          ]
+          ],
+          "d": "The spur to the signal tower viewpoint — official line to the gate; the Lusitania sank 11 miles off this head. Signature Point fifteen — the set, complete."
         },
         {
           "n": "KINSALE",
-          "d": "THE OFFICIAL END OF THE WILD ATLANTIC WAY — 2,500km from Muff. Finish-line photo at the marker, Charles Fort if there’s half an hour, fuel for the run.",
+          "kind": "onroute",
           "finish": true,
+          "stopMin": 45,
           "tags": [
             "town",
             "pub",
             "finish"
-          ]
+          ],
+          "d": "THE OFFICIAL END OF THE WILD ATLANTIC WAY — every metre of the line from Muff behind you. WAW completion: 100.0%. Finish-line photo at the marker, Charles Fort if the clock allows, fuel for the run."
         },
         {
           "n": "N25 run to Rosslare",
+          "kind": "transfer",
           "skip": true,
-          "d": "Kinsale → Cork → N25 east — ~130mi of main road, ~2h45. Fuel at Cork, heads down, tent by ~19:30. The price of the morning boat — but the Way is already won.",
-          "warn": "Long transfer after a big day — fuel up and push on.",
+          "stopMin": 0,
           "tags": [
             "logistics"
-          ]
+          ],
+          "warn": "Long transfer after the biggest day — fuel at Cork, heads down.",
+          "d": "Kinsale → Cork → N25 east — ~130mi of main road, ~2h45. Tent by ~20:00. The price of the morning boat — but the Way is 100.0% won."
         }
       ],
       "night": {
@@ -947,8 +1218,15 @@ export const tripData: Trip = {
         "primary": "St Margaret's Beach Camping, Rosslare",
         "note": "~30 min from Rosslare Harbour. Sets up the 08:15 sailing.",
         "backup": "Morriscastle Strand, Kilmuckridge",
-        "sellout": false
-      }
+        "sellout": false,
+        "deviationMi": 0,
+        "retraceMi": 0
+      },
+      "wawKm": [
+        2198,
+        2506.8
+      ],
+      "transferMi": 130
     },
     {
       "n": "10",
@@ -964,14 +1242,16 @@ export const tripData: Trip = {
           "d": "At the port by 07:15 for the 08:15 Stena Nordica sailing (3h30). Into Fishguard 11:45.",
           "tags": [
             "logistics"
-          ]
+          ],
+          "kind": "transfer"
         },
         {
           "n": "Fishguard → Preston",
           "d": "~250mi / ~5h up the M4 → M5 → M6. Home for the evening.",
           "tags": [
             "logistics"
-          ]
+          ],
+          "kind": "transfer"
         }
       ],
       "night": null
@@ -1244,7 +1524,15 @@ export const tripData: Trip = {
       "primary": "Binion Bay Camping, Clonmany",
       "primaryNote": "BOOKED ✓ — beachside at Binnion strand",
       "backup": "Tullagh Bay Camping (next bay over)",
-      "sellout": false
+      "sellout": false,
+      "deviationMi": 0.5,
+      "retraceMi": 0,
+      "tents": "confirmed",
+      "bikes": "accepted",
+      "open2026": "covers-august",
+      "availability": "booked",
+      "booking": "BOOKED ✓",
+      "source": "booked by the brothers · 2026"
     },
     {
       "night": "Tue 11",
@@ -1252,7 +1540,15 @@ export const tripData: Trip = {
       "primary": "Corcreggan Mill, Dunfanaghy",
       "primaryNote": "Biker-friendly old mill",
       "backup": "Wild Atlantic Camp (pods = storm insurance)",
-      "sellout": false
+      "sellout": false,
+      "deviationMi": 1.4,
+      "retraceMi": 0,
+      "tents": "unknown",
+      "bikes": "unknown",
+      "open2026": "unknown",
+      "availability": "unknown",
+      "price": "~€24 total / ~€12pp",
+      "source": "previous trip research (app v1 notes) · UNVERIFIED — phone to confirm"
     },
     {
       "night": "Wed 12",
@@ -1260,7 +1556,15 @@ export const tripData: Trip = {
       "primary": "Strandhill Caravan & Camping",
       "primaryNote": "On the beach",
       "backup": "Greenlands, Rosses Point",
-      "sellout": true
+      "sellout": true,
+      "deviationMi": 0.1,
+      "retraceMi": 0,
+      "tents": "unknown",
+      "bikes": "unknown",
+      "open2026": "unknown",
+      "availability": "unknown",
+      "price": "~€40 total / ~€20pp",
+      "source": "previous trip research (app v1 notes) · UNVERIFIED — phone to confirm"
     },
     {
       "night": "Thu 13",
@@ -1268,7 +1572,15 @@ export const tripData: Trip = {
       "primary": "Keel Sandybanks",
       "primaryNote": "On Keel beach",
       "backup": "Seal Caves, Dugort",
-      "sellout": true
+      "sellout": true,
+      "deviationMi": 0.1,
+      "retraceMi": 0,
+      "tents": "unknown",
+      "bikes": "unknown",
+      "open2026": "unknown",
+      "availability": "unknown",
+      "price": "~€36 total / ~€18pp",
+      "source": "previous trip research (app v1 notes) · UNVERIFIED — phone to confirm"
     },
     {
       "night": "Fri 14",
@@ -1276,7 +1588,16 @@ export const tripData: Trip = {
       "primary": "Clifden Eco Beach Camping",
       "primaryNote": "On the machair facing Omey",
       "backup": "Clifden Camping & Caravan Park",
-      "sellout": true
+      "sellout": true,
+      "deviationMi": 0.8,
+      "retraceMi": 0,
+      "tents": "unknown",
+      "bikes": "unknown",
+      "open2026": "unknown",
+      "availability": "unknown",
+      "price": "~€40 total / ~€20pp",
+      "booking": "advance booking only — no walk-ins",
+      "source": "previous trip research (app v1 notes) · UNVERIFIED — phone to confirm"
     },
     {
       "night": "Sat 15",
@@ -1284,7 +1605,16 @@ export const tripData: Trip = {
       "primary": "Nagle's Doolin",
       "primaryNote": "Cliffs view from the tent",
       "backup": "O'Connors Riverside",
-      "sellout": true
+      "sellout": true,
+      "deviationMi": 0.2,
+      "retraceMi": 0,
+      "tents": "unknown",
+      "bikes": "unknown",
+      "open2026": "unknown",
+      "availability": "unknown",
+      "price": "~€36 total / ~€18pp",
+      "booking": "book now — peak Saturday, most contested pitch of the trip",
+      "source": "previous trip research (app v1 notes) · UNVERIFIED — phone to confirm"
     },
     {
       "night": "Sun 16",
@@ -1292,7 +1622,16 @@ export const tripData: Trip = {
       "primary": "Campáil Teach an Aragail, Gallarus",
       "primaryNote": "Mid-Slea Head loop",
       "backup": "Dingle town campsite",
-      "sellout": false
+      "sellout": false,
+      "deviationMi": 0.4,
+      "retraceMi": 5,
+      "tents": "unknown",
+      "bikes": "unknown",
+      "open2026": "unknown",
+      "availability": "unknown",
+      "price": "~€30 total / ~€15pp",
+      "source": "previous trip research (app v1 notes) · UNVERIFIED — phone to confirm",
+      "retraceWhy": "sits inside the Slea Head loop — the morning loop re-passes camp; no forward-only alternative exists with a campsite on the loop. ACCEPT."
     },
     {
       "night": "Mon 17",
@@ -1300,7 +1639,15 @@ export const tripData: Trip = {
       "primary": "Hungry Hill Lodge & Camping",
       "primaryNote": "Foot of the Healy Pass — phone ahead, late arrival",
       "backup": "Berehaven Camping, Castletownbere",
-      "sellout": false
+      "sellout": false,
+      "deviationMi": 0.2,
+      "retraceMi": 0,
+      "tents": "unknown",
+      "bikes": "unknown",
+      "open2026": "unknown",
+      "availability": "unknown",
+      "booking": "phone ahead — confirm tents + ~20:30 arrival",
+      "source": "route analysis only · price/tents UNVERIFIED — phone this week (the endgame leans on this night)"
     },
     {
       "night": "Tue 18",
@@ -1308,7 +1655,15 @@ export const tripData: Trip = {
       "primary": "St Margaret's Beach, Rosslare",
       "primaryNote": "~30 min from the port",
       "backup": "Morriscastle Strand, Kilmuckridge",
-      "sellout": false
+      "sellout": false,
+      "deviationMi": 0,
+      "retraceMi": 0,
+      "tents": "unknown",
+      "bikes": "unknown",
+      "open2026": "unknown",
+      "availability": "unknown",
+      "price": "~€24 total / ~€12pp",
+      "source": "previous trip research (app v1 notes) · UNVERIFIED — phone to confirm"
     }
   ],
   "campNotes": {

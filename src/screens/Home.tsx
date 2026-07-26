@@ -102,7 +102,7 @@ export function Home() {
     jFeedSwipeStart,
     jFeedSwipeEnd,
   } = s
-  const { geo, curLabel, liveActive } = useMap()
+  const { geo, curLabel, liveActive, wawPct } = useMap()
 
   const updates = store.updates || []
   const posts = store.posts || []
@@ -293,6 +293,7 @@ export function Home() {
           <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontFamily: font.mono, fontSize: 8.5, letterSpacing: '.16em', textTransform: 'uppercase', opacity: 0.85 }}>
               {liveHereLabel} · updated {liveWhen}
+              {wawPct !== null && <> · WAW {wawPct}%</>}
             </div>
             <div style={{ fontFamily: font.display, fontWeight: 700, fontSize: 19, textTransform: 'uppercase', letterSpacing: '.01em', lineHeight: 1.05, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
               {liveArea}
