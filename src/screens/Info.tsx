@@ -192,7 +192,7 @@ export function Info() {
           >
             <b>Signature 15</b> — tick them off as you bag each one — and the 19 biker <b>Passes</b>, north to south. Bagged spots get a badge that shows on the guests’ version too.
           </GuideRow>
-          <GuideRow title="Kit &amp; admin">The to-do list, full packing list, cost estimate, the bookings to lock in this week, and practical intel for the road.</GuideRow>
+          <GuideRow title="Kit &amp; admin">The to-do list (bookings included), the full packing list and the cost estimate.</GuideRow>
           <GuideRow title="The postbox">Everything F&amp;F have posted. Read them and remove any you don’t want to keep. You review here — guests are the ones who post.</GuideRow>
           <GuideRow
             title="The journal"

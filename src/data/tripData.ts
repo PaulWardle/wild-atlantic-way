@@ -1795,44 +1795,26 @@ export const tripData: Trip = {
   "bookings": [
     {
       "id": "bk1",
-      "label": "Both ferries",
-      "note": "Booked — £233 (Douglas→Larne Mon 10 + Rosslare→Fishguard Wed 19).",
+      "label": "Book the ferries",
+      "note": "Outbound and homeward crossings, both directions locked to the trip dates.",
+      "urgent": false
+    },
+    {
+      "id": "bk2",
+      "label": "Book the campsites",
+      "note": "One site per night, nine nights — the list and live status are on the Campsites page.",
       "urgent": true
     },
     {
       "id": "bk3",
-      "label": "Strandhill Caravan & Camping",
-      "note": "Sell-out site for mid-August.",
-      "urgent": true
+      "label": "Confirm bike cover for Ireland",
+      "note": "Insurance and breakdown cover valid in the Republic, more than third-party.",
+      "urgent": false
     },
     {
       "id": "bk4",
-      "label": "Keel Sandybanks",
-      "note": "Sell-out site — on Keel beach.",
-      "urgent": true
-    },
-    {
-      "id": "bk5",
-      "label": "Clifden Eco Beach Camping",
-      "note": "Sell-out site — the famous one.",
-      "urgent": true
-    },
-    {
-      "id": "bk6",
-      "label": "Nagle's Doolin",
-      "note": "Sell-out site — Cliffs view.",
-      "urgent": true
-    },
-    {
-      "id": "bk7",
-      "label": "Ring of Kerry Camping / Mannix Point",
-      "note": "Sell-out for mid-August — book the Kenmare/Cahersiveen night.",
-      "urgent": true
-    },
-    {
-      "id": "bk10",
-      "label": "Skellig eco-cruise (optional)",
-      "note": "Landing boats gone for August; the no-landing cruise sometimes has space.",
+      "label": "Skellig boat trip (optional)",
+      "note": "If fancied — availability is tight in August; check early.",
       "urgent": false
     }
   ],

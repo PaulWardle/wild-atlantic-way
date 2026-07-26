@@ -91,7 +91,8 @@ function tabStyle(active: boolean): React.CSSProperties {
 export function Kit() {
   const { kitTab, setKitTab, togglePack, toggleBook } = useStore()
   const { pack, book, groups, packDone, packTotal, bookDone } = usePackData()
-  const tab = kitTab || 'packing'
+  // Book + Intel tabs are gone — bookings live inside To do now.
+  const tab = kitTab === 'todo' || kitTab === 'costs' ? kitTab : kitTab === 'packing' ? 'packing' : 'todo'
 
   const packGroupsBlock = (headerColor: string, headerWeight = false) =>
     groups.map((grp, gi) => (
@@ -112,15 +113,13 @@ export function Kit() {
         <button onClick={() => setKitTab('todo')} style={tabStyle(tab === 'todo')}>To do</button>
         <button onClick={() => setKitTab('packing')} style={tabStyle(tab === 'packing')}>Packing</button>
         <button onClick={() => setKitTab('costs')} style={tabStyle(tab === 'costs')}>Costs</button>
-        <button onClick={() => setKitTab('bookings')} style={tabStyle(tab === 'bookings')}>Book</button>
-        <button onClick={() => setKitTab('intel')} style={tabStyle(tab === 'intel')}>Intel</button>
       </div>
 
       {tab === 'todo' && (
         <>
           <SectionHead tabRight={<div style={{ fontFamily: font.mono, fontSize: 11, color: c.green }}>{packDone + bookDone}/{packTotal + T.bookings.length}</div>}>To do</SectionHead>
           <div style={{ fontFamily: font.serif, fontStyle: 'italic', fontSize: 12.5, color: c.inkMuted, marginBottom: 12 }}>
-            Everything to sort before departure — bookings and the full packing list in one place. Ticks sync with the Book and Packing tabs.
+            Everything to sort before departure — bookings and the full packing list in one place. Ticks sync with the Packing tab.
           </div>
           <div style={{ fontFamily: font.mono, fontSize: 9, fontWeight: 700, letterSpacing: '.14em', color: c.rust, textTransform: 'uppercase', borderBottom: `1.5px solid ${c.ink}`, paddingBottom: 4, marginBottom: 8 }}>Book &amp; confirm</div>
           {T.bookings.map((b) => (
@@ -159,34 +158,6 @@ export function Kit() {
         </>
       )}
 
-      {tab === 'bookings' && (
-        <>
-          <SectionHead tabRight={<div style={{ fontFamily: font.mono, fontSize: 11, color: c.green }}>{bookDone}/{T.bookings.length}</div>}>Book this week</SectionHead>
-          <div style={{ fontFamily: font.serif, fontStyle: 'italic', fontSize: 12.5, color: c.inkMuted, marginBottom: 12 }}>These genuinely sell out for mid-August. Red = do it now.</div>
-          {T.bookings.map((b) => (
-            <BookRow key={b.id} b={b} ticked={!!book[b.id]} onToggle={() => toggleBook(b.id)} />
-          ))}
-        </>
-      )}
-
-      {tab === 'intel' && (
-        <>
-          <div style={{ fontFamily: font.display, fontWeight: 700, fontSize: 24, textTransform: 'uppercase', color: c.ink, marginBottom: 12 }}>Practical intel</div>
-          {T.intel.map((card, i) => (
-            <div key={i} style={{ border: `1.5px solid ${c.ink}`, borderRadius: 8, background: c.paper, padding: '11px 13px', marginBottom: 8 }}>
-              <div style={{ fontFamily: font.display, fontWeight: 600, fontSize: 14, textTransform: 'uppercase', letterSpacing: '.03em', color: c.rust, marginBottom: 4 }}>{card.title}</div>
-              <div style={{ fontFamily: font.serif, fontSize: 13, color: c.inkSoft, lineHeight: 1.55 }}>{card.body}</div>
-            </div>
-          ))}
-          <div style={{ fontFamily: font.mono, fontSize: 9, fontWeight: 700, letterSpacing: '.14em', color: c.teal, textTransform: 'uppercase', margin: '16px 0 8px' }}>Resources</div>
-          {T.resources.map((res, i) => (
-            <div key={i} style={{ borderTop: `1px solid ${c.lineSoft}`, padding: '9px 0' }}>
-              <div style={{ fontFamily: font.display, fontWeight: 600, fontSize: 13.5, textTransform: 'uppercase', color: c.ink }}>{res.name}</div>
-              <div style={{ fontFamily: font.serif, fontSize: 12.5, color: c.inkMuted, lineHeight: 1.45, marginTop: 1 }}>{res.note}</div>
-            </div>
-          ))}
-        </>
-      )}
     </div>
   )
 }
