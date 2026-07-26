@@ -31,11 +31,14 @@ export interface DaySummary {
 
 export type ExtraMark = 'keep' | 'maybe' | 'cut'
 
-/** The effective status of an extra: explicit mark, else Maybe. */
+/** The effective status of a markable stop. Defaults differ by cost:
+ *  on-route stops (no road cost) default to KEEP — they're the plan;
+ *  off-route extras (road cost) default to MAYBE — their miles are opted into. */
 export function extraStatus(day: Day, di: number, si: number, st: Stop, marks: Marks): ExtraMark | null {
   if (!isMarkable(day, st)) return null
   const mk = marks['d' + di + 's' + si]
-  return mk === 'keep' || mk === 'cut' ? mk : 'maybe'
+  if (mk === 'keep' || mk === 'maybe' || mk === 'cut') return mk
+  return st.kind === 'extra' ? 'maybe' : 'keep'
 }
 
 export function summarizeDay(day: Day, di: number, marks: Marks): DaySummary {

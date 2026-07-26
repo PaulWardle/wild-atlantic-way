@@ -52,11 +52,16 @@ export function buildTags(st: Stop): TagChip[] {
 }
 
 /** A stop can be kept/maybe/cut only if it isn't a skip/finish stop on a non-home day. */
-/** 100% WAW mode: only OPTIONAL EXTRAS (off the official line) take Keep/Maybe/Cut.
- *  Official road segments are locked; on-route stops can be ridden past but the
- *  road under them can never be removed; transfers are fixed logistics. */
+/** 100% WAW mode marking policy (riders' rule):
+ *  LOCKED — official road segments ('waw'), Signature Points (tag 's'),
+ *  transfers, skip/finish rows. Everything else is reviewable Keep/Maybe/Cut:
+ *  cutting an on-route stop never removes its road (that's the Way) — it just
+ *  means ride past without stopping. */
 export function isMarkable(day: { phase: string }, st: Stop): boolean {
-  return st.kind === 'extra' && !st.skip && !st.finish && day.phase !== 'home'
+  if (st.skip || st.finish || day.phase === 'home') return false
+  if (st.kind === 'waw' || st.kind === 'transfer') return false
+  if ((st.tags || []).indexOf('s') >= 0) return false
+  return true
 }
 
 export interface ReasonMeta {

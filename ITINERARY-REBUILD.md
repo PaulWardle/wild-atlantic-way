@@ -1,5 +1,8 @@
 # Wild Atlantic Way — Route Rebuild
 
+> **NOTE (26 Jul, evening):** Route corrections adopted after cross-check round 2 — Slea Head Drive moved to **Day 7 evening** (the official line exits Gallarus forward through Dingle: **zero retrace**); Day 6/7 boundary at km 1483 (Day 7 opens with the Cliffs); Glenveagh is now a Day-3 out-and-back; Warren Point has its own Day-1 waypoint and Farren's precedes Malin Head. Marking policy: official road + Signature Points locked, every other stop reviewable Keep/Maybe/Cut. **`WAW-FULL-EXPORT.md` is regenerated from live app data and is always current — prefer it for cross-referencing.**
+
+
 **Built directly on the official Fáilte Ireland route map** (KML, June 2023 — the actual signposted line, all 188 Discovery Points, all 15 Signature Discovery Points, in official route order).
 
 Method: the official route geometry was stitched into a single south-bound line (2,507 km — matches the published ~2,500 km), every Discovery Point was snapped to it to get its **distance-along-route ("km mark")**, and the itinerary below was then built as nine *strictly forward* windows along that line. Every stop in every day is in true route order — no doubling back except deliberately labelled out-and-back spurs.

@@ -35,7 +35,7 @@ export const tripData: Trip = {
       "miles": "~135mi + ferry",
       "phase": "lead",
       "wawStart": true,
-      "warnBanner": "Locked day: Larne → Derry → Muff, then the official line through east Inishowen to Malin Head and the tent at Binion. If the boat runs late, the fallback is Muff → R238 direct to camp with Malin Head as a 25-mile spur at dawn — every official mile still gets ridden.",
+      "warnBanner": "Locked day: Larne → Derry → Muff, then the official line up Lough Foyle — Greencastle/Warren Point, Stroove — round to Culdaff, past Farren's to Malin Head, and the tent at Binion. Late boat? Muff → R238 direct to camp, Malin as a 25-mile dawn spur.",
       "stops": [
         {
           "n": "Douglas → Larne",
@@ -59,14 +59,25 @@ export const tripData: Trip = {
           "stopMin": 10
         },
         {
-          "n": "East Inishowen shore & Stroove",
-          "d": "The first miles of the Way proper: Moville, Greencastle, Stroove lighthouse and the Warren, out to the Inishowen Head corner — the first Discovery Points fall inside the opening hour.",
+          "n": "Moville → Greencastle & Warren Point",
+          "kind": "waw",
+          "stopMin": 5,
           "tags": [
             "b",
-            "view"
+            "view",
+            "history"
           ],
-          "kind": "waw",
-          "stopMin": 5
+          "d": "The first miles of the Way proper up Lough Foyle — Moville, then Greencastle with the square-towered Warren Point lighthouse at the harbour mouth."
+        },
+        {
+          "n": "Stroove & Inishowen Head",
+          "kind": "onroute",
+          "stopMin": 5,
+          "tags": [
+            "view",
+            "beach"
+          ],
+          "d": "Shrove beach, the Stroove lighthouse and the Inishowen Head corner — the first Discovery Points fall inside the opening hour."
         },
         {
           "n": "Kinnagoe Bay",
@@ -89,6 +100,15 @@ export const tripData: Trip = {
           "stopMin": 0
         },
         {
+          "n": "Farren's Bar",
+          "d": "Ireland's most northerly pub, on the approach road to the head — you pass it BEFORE Banba's Crown. Sticker and photo on the way up; the pint on the way back down if the light allows.",
+          "tags": [
+            "pub"
+          ],
+          "kind": "onroute",
+          "stopMin": 15
+        },
+        {
           "n": "MALIN HEAD",
           "d": "Ireland's most northerly point. Banba's Crown Napoleonic tower, the “EIRE 80” WW2 sign, a Star Wars: The Last Jedi filming site — Signature Point number one, bagged on day one.",
           "tags": [
@@ -98,15 +118,6 @@ export const tripData: Trip = {
           ],
           "kind": "onroute",
           "stopMin": 25
-        },
-        {
-          "n": "Farren's Bar",
-          "d": "Ireland's most northerly pub — a sticker-and-photo stop, 5 minutes off the head.",
-          "tags": [
-            "pub"
-          ],
-          "kind": "onroute",
-          "stopMin": 15
         },
         {
           "n": "Doagh → Pollan Bay → camp",
@@ -228,23 +239,6 @@ export const tripData: Trip = {
           "stopMin": 10
         },
         {
-          "n": "Glenveagh / Errigal",
-          "d": "OPTIONAL EXTRA (inland, not WAW): the R251 under Errigal past Glenveagh, rejoining the Way at Gweedore. Road impact: +15mi / +40min riding vs the direct N56 — plus whatever you spend at the castle.",
-          "tags": [
-            "attraction",
-            "nature"
-          ],
-          "kind": "extra",
-          "impactMi": 15,
-          "impactMin": 40,
-          "stopMin": 45,
-          "exit": "Dunfanaghy (N56)",
-          "rejoin": "Gweedore (N56)",
-          "baseMi": 15,
-          "viaMi": 30,
-          "impactSrc": "manual road estimate · verify in Google Maps before the trip · checked 26 Jul 2026"
-        },
-        {
           "n": "Dunfanaghy",
           "d": "Good food town under Horn Head — the headland itself is 100 metres from tonight’s campsite gate, saved for first thing tomorrow.",
           "tags": [
@@ -298,6 +292,23 @@ export const tripData: Trip = {
           ],
           "kind": "onroute",
           "stopMin": 5
+        },
+        {
+          "n": "Glenveagh / Errigal",
+          "d": "OPTIONAL EXTRA (inland): from Gweedore up the R251 under Errigal to Glenveagh — ridden as an OUT-AND-BACK so not a metre of official line is skipped. Road impact: +20mi / +50min est, plus castle time. (Riding it through Dunfanaghy→Gweedore would bypass Horn Head and Bloody Foreland — never that.)",
+          "tags": [
+            "attraction",
+            "nature"
+          ],
+          "kind": "extra",
+          "impactMi": 20,
+          "impactMin": 50,
+          "stopMin": 45,
+          "exit": "Gweedore (R251)",
+          "rejoin": "same (out-and-back)",
+          "baseMi": 0,
+          "viaMi": 20,
+          "impactSrc": "manual road estimate · verify in Google Maps before the trip · checked 26 Jul 2026"
         },
         {
           "n": "The Rosses",
@@ -762,18 +773,18 @@ export const tripData: Trip = {
       },
       "wawKm": [
         1197,
-        1487
+        1483
       ]
     },
     {
       "n": "07",
       "dow": "SUN",
       "date": "16 AUG",
-      "title": "Cliffs → Loop Head → Shannon → Conor Pass",
-      "tagline": "Two counties, one ferry, one mighty pass",
+      "title": "Cliffs → Loop Head → Conor Pass → Slea Head",
+      "tagline": "The monster Sunday — two counties, one ferry, one pass, one perfect evening loop",
       "miles": "~200mi",
       "phase": "waw",
-      "warnBanner": "Shannon ferry is hourly on the half-hour from Killimer. The line is locked end to end — including the Maharees and the Ballybunion coast. Levers are stop lengths only.",
+      "warnBanner": "Biggest official-mileage day. Cliffs at 08:00 sharp, Shannon ferry is hourly on the half-hour, and the Slea Head Drive comes at golden hour with the buses gone. Levers are stop lengths only — the line is locked end to end.",
       "stops": [
         {
           "n": "CLIFFS OF MOHER, 08:00",
@@ -859,37 +870,48 @@ export const tripData: Trip = {
         },
         {
           "n": "Dingle town",
-          "d": "Early dinner and one pint — Foxy John’s (hardware shop + bar) or Dick Mack’s. Ten minutes north to the tent after.",
+          "d": "Into Dingle ~17:00 off the Conor Pass descent — quick fuel and food before the evening loop. (The proper pint comes after Gallarus.)",
           "tags": [
             "town",
             "pub",
             "food"
           ],
           "kind": "onroute",
-          "stopMin": 60
+          "stopMin": 45
         },
         {
-          "n": "Gallarus",
-          "d": "Camp beside the 1,200-year-old Gallarus Oratory — dry-stone, still watertight. Tomorrow starts with Slea Head at dawn.",
+          "n": "SLEA HEAD DRIVE — evening",
+          "kind": "waw",
+          "stopMin": 20,
           "tags": [
+            "s",
+            "b",
+            "w",
+            "view"
+          ],
+          "d": "The loop at golden hour, buses gone, sun over the water: Ventry, the beehive huts, Slea Head itself — then DUNMORE HEAD, mainland Ireland's westernmost point and the Blasket Islands view. Signature Point eleven, in the best light of the day."
+        },
+        {
+          "n": "Dunquin → Ballyferriter → Gallarus",
+          "kind": "waw",
+          "stopMin": 5,
+          "tags": [
+            "view",
             "history"
           ],
-          "kind": "onroute",
-          "stopMin": 10
+          "d": "Round the loop's west side — Kruger's (Ireland's westernmost pub) at Dunquin — to the tent beside the 1,200-year-old Gallarus Oratory. The official line continues FORWARD from here through Dingle tomorrow: zero repeated road."
         }
       ],
       "night": {
         "area": "West Dingle",
         "primary": "Campáil Teach an Aragail, Gallarus",
-        "note": "Mid-Slea Head loop — sets up the dawn drive.",
+        "note": "Beside the Gallarus Oratory, at the END of today's window — the Way exits forward through Dingle tomorrow. Zero repeated road.",
         "backup": "Dingle town campsite",
         "sellout": false,
-        "deviationMi": 0.4,
-        "retraceMi": 5,
-        "retraceWhy": "sits inside the Slea Head loop — the morning loop re-passes camp; no forward-only alternative exists with a campsite on the loop. ACCEPT."
+        "deviationMi": 0.4
       },
       "wawKm": [
-        1487,
+        1483,
         1868
       ]
     },
@@ -897,33 +919,21 @@ export const tripData: Trip = {
       "n": "08",
       "dow": "MON",
       "date": "17 AUG",
-      "title": "Slea Head dawn → Ring of Kerry → Beara north",
-      "tagline": "The queen stage — three peninsulas before dark",
-      "miles": "~215mi",
+      "title": "Ring of Kerry + Skellig Ring → Beara north",
+      "tagline": "The queen stage — two peninsulas before dark",
+      "miles": "~205mi",
       "phase": "waw",
-      "warnBanner": "Queen stage — dawn start, luggage on, Slea Head clockwise at 07:00. The whole line is locked, Valentia included. Levers: stop lengths, and the optional Dursey cable-car crossing is NOT in the plan (2h). ~215mi.",
+      "warnBanner": "Dawn start. The whole line is locked, Valentia included. Levers: stop lengths; the Dursey cable-car crossing stays out (2h). ~205mi of official road.",
       "stops": [
         {
-          "n": "SLEA HEAD DRIVE at dawn",
-          "d": "Clockwise (the official/bus direction): Ventry, the beehive huts, Slea Head itself — then DUNMORE HEAD, mainland Ireland’s westernmost point and the Blasket Islands view. Signature Point eleven, before breakfast.",
+          "n": "Gallarus → Dingle, forward",
+          "kind": "waw",
+          "stopMin": 10,
           "tags": [
-            "s",
             "b",
-            "w",
-            "view"
+            "town"
           ],
-          "kind": "onroute",
-          "stopMin": 30
-        },
-        {
-          "n": "Dunquin → Ballyferriter",
-          "d": "The Blasket Centre, Kruger’s (Ireland’s westernmost pub — too early, note it for next time), round to Ballyferriter and past the tent to Dingle for coffee.",
-          "tags": [
-            "view",
-            "history"
-          ],
-          "kind": "onroute",
-          "stopMin": 15
+          "d": "The line itself runs from Gallarus back through Dingle harbour — forward official kilometres, not a retrace. Coffee in Dingle at 07:30 before the town wakes."
         },
         {
           "n": "South Pole Inn, Annascaul",
@@ -1365,8 +1375,8 @@ export const tripData: Trip = {
       "id": "s11",
       "name": "Blasket Sound (Dingle)",
       "county": "Kerry",
-      "day": "08",
-      "date": "Mon 17"
+      "day": "07",
+      "date": "Sun 16"
     },
     {
       "id": "s12",
@@ -1593,18 +1603,16 @@ export const tripData: Trip = {
       "night": "Sun 16",
       "base": "West Dingle",
       "primary": "Campáil Teach an Aragail, Gallarus",
-      "primaryNote": "Mid-Slea Head loop",
+      "primaryNote": "Beside the Gallarus Oratory — at the end of the day's window, line exits forward",
       "backup": "Dingle town campsite",
       "sellout": false,
       "deviationMi": 0.4,
-      "retraceMi": 5,
       "tents": "unknown",
       "bikes": "unknown",
       "open2026": "unknown",
       "availability": "unknown",
       "price": "~€30 total / ~€15pp",
-      "source": "previous trip research (app v1 notes) · UNVERIFIED — phone to confirm",
-      "retraceWhy": "sits inside the Slea Head loop — the morning loop re-passes camp; no forward-only alternative exists with a campsite on the loop. ACCEPT."
+      "source": "previous trip research (app v1 notes) · UNVERIFIED — phone to confirm"
     },
     {
       "night": "Mon 17",

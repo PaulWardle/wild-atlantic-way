@@ -36,8 +36,8 @@ The tent is ON the official line, one km BEFORE Sky Road/Derrigimlagh which open
 **D7. Night 6 — Nagle's, Doolin (km 1486)**
 Cliffs of Moher sit effectively adjacent on the line (the two are ~1.5km apart in chainage) — sleeping at Doolin buys the Cliffs at 08:00 before the coaches, zero dead leg, plus the trad session. Most contested booking of the trip (peak Saturday).
 
-**D8. Night 7 — Campáil Teach an Aragail, Gallarus (km 1867) — DECLARED 5mi retrace, ACCEPT**
-The only campsite ON the Slea Head loop. The morning loop re-passes camp: ~5mi of repeated road, declared in the app. Rejected alternative: sleeping in Dingle instead — that makes Day 8 ~241mi (worse) and forfeits the 07:00 empty Slea Head. Independently converged on by two separate planning passes.
+**D8. Night 7 — Campáil Teach an Aragail, Gallarus (km 1867) — ZERO retrace (corrected 26 Jul)**
+Chainage proof: the official line runs Dingle (1810) → Slea Head → Blasket (1856) → Gallarus (1867) → BACK through Dingle (1890) → Inch — the loop's return leg is forward official line. So the Slea Head Drive is ridden on DAY 7 EVENING (golden hour, buses gone) ending at the tent, and Day 8 exits forward Gallarus → Dingle → Inch with no repeated road at all. The earlier declared 5mi retrace was an artefact of describing a dawn loop the windows never required.
 
 **D9. Night 8 — Hungry Hill Lodge, Adrigole (km 2197) — THE ONE CAMPSITE CHANGE (was Kenmare)**
 Proven necessity: from Kenmare (km 2131), the final day = 373km of remaining official line PLUS the 210km transfer — impossible. Sleeping at Adrigole banks the whole of north Beara + Dursey Sound + McCarthy's Bar on Monday evening and puts the tent at the foot of the Healy Pass (optional sunrise spur, +9mi). Fallbacks if unbookable: Berehaven (Castletownbere), Dowling's (Glengarriff), Eagle Point (Ballylickey). STATUS: UNVERIFIED — first phone call to make.
@@ -60,7 +60,13 @@ They are not official WAW line (checked against the KML — the Way crosses Bear
 **D15. Buncrana–Rathmullan ferry NOT recommended**
 It would skip ~25mi of official line around Lough Swilly (there is no bridge; Letterkenny loop is the Way). Flagged in-app as ⚠ breaks 100% completion. The Killimer–Tarbert Shannon ferry, by contrast, IS the official crossing and is retained (hourly, on the half-hour, no booking possible).
 
-**D16. Only EXTRAS are cuttable**
+**D16. Route corrections adopted 26 Jul (cross-check round 2)**
+Four fixes from external review, each verified against the chainage before adoption: (1) Day 1 — Warren Point (Greencastle) gets its own waypoint in true road order (Moville → Greencastle/Warren → Stroove), and Farren's Bar precedes Malin Head (it sits on the approach road); (2) Glenveagh/Errigal moved to Day 3 as an OUT-AND-BACK from Gweedore (+20mi/+50min est) — the previous Dunfanaghy→Gweedore through-routing both overshot the Day-2 campsite AND would have bypassed official line; (3) the Day 6/7 boundary moved to km 1483 so Day 6 no longer claims the Cliffs (1485) while sleeping at Doolin — Day 7 now opens with them; (4) the Gallarus/Slea fix above.
+
+**D17. Marking policy (riders' rule, 26 Jul)**
+LOCKED and non-reviewable: official road, Signature Points, transfers. EVERYTHING else — every on-route stop and off-route extra — carries Keep/Maybe/Cut for review. Cutting an on-route stop never removes its road (that is the Way); it means ride past without stopping. Defaults: on-route stops = Keep (they are the plan), off-route extras = Maybe (their road cost is opted into).
+
+**D18. Only EXTRAS are cuttable**
 The app enforces it: official road cannot be Cut or Maybe'd; on-route stops can be ridden past but their road stays; the release-valve concept now applies to stop DURATIONS and optional extras only. The build fails if a data edit ever breaks window contiguity or campsite forwardness.
 
 ---
@@ -72,29 +78,31 @@ All numbers generated from the live app data. "Official" mileage is the locked l
 *Off the boat, straight to the start line at Muff*
 
 **Official window:** km 0 → 120 (74.6 mi locked) · **Transfer:** 75 mi · **Camp ±:** 0.5 mi
-**Planned:** 150 mi (max with all extras 150) · **Est:** riding 4h 08m + stops 1h 05m = 5h 13m (max 5h 13m) · **WAW after today: 4.8%**
+**Planned:** 150 mi (max with all extras 150) · **Est:** riding 4h 08m + stops 1h 10m = 5h 18m (max 5h 18m) · **WAW after today: 4.8%**
 
-> ⚠ Locked day: Larne → Derry → Muff, then the official line through east Inishowen to Malin Head and the tent at Binion. If the boat runs late, the fallback is Muff → R238 direct to camp with Malin Head as a 25-mile spur at dawn — every official mile still gets ridden.
+> ⚠ Locked day: Larne → Derry → Muff, then the official line up Lough Foyle — Greencastle/Warren Point, Stroove — round to Culdaff, past Farren's to Malin Head, and the tent at Binion. Late boat? Muff → R238 direct to camp, Malin as a 25-mile dawn spur.
 
 | # | Stop | Type | Time/impact |
 |---|---|---|---|
 | 1 | **Douglas → Larne** | ⛴ TRANSFER (non-WAW) | — |
 | 2 | **Muff — the Way begins** | 🔒 OFFICIAL WAW (locked road) | ~10min stop |
-| 3 | **East Inishowen shore & Stroove** | 🔒 OFFICIAL WAW (locked road) | ~5min stop |
-| 4 | **Kinnagoe Bay** | 📍 ON ROUTE (road locked, stop optional) | ~10min stop |
-| 5 | **Culdaff** | 📍 ON ROUTE (road locked, stop optional) | — |
-| 6 | **MALIN HEAD** | 📍 ON ROUTE (road locked, stop optional) | ~25min stop |
+| 3 | **Moville → Greencastle & Warren Point** | 🔒 OFFICIAL WAW (locked road) | ~5min stop |
+| 4 | **Stroove & Inishowen Head** | 📍 ON ROUTE (road locked, stop optional) | ~5min stop |
+| 5 | **Kinnagoe Bay** | 📍 ON ROUTE (road locked, stop optional) | ~10min stop |
+| 6 | **Culdaff** | 📍 ON ROUTE (road locked, stop optional) | — |
 | 7 | **Farren's Bar** | 📍 ON ROUTE (road locked, stop optional) | ~15min stop |
-| 8 | **Doagh → Pollan Bay → camp** | 🔒 OFFICIAL WAW (locked road) | — |
+| 8 | **MALIN HEAD** | 📍 ON ROUTE (road locked, stop optional) | ~25min stop |
+| 9 | **Doagh → Pollan Bay → camp** | 🔒 OFFICIAL WAW (locked road) | — |
 
 Stop detail:
 - **Douglas → Larne**: Steam Packet 09:30, into Larne 14:15 (~4h45). Then the transfer: Larne → Derry → Muff, ~75mi of main road, ~1h45 — no sightseeing, the trip starts at the Muff marker. ⚠ Vehicle check-in closes 45 min before — be at Douglas for 08:45.
 - **Muff — the Way begins**: Skirt Derry and cross into Donegal at Muff on Lough Foyle — the official start/end point of the Wild Atlantic Way, km zero. Currency and speed flip to € and km/h; home of the Muff Liquor Co. Photo at the marker.
-- **East Inishowen shore & Stroove**: The first miles of the Way proper: Moville, Greencastle, Stroove lighthouse and the Warren, out to the Inishowen Head corner — the first Discovery Points fall inside the opening hour.
+- **Moville → Greencastle & Warren Point**: The first miles of the Way proper up Lough Foyle — Moville, then Greencastle with the square-towered Warren Point lighthouse at the harbour mouth.
+- **Stroove & Inishowen Head**: Shrove beach, the Stroove lighthouse and the Inishowen Head corner — the first Discovery Points fall inside the opening hour.
 - **Kinnagoe Bay**: Steep drop to a huge empty beach — an Armada wreck site (La Trinidad Valencera, 1588).
 - **Culdaff**: Beach village on the north shore — the road west from here runs straight for the head.
+- **Farren's Bar**: Ireland's most northerly pub, on the approach road to the head — you pass it BEFORE Banba's Crown. Sticker and photo on the way up; the pint on the way back down if the light allows.
 - **MALIN HEAD**: Ireland's most northerly point. Banba's Crown Napoleonic tower, the “EIRE 80” WW2 sign, a Star Wars: The Last Jedi filming site — Signature Point number one, bagged on day one.
-- **Farren's Bar**: Ireland's most northerly pub — a sticker-and-photo stop, 5 minutes off the head.
 - **Doagh → Pollan Bay → camp**: Down the west shoulder through Doagh Isle and Ballyliffin to Binion — tent up in the last of the light, everything east of you already done.
 
 **NIGHT: Binion Bay Camping, Clonmany** (Inishowen) — BOOKED ✓ — beachside at Binnion strand, just round from Tullagh Bay. Cash (€) from here on.
@@ -107,7 +115,7 @@ Stop detail:
 *Three peninsulas, one easy day — the recovery after the dash*
 
 **Official window:** km 120 → 279 (98.8 mi locked) · **Camp ±:** 1.4 mi
-**Planned:** 100 mi (max with all extras 119) · **Est:** riding 3h 20m + stops 1h 45m = 5h 05m (max 7h 07m) · **WAW after today: 11.1%**
+**Planned:** 100 mi (max with all extras 104) · **Est:** riding 3h 20m + stops 1h 45m = 5h 05m (max 5h 42m) · **WAW after today: 11.1%**
 
 | # | Stop | Type | Time/impact |
 |---|---|---|---|
@@ -119,8 +127,7 @@ Stop detail:
 | 6 | **FANAD HEAD** | 📍 ON ROUTE (road locked, stop optional) | ~25min stop |
 | 7 | **Harry Blaney Bridge** | 🔒 OFFICIAL WAW (locked road) | — |
 | 8 | **Atlantic Drive, Rosguill** | 🔒 OFFICIAL WAW (locked road) | ~10min stop |
-| 9 | **Glenveagh / Errigal** | 🏍 OPTIONAL EXTRA (Keep/Maybe/Cut) | +15mi est · +40min ride · ~45min stop |
-| 10 | **Dunfanaghy** | 📍 ON ROUTE (road locked, stop optional) | ~45min stop |
+| 9 | **Dunfanaghy** | 📍 ON ROUTE (road locked, stop optional) | ~45min stop |
 
 Stop detail:
 - **Gap of Mamore**: Straight from the tent up the switchback gap between Mamore Hill and Urris — 1-in-4 gradients and the whole of Lough Swilly below.
@@ -131,7 +138,6 @@ Stop detail:
 - **FANAD HEAD**: One of the world’s most beautiful lighthouses, at the mouth of the Swilly. Signature Point two.
 - **Harry Blaney Bridge**: Exit Fanad across Mulroy Bay on the Blaney bridge — straight onto the Rosguill peninsula.
 - **Atlantic Drive, Rosguill**: A short, stunning loop — Downings, Tranarossan, the lot. Unmissable and only 20 minutes.
-- **Glenveagh / Errigal**: OPTIONAL EXTRA (inland, not WAW): the R251 under Errigal past Glenveagh, rejoining the Way at Gweedore. Road impact: +15mi / +40min riding vs the direct N56 — plus whatever you spend at the castle.
 - **Dunfanaghy**: Good food town under Horn Head — the headland itself is 100 metres from tonight’s campsite gate, saved for first thing tomorrow.
 
 **NIGHT: Corcreggan Mill, Dunfanaghy** (NW Donegal) — Quirky and biker-friendly, in an old mill.
@@ -145,7 +151,7 @@ Stop detail:
 *The long one — Donegal's whole west face in a day*
 
 **Official window:** km 279 → 661 (237.4 mi locked) · **Camp ±:** 0.1 mi
-**Planned:** 237 mi (max with all extras 237) · **Est:** riding 7h 55m + stops 3h 05m = 11h 00m (max 11h 00m) · **WAW after today: 26.4%**
+**Planned:** 237 mi (max with all extras 257) · **Est:** riding 7h 55m + stops 3h 05m = 11h 00m (max 12h 35m) · **WAW after today: 26.4%**
 
 > ⚠ Longest riding day. The official line is locked — the levers are stop time, not road: shorten Slieve League / Killybegs / Malin Beg visits if behind. Nothing official gets skipped.
 
@@ -153,19 +159,21 @@ Stop detail:
 |---|---|---|---|
 | 1 | **Horn Head loop** | 🔒 OFFICIAL WAW (locked road) | ~15min stop |
 | 2 | **Bloody Foreland** | 📍 ON ROUTE (road locked, stop optional) | ~5min stop |
-| 3 | **The Rosses** | 🔒 OFFICIAL WAW (locked road) | — |
-| 4 | **Maghera & Assaranca** | 📍 ON ROUTE (road locked, stop optional) | ~15min stop |
-| 5 | **Glengesh Pass** | 📍 ON ROUTE (road locked, stop optional) | ~10min stop |
-| 6 | **Glencolmcille & Malin Beg** | 📍 ON ROUTE (road locked, stop optional) | ~20min stop |
-| 7 | **SLIEVE LEAGUE / SLIABH LIAG** | 📍 ON ROUTE (road locked, stop optional) | ~45min stop |
-| 8 | **Killybegs** | 📍 ON ROUTE (road locked, stop optional) | ~40min stop |
-| 9 | **Donegal Bay run** | 🔒 OFFICIAL WAW (locked road) | — |
-| 10 | **MULLAGHMORE HEAD** | 📍 ON ROUTE (road locked, stop optional) | ~20min stop |
-| 11 | **Drumcliffe → Strandhill** | 📍 ON ROUTE (road locked, stop optional) | ~15min stop |
+| 3 | **Glenveagh / Errigal** | 🏍 OPTIONAL EXTRA (Keep/Maybe/Cut) | +20mi est · +50min ride · ~45min stop |
+| 4 | **The Rosses** | 🔒 OFFICIAL WAW (locked road) | — |
+| 5 | **Maghera & Assaranca** | 📍 ON ROUTE (road locked, stop optional) | ~15min stop |
+| 6 | **Glengesh Pass** | 📍 ON ROUTE (road locked, stop optional) | ~10min stop |
+| 7 | **Glencolmcille & Malin Beg** | 📍 ON ROUTE (road locked, stop optional) | ~20min stop |
+| 8 | **SLIEVE LEAGUE / SLIABH LIAG** | 📍 ON ROUTE (road locked, stop optional) | ~45min stop |
+| 9 | **Killybegs** | 📍 ON ROUTE (road locked, stop optional) | ~40min stop |
+| 10 | **Donegal Bay run** | 🔒 OFFICIAL WAW (locked road) | — |
+| 11 | **MULLAGHMORE HEAD** | 📍 ON ROUTE (road locked, stop optional) | ~20min stop |
+| 12 | **Drumcliffe → Strandhill** | 📍 ON ROUTE (road locked, stop optional) | ~15min stop |
 
 Stop detail:
 - **Horn Head loop**: First 30 minutes of the day: the loop above 180m sea cliffs, straight from the campsite. Empty at 08:00.
 - **Bloody Foreland**: Headland named for the red glow of the setting sun on the rock — rounding it, the road turns south for the first time and stays south for a week.
+- **Glenveagh / Errigal**: OPTIONAL EXTRA (inland): from Gweedore up the R251 under Errigal to Glenveagh — ridden as an OUT-AND-BACK so not a metre of official line is skipped. Road impact: +20mi / +50min est, plus castle time. (Riding it through Dunfanaghy→Gweedore would bypass Horn Head and Bloody Foreland — never that.)
 - **The Rosses**: Granite, lakes and pier lanes through Gweedore and Dungloe, then Narin/Portnoo strand — every lane of it official line, every lane locked.
 - **Maghera & Assaranca**: West of Ardara: Assaranca waterfall right beside the road, then the caves and dunes at Maghera.
 - **Glengesh Pass**: Hairpins over the hills between Ardara and Glencolmcille — one of Donegal’s great biking roads.
@@ -259,8 +267,8 @@ Stop detail:
 ### DAY 06 · SAT 15 AUG — Sky Road → Connemara shore → Burren → Doolin
 *Bog, granite and limestone — three worlds in one day*
 
-**Official window:** km 1197 → 1487 (180.2 mi locked) · **Camp ±:** 0.2 mi
-**Planned:** 180 mi (max with all extras 190) · **Est:** riding 6h 01m + stops 1h 55m = 7h 56m (max 8h 41m) · **WAW after today: 59.3%**
+**Official window:** km 1197 → 1483 (177.7 mi locked) · **Camp ±:** 0.2 mi
+**Planned:** 178 mi (max with all extras 188) · **Est:** riding 5h 56m + stops 1h 55m = 7h 51m (max 8h 36m) · **WAW after today: 59.2%**
 
 | # | Stop | Type | Time/impact |
 |---|---|---|---|
@@ -289,15 +297,15 @@ Stop detail:
 - Route impact: deviation +0.2 mi · ✓ forward progression
 - Backup: O'Connors Riverside
 
-**Official Discovery Points in this window (23, of which ★2 Signature):** Sky Road (km 1213) · Derrigimlagh (km 1218) · ★Derrigmlagh Bog (km 1218) · Bunowen Bay (km 1234) · Port na Feadóige (km 1246) · Glinsce (km 1273) · Teach an Phiarsaigh (km 1304) · Droichead Charraig an Logáin (km 1321) · Trá an Dóilín (km 1328) · Calafort Ros an Mhíl (km 1334) · Céibh Bhaile nahAbhann (km 1354) · Aerfort Réigiúnach Chonamara (km 1356) · Seanchéibh an Spidéil (km 1369) · Trá na gCeann (km 1382) · Salthill Promenade (km 1386) · Rinville Park (km 1403) · Traught (km 1431) · Flaggy Shore (km 1434) · Ballyvaughan Pier (km 1447) · Murrooghtoohy (km 1458) · Fanore Beach (km 1461) · Doolin Pier (km 1477) · ★Cliffs of Moher (km 1485)
+**Official Discovery Points in this window (22, of which ★1 Signature):** Sky Road (km 1213) · Derrigimlagh (km 1218) · ★Derrigmlagh Bog (km 1218) · Bunowen Bay (km 1234) · Port na Feadóige (km 1246) · Glinsce (km 1273) · Teach an Phiarsaigh (km 1304) · Droichead Charraig an Logáin (km 1321) · Trá an Dóilín (km 1328) · Calafort Ros an Mhíl (km 1334) · Céibh Bhaile nahAbhann (km 1354) · Aerfort Réigiúnach Chonamara (km 1356) · Seanchéibh an Spidéil (km 1369) · Trá na gCeann (km 1382) · Salthill Promenade (km 1386) · Rinville Park (km 1403) · Traught (km 1431) · Flaggy Shore (km 1434) · Ballyvaughan Pier (km 1447) · Murrooghtoohy (km 1458) · Fanore Beach (km 1461) · Doolin Pier (km 1477)
 
-### DAY 07 · SUN 16 AUG — Cliffs → Loop Head → Shannon → Conor Pass
-*Two counties, one ferry, one mighty pass*
+### DAY 07 · SUN 16 AUG — Cliffs → Loop Head → Conor Pass → Slea Head
+*The monster Sunday — two counties, one ferry, one pass, one perfect evening loop*
 
-**Official window:** km 1487 → 1868 (236.7 mi locked) · **Camp ±:** 5.4 mi
-**Planned:** 242 mi (max with all extras 242) · **Est:** riding 8h 04m + stops 3h 55m = 11h 59m (max 11h 59m) · **WAW after today: 74.5%**
+**Official window:** km 1483 → 1868 (239.2 mi locked) · **Camp ±:** 0.4 mi
+**Planned:** 240 mi (max with all extras 240) · **Est:** riding 7h 59m + stops 3h 55m = 11h 54m (max 11h 54m) · **WAW after today: 74.5%**
 
-> ⚠ Shannon ferry is hourly on the half-hour from Killimer. The line is locked end to end — including the Maharees and the Ballybunion coast. Levers are stop lengths only.
+> ⚠ Biggest official-mileage day. Cliffs at 08:00 sharp, Shannon ferry is hourly on the half-hour, and the Slea Head Drive comes at golden hour with the buses gone. Levers are stop lengths only — the line is locked end to end.
 
 | # | Stop | Type | Time/impact |
 |---|---|---|---|
@@ -309,8 +317,9 @@ Stop detail:
 | 6 | **Ballybunion** | 📍 ON ROUTE (road locked, stop optional) | ~15min stop |
 | 7 | **Camp → Castlegregory** | 🔒 OFFICIAL WAW (locked road) | — |
 | 8 | **CONOR PASS** | 📍 ON ROUTE (road locked, stop optional) | ~15min stop |
-| 9 | **Dingle town** | 📍 ON ROUTE (road locked, stop optional) | ~60min stop |
-| 10 | **Gallarus** | 📍 ON ROUTE (road locked, stop optional) | ~10min stop |
+| 9 | **Dingle town** | 📍 ON ROUTE (road locked, stop optional) | ~45min stop |
+| 10 | **SLEA HEAD DRIVE — evening** | 🔒 OFFICIAL WAW (locked road) | ~20min stop |
+| 11 | **Dunquin → Ballyferriter → Gallarus** | 🔒 OFFICIAL WAW (locked road) | ~5min stop |
 
 Stop detail:
 - **CLIFFS OF MOHER, 08:00**: At the gates when they open, before the coach army lands — O’Brien’s Tower, 214m straight down, puffins below in August. Signature Point nine.
@@ -321,41 +330,40 @@ Stop detail:
 - **Ballybunion**: Castle ruin between the two strands — quick leg-stretch, then the miles across north Kerry.
 - **Camp → Castlegregory**: Onto the Dingle peninsula’s north shore under the Slieve Mish, out around the Castlegregory/Maharees spit — official line, locked.
 - **CONOR PASS**: Ireland’s highest paved pass, ridden INBOUND — the official direction — from Cloghane over the top and the great descent into Dingle with the harbour laid out below.
-- **Dingle town**: Early dinner and one pint — Foxy John’s (hardware shop + bar) or Dick Mack’s. Ten minutes north to the tent after.
-- **Gallarus**: Camp beside the 1,200-year-old Gallarus Oratory — dry-stone, still watertight. Tomorrow starts with Slea Head at dawn.
+- **Dingle town**: Into Dingle ~17:00 off the Conor Pass descent — quick fuel and food before the evening loop. (The proper pint comes after Gallarus.)
+- **SLEA HEAD DRIVE — evening**: The loop at golden hour, buses gone, sun over the water: Ventry, the beehive huts, Slea Head itself — then DUNMORE HEAD, mainland Ireland's westernmost point and the Blasket Islands view. Signature Point eleven, in the best light of the day.
+- **Dunquin → Ballyferriter → Gallarus**: Round the loop's west side — Kruger's (Ireland's westernmost pub) at Dunquin — to the tent beside the 1,200-year-old Gallarus Oratory. The official line continues FORWARD from here through Dingle tomorrow: zero repeated road.
 
-**NIGHT: Campáil Teach an Aragail, Gallarus** (West Dingle) — Mid-Slea Head loop — sets up the dawn drive.
-- Route impact: deviation +0.4 mi · repeated road next morning ~5 mi (sits inside the Slea Head loop — the morning loop re-passes camp; no forward-only alternative exists with a campsite on the loop. ACCEPT.)
+**NIGHT: Campáil Teach an Aragail, Gallarus** (West Dingle) — Beside the Gallarus Oratory, at the END of today's window — the Way exits forward through Dingle tomorrow. Zero repeated road.
+- Route impact: deviation +0.4 mi · ✓ forward progression
 - Backup: Dingle town campsite
 
-**Official Discovery Points in this window (30, of which ★2 Signature):** Cliffs of Moher (km 1488) · Clehane (km 1495) · Lehinch Beach (km 1501) · Spanish Point (km 1515) · Doughmore Bay (km 1532) · Kilkee Cliffs (km 1552) · Bridges of Ross (km 1556) · ★Loop Head (km 1577) · Carrigaholt Bay (km 1577) · Kilrush Marina (km 1578) · Cappagh Pier (km 1580) · Scattery Island (km 1580) · Killimer Port (km 1590) · Tarbert Port (km 1616) · Foynes Island Viewpoint (km 1638) · Carrigafoyle Castle (km 1647) · Beale Strand (km 1660) · Ballybunion Beach (km 1671) · Ballyheige Beach (km 1712) · Banna Strand (km 1722) · Samphire Island (km 1733) · Fenit Harbour (km 1733) · Castlegregory Beach (km 1776) · Srón Bhroin (km 1788) · An Chonair (km 1803) · An Blascaod Mor (km 1836) · Radharc na mBlascaodaí (km 1837) · Ceann Sléibhe (km 1839) · Cé Dhún Chaoin (km 1853) · ★Ionad an Bhlascaoid Mhóir (km 1856)
+**Official Discovery Points in this window (31, of which ★3 Signature):** ★Cliffs of Moher (km 1485) · Cliffs of Moher (km 1488) · Clehane (km 1495) · Lehinch Beach (km 1501) · Spanish Point (km 1515) · Doughmore Bay (km 1532) · Kilkee Cliffs (km 1552) · Bridges of Ross (km 1556) · ★Loop Head (km 1577) · Carrigaholt Bay (km 1577) · Kilrush Marina (km 1578) · Cappagh Pier (km 1580) · Scattery Island (km 1580) · Killimer Port (km 1590) · Tarbert Port (km 1616) · Foynes Island Viewpoint (km 1638) · Carrigafoyle Castle (km 1647) · Beale Strand (km 1660) · Ballybunion Beach (km 1671) · Ballyheige Beach (km 1712) · Banna Strand (km 1722) · Samphire Island (km 1733) · Fenit Harbour (km 1733) · Castlegregory Beach (km 1776) · Srón Bhroin (km 1788) · An Chonair (km 1803) · An Blascaod Mor (km 1836) · Radharc na mBlascaodaí (km 1837) · Ceann Sléibhe (km 1839) · Cé Dhún Chaoin (km 1853) · ★Ionad an Bhlascaoid Mhóir (km 1856)
 
-### DAY 08 · MON 17 AUG — Slea Head dawn → Ring of Kerry → Beara north
-*The queen stage — three peninsulas before dark*
+### DAY 08 · MON 17 AUG — Ring of Kerry + Skellig Ring → Beara north
+*The queen stage — two peninsulas before dark*
 
 **Official window:** km 1868 → 2198 (205.1 mi locked) · **Camp ±:** 0.2 mi
-**Planned:** 205 mi (max with all extras 205) · **Est:** riding 6h 51m + stops 3h 35m = 10h 26m (max 10h 26m) · **WAW after today: 87.7%**
+**Planned:** 205 mi (max with all extras 205) · **Est:** riding 6h 51m + stops 3h 00m = 9h 51m (max 9h 51m) · **WAW after today: 87.7%**
 
-> ⚠ Queen stage — dawn start, luggage on, Slea Head clockwise at 07:00. The whole line is locked, Valentia included. Levers: stop lengths, and the optional Dursey cable-car crossing is NOT in the plan (2h). ~215mi.
+> ⚠ Dawn start. The whole line is locked, Valentia included. Levers: stop lengths; the Dursey cable-car crossing stays out (2h). ~205mi of official road.
 
 | # | Stop | Type | Time/impact |
 |---|---|---|---|
-| 1 | **SLEA HEAD DRIVE at dawn** | 📍 ON ROUTE (road locked, stop optional) | ~30min stop |
-| 2 | **Dunquin → Ballyferriter** | 📍 ON ROUTE (road locked, stop optional) | ~15min stop |
-| 3 | **South Pole Inn, Annascaul** | 📍 ON ROUTE (road locked, stop optional) | ~10min stop |
-| 4 | **Inch Strand** | 📍 ON ROUTE (road locked, stop optional) | ~5min stop |
-| 5 | **Killorglin → the N70 coast** | 🔒 OFFICIAL WAW (locked road) | — |
-| 6 | **Portmagee & Kerry Cliffs** | 📍 ON ROUTE (road locked, stop optional) | ~30min stop |
-| 7 | **Coomanaspig Pass** | 📍 ON ROUTE (road locked, stop optional) | ~10min stop |
-| 8 | **Waterville → Coomakista** | 📍 ON ROUTE (road locked, stop optional) | ~10min stop |
-| 9 | **Derrynane, Caherdaniel** | 📍 ON ROUTE (road locked, stop optional) | ~15min stop |
-| 10 | **Kenmare** | 📍 ON ROUTE (road locked, stop optional) | ~45min stop |
-| 11 | **DURSEY SOUND** | 📍 ON ROUTE (road locked, stop optional) | ~20min stop |
-| 12 | **Castletownbere & McCarthy's Bar** | 📍 ON ROUTE (road locked, stop optional) | ~25min stop |
+| 1 | **Gallarus → Dingle, forward** | 🔒 OFFICIAL WAW (locked road) | ~10min stop |
+| 2 | **South Pole Inn, Annascaul** | 📍 ON ROUTE (road locked, stop optional) | ~10min stop |
+| 3 | **Inch Strand** | 📍 ON ROUTE (road locked, stop optional) | ~5min stop |
+| 4 | **Killorglin → the N70 coast** | 🔒 OFFICIAL WAW (locked road) | — |
+| 5 | **Portmagee & Kerry Cliffs** | 📍 ON ROUTE (road locked, stop optional) | ~30min stop |
+| 6 | **Coomanaspig Pass** | 📍 ON ROUTE (road locked, stop optional) | ~10min stop |
+| 7 | **Waterville → Coomakista** | 📍 ON ROUTE (road locked, stop optional) | ~10min stop |
+| 8 | **Derrynane, Caherdaniel** | 📍 ON ROUTE (road locked, stop optional) | ~15min stop |
+| 9 | **Kenmare** | 📍 ON ROUTE (road locked, stop optional) | ~45min stop |
+| 10 | **DURSEY SOUND** | 📍 ON ROUTE (road locked, stop optional) | ~20min stop |
+| 11 | **Castletownbere & McCarthy's Bar** | 📍 ON ROUTE (road locked, stop optional) | ~25min stop |
 
 Stop detail:
-- **SLEA HEAD DRIVE at dawn**: Clockwise (the official/bus direction): Ventry, the beehive huts, Slea Head itself — then DUNMORE HEAD, mainland Ireland’s westernmost point and the Blasket Islands view. Signature Point eleven, before breakfast.
-- **Dunquin → Ballyferriter**: The Blasket Centre, Kruger’s (Ireland’s westernmost pub — too early, note it for next time), round to Ballyferriter and past the tent to Dingle for coffee.
+- **Gallarus → Dingle, forward**: The line itself runs from Gallarus back through Dingle harbour — forward official kilometres, not a retrace. Coffee in Dingle at 07:30 before the town wakes.
 - **South Pole Inn, Annascaul**: Tom Crean's own pub, directly on the exit road east — the Antarctic legend's statue outside. Shut at this hour (the pint was last night in Dingle), but the photo is free and costs zero miles.
 - **Inch Strand**: Three miles of dune-backed sand — dead on the exit road east. Zero detour, one photo.
 - **Killorglin → the N70 coast**: Onto the Ring of Kerry proper, ridden ONCE, anticlockwise with the flow: Glenbeigh, Rossbeigh strand, Kells, Cahersiveen.
@@ -446,7 +454,7 @@ Stop detail:
 | Derrigmlagh Bog | 1218 | 6 | boardwalk |
 | Cliffs of Moher | 1485 | 7 | 08:00 visit |
 | Loop Head | 1577 | 7 | full visit |
-| Ionad an Bhlascaoid Mhóir | 1856 | 8 | Slea Head dawn (Blasket view) |
+| Ionad an Bhlascaoid Mhóir | 1856 | 7 | Slea Head Drive, evening (Blasket view) |
 | Sceilg Mhichíl | 1998 | 8 | Kerry Cliffs viewpoint (landing sold out) |
 | Dursey Island | 2164 | 8 | Sound + cable-car station (crossing = 2h, excluded) |
 | Mizen Head | 2310 | 9 | footbridge visit |
@@ -462,7 +470,7 @@ Stop detail:
 | Thu 13 | Keel Sandybanks | — | phone to book | ~€36 total / ~€18pp | +0.1 mi / forward ✓ |
 | Fri 14 | Clifden Eco Beach Camping | — | advance booking only — no walk-ins | ~€40 total / ~€20pp | +0.8 mi / forward ✓ |
 | Sat 15 | Nagle's Doolin | — | book now — peak Saturday, most contested pitch of the trip | ~€36 total / ~€18pp | +0.2 mi / forward ✓ |
-| Sun 16 | Campáil Teach an Aragail, Gallarus | — | phone to book | ~€30 total / ~€15pp | +0.4 mi / retrace 5 mi |
+| Sun 16 | Campáil Teach an Aragail, Gallarus | — | phone to book | ~€30 total / ~€15pp | +0.4 mi / forward ✓ |
 | Mon 17 | Hungry Hill Lodge & Camping | — | phone ahead — confirm tents + ~20:30 arrival | unknown — ask | +0.2 mi / forward ✓ |
 | Tue 18 | St Margaret's Beach, Rosslare | — | phone to book | ~€24 total / ~€12pp | +0 mi / forward ✓ |
 
@@ -473,7 +481,7 @@ Sources: night 1 = booked by riders; prices = previous trip research, UNVERIFIED
 | Extra | Day | Exit / rejoin | Base vs via | Impact | Method |
 |---|---|---|---|---|---|
 | Fort Dunree | 02 | Urris road (post-Mamore) → same (out-and-back) | 0 vs 4 mi | +4 mi / +12 min | manual road est · verify pre-trip |
-| Glenveagh / Errigal | 02 | Dunfanaghy (N56) → Gweedore (N56) | 15 vs 30 mi | +15 mi / +40 min | manual road est · verify pre-trip |
+| Glenveagh / Errigal | 03 | Gweedore (R251) → same (out-and-back) | 0 vs 20 mi | +20 mi / +50 min | manual road est · verify pre-trip |
 | Poulnabrone dolmen | 06 | Ballyvaughan (R480) → same (out-and-back) | 0 vs 10 mi | +10 mi / +25 min | manual road est · verify pre-trip |
 | Healy Pass at sunrise | 09 | Adrigole (R574) → same (out-and-back to the saddle) | 0 vs 9 mi | +9 mi / +30 min | manual road est · verify pre-trip |
 
