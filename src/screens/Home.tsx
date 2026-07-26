@@ -13,6 +13,7 @@ import { Slider } from '../components/Slider'
 import { Dropdown } from '../components/ui'
 import { PhotoInput } from '../components/PhotoInput'
 import { PhotoView } from '../components/PhotoView'
+import { WeatherStrip } from '../components/WeatherStrip'
 
 const meta = tripData.meta
 
@@ -284,6 +285,9 @@ export function Home() {
           <div style={{ fontFamily: font.serif, fontSize: 13, color: c.inkMuted, marginTop: 2 }}>until the Wild Atlantic Way</div>
         </div>
       </div>
+
+      {/* weather: today where we are, tomorrow where we're headed */}
+      <WeatherStrip />
 
       {/* journey map */}
       <div style={{ margin: '18px 16px 0', border: `1.5px solid ${c.ink}`, borderRadius: 10, background: c.paperMap, overflow: 'hidden' }}>
