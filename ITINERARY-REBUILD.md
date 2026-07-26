@@ -183,7 +183,9 @@ Port 07:15 → Stena 08:15 → Fishguard 11:45 → M4/M5/M6 → home. Unchanged.
 
 Why the change: sleeping at Kenmare makes Tuesday impossible (373 km of official line + the 130 mi transfer). Sleeping at Adrigole banks Beara on Monday evening (bagging Dursey Sound + McCarthy's on the way through) and gifts you the Healy Pass at sunrise. It is the single highest-value edit in this document.
 
-**Booking priorities & checks (this week):**
+**Booking state (26 Jul): nights 1, 2 and 4 BOOKED ✓** (Binion Bay, Corcreggan Mill, Keel Sandybanks).
+
+**Still to book, in priority order:**
 1. **Hungry Hill Lodge, Adrigole** — the whole endgame leans on this night. Confirm the 2026 season, tents, and a ~20:30 arrival. Fallbacks: Berehaven (Castletownbere) or Glengarriff.
 2. **Nagle's Doolin, Sat 15 Aug** — peak-season Saturday, the most contested pitch of the trip. Book immediately.
 3. **Clifden Eco Beach** — advance booking only, no walk-ins.

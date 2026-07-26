@@ -140,7 +140,7 @@ Stop detail:
 - **Atlantic Drive, Rosguill**: A short, stunning loop — Downings, Tranarossan, the lot. Unmissable and only 20 minutes.
 - **Dunfanaghy**: Good food town under Horn Head — the headland itself is 100 metres from tonight’s campsite gate, saved for first thing tomorrow.
 
-**NIGHT: Corcreggan Mill, Dunfanaghy** (NW Donegal) — Quirky and biker-friendly, in an old mill.
+**NIGHT: Corcreggan Mill, Dunfanaghy** (NW Donegal) — BOOKED ✓ — quirky and biker-friendly, in an old mill.
 - Route impact: deviation +1.4 mi · ✓ forward progression
 - Backup: Wild Atlantic Camp, Creeslough (pods = storm insurance)
 
@@ -223,7 +223,7 @@ Stop detail:
 - **Achill Atlantic Drive**: The cliff road round the south of the island — Cloughmore, the Minaun cliffs across the bay.
 - **Keel**: The strand, the pubs, the tent. Keem Bay is 5 miles on — saved for 08:00 tomorrow when the car park is empty and the light is on the cliffs.
 
-**NIGHT: Keel Sandybanks Caravan & Camping** (Achill Island) — On Keel beach.
+**NIGHT: Keel Sandybanks Caravan & Camping** (Achill Island) — BOOKED ✓ — on Keel beach.
 - Route impact: deviation +0.1 mi · ✓ forward progression
 - Backup: Seal Caves, Dugort
 
@@ -465,9 +465,9 @@ Stop detail:
 | Night | Site | km | Status | Price (unverified unless noted) | Route impact |
 |---|---|---|---|---|---|
 | Mon 10 | Binion Bay Camping, Clonmany | — | **BOOKED ✓** (tents+bikes confirmed) | unknown — ask | +0.5 mi / forward ✓ |
-| Tue 11 | Corcreggan Mill, Dunfanaghy | — | phone to book | ~€24 total / ~€12pp | +1.4 mi / forward ✓ |
+| Tue 11 | Corcreggan Mill, Dunfanaghy | — | **BOOKED ✓** (tents+bikes confirmed) | ~€24 total / ~€12pp | +1.4 mi / forward ✓ |
 | Wed 12 | Strandhill Caravan & Camping | — | phone to book | ~€40 total / ~€20pp | +0.1 mi / forward ✓ |
-| Thu 13 | Keel Sandybanks | — | phone to book | ~€36 total / ~€18pp | +0.1 mi / forward ✓ |
+| Thu 13 | Keel Sandybanks | — | **BOOKED ✓** (tents+bikes confirmed) | ~€36 total / ~€18pp | +0.1 mi / forward ✓ |
 | Fri 14 | Clifden Eco Beach Camping | — | advance booking only — no walk-ins | ~€40 total / ~€20pp | +0.8 mi / forward ✓ |
 | Sat 15 | Nagle's Doolin | — | book now — peak Saturday, most contested pitch of the trip | ~€36 total / ~€18pp | +0.2 mi / forward ✓ |
 | Sun 16 | Campáil Teach an Aragail, Gallarus | — | phone to book | ~€30 total / ~€15pp | +0.4 mi / forward ✓ |

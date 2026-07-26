@@ -252,7 +252,7 @@ export const tripData: Trip = {
       "night": {
         "area": "NW Donegal",
         "primary": "Corcreggan Mill, Dunfanaghy",
-        "note": "Quirky and biker-friendly, in an old mill.",
+        "note": "BOOKED ✓ — quirky and biker-friendly, in an old mill.",
         "backup": "Wild Atlantic Camp, Creeslough (pods = storm insurance)",
         "sellout": false,
         "deviationMi": 1.4,
@@ -527,7 +527,7 @@ export const tripData: Trip = {
       "night": {
         "area": "Achill Island",
         "primary": "Keel Sandybanks Caravan & Camping",
-        "note": "On Keel beach.",
+        "note": "BOOKED ✓ — on Keel beach.",
         "backup": "Seal Caves, Dugort",
         "sellout": true,
         "deviationMi": 0.1,
@@ -1515,7 +1515,7 @@ export const tripData: Trip = {
       "open2026": "covers-august",
       "availability": "booked",
       "booking": "BOOKED ✓",
-      "source": "booked by the brothers · 2026"
+      "source": "booked & confirmed by the brothers · 26 Jul 2026"
     },
     {
       "night": "Tue 11",
@@ -1526,12 +1526,13 @@ export const tripData: Trip = {
       "sellout": false,
       "deviationMi": 1.4,
       "retraceMi": 0,
-      "tents": "unknown",
-      "bikes": "unknown",
-      "open2026": "unknown",
-      "availability": "unknown",
+      "tents": "confirmed",
+      "bikes": "accepted",
+      "open2026": "covers-august",
+      "availability": "booked",
       "price": "~€24 total / ~€12pp",
-      "source": "previous trip research (app v1 notes) · UNVERIFIED — phone to confirm"
+      "source": "booked & confirmed by the brothers · 26 Jul 2026",
+      "booking": "BOOKED ✓"
     },
     {
       "night": "Wed 12",
@@ -1555,15 +1556,16 @@ export const tripData: Trip = {
       "primary": "Keel Sandybanks",
       "primaryNote": "On Keel beach",
       "backup": "Seal Caves, Dugort",
-      "sellout": true,
+      "sellout": false,
       "deviationMi": 0.1,
       "retraceMi": 0,
-      "tents": "unknown",
-      "bikes": "unknown",
-      "open2026": "unknown",
-      "availability": "unknown",
+      "tents": "confirmed",
+      "bikes": "accepted",
+      "open2026": "covers-august",
+      "availability": "booked",
       "price": "~€36 total / ~€18pp",
-      "source": "previous trip research (app v1 notes) · UNVERIFIED — phone to confirm"
+      "source": "booked & confirmed by the brothers · 26 Jul 2026",
+      "booking": "BOOKED ✓"
     },
     {
       "night": "Fri 14",
