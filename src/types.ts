@@ -139,6 +139,10 @@ export interface Campsite {
   retraceMi?: number
   /** Why a retrace is accepted (e.g. "sits inside the Slea Head loop"). */
   retraceWhy?: string
+  // ---- booking status (single source of truth for every accommodation UI) ----
+  bookingStatus?: 'booked' | 'pending' | 'unavailable' | 'not_contacted'
+  /** Short human note for the status, e.g. "CJ calling" / "Awaiting campsite response". */
+  bookingNote?: string
   // ---- verification (brother view only; never claim what isn't verified) ----
   tents?: 'confirmed' | 'unknown'
   bikes?: 'accepted' | 'unknown'

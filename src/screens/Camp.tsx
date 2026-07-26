@@ -2,7 +2,7 @@ import { c, font } from '../theme'
 import { useStore } from '../store/StoreProvider'
 import { tripData } from '../data/tripData'
 import { stripPrice } from '../lib/camps'
-import { Kicker, ScreenTitle } from '../components/ui'
+import { Kicker, ScreenTitle, BookingChip } from '../components/ui'
 import type { Campsite } from '../types'
 
 /** Brother-only verification row: what's actually confirmed vs needs a phone call. */
@@ -14,10 +14,9 @@ function VerifyRow({ camp }: { camp: Campsite }) {
   )
   return (
     <div style={{ marginTop: 7, borderTop: '1px dashed #c9ba94', paddingTop: 6 }}>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-        {chip(camp.availability === 'booked' ? 'BOOKED ✓' : camp.availability === 'unknown' ? 'availability: phone' : `availability: ${camp.availability}`, camp.availability === 'booked')}
-        {chip(camp.tents === 'confirmed' ? 'tents ✓' : 'tents: confirm', camp.tents === 'confirmed')}
-        {chip(camp.bikes === 'accepted' ? 'bikes ✓' : 'bikes: confirm', camp.bikes === 'accepted')}
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, alignItems: 'center' }}>
+        {camp.bookingStatus === 'booked' && chip('tents ✓', true)}
+        {camp.bookingStatus === 'booked' && chip('bikes ✓', true)}
         {camp.price && chip(camp.price, false)}
       </div>
       {(camp.deviationMi != null || camp.retraceMi != null) && (
@@ -27,6 +26,7 @@ function VerifyRow({ camp }: { camp: Campsite }) {
         </div>
       )}
       {camp.source && <div style={{ fontFamily: font.mono, fontSize: 8, color: c.inkFaintest, marginTop: 3, lineHeight: 1.5 }}>{camp.source}</div>}
+      {camp.backup && <div style={{ fontFamily: font.mono, fontSize: 8, color: c.inkFaint, marginTop: 3, lineHeight: 1.5 }}>ALT · {camp.backup}</div>}
     </div>
   )
 }
@@ -34,10 +34,22 @@ function VerifyRow({ camp }: { camp: Campsite }) {
 export function Camp() {
   const { isBrother } = useStore()
   const T = tripData
+  const booked = T.campsites.filter((x) => x.bookingStatus === 'booked').length
+  const pending = T.campsites.filter((x) => x.bookingStatus === 'pending').length
   return (
     <div style={{ animation: 'waw-fade .35s ease both', padding: '18px 16px 28px' }}>
       <Kicker color={c.green}>Zero wild camping — every night pre-booked</Kicker>
       <ScreenTitle style={{ margin: '3px 0 6px' }}>Campsites</ScreenTitle>
+      <div style={{ margin: '2px 0 8px', display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+        <span style={{ fontFamily: font.display, fontWeight: 700, fontSize: 15, color: c.ink }}>
+          Camping: {booked} / {T.campsites.length} booked
+        </span>
+        {pending > 0 && (
+          <span style={{ fontFamily: font.mono, fontSize: 9, fontWeight: 700, letterSpacing: '.06em', color: c.amber, background: c.amberPanel, border: `1px solid ${c.amber}`, borderRadius: 3, padding: '1.5px 7px', textTransform: 'uppercase' }}>
+            {pending} pending
+          </span>
+        )}
+      </div>
       <div style={{ fontFamily: font.serif, fontSize: 13, color: '#5a5140', lineHeight: 1.55 }}>{T.campNotes.intro}</div>
 
       <div style={{ marginTop: 16 }}>
@@ -53,6 +65,9 @@ export function Camp() {
             <div style={{ flex: 1, minWidth: 0, padding: '10px 12px' }}>
               <div style={{ fontFamily: font.mono, fontSize: 8.5, letterSpacing: '.1em', color: c.inkFainter, textTransform: 'uppercase' }}>{camp.base}</div>
               <div style={{ fontFamily: font.display, fontWeight: 600, fontSize: 14.5, textTransform: 'uppercase', color: c.ink, lineHeight: 1.12, marginTop: 2 }}>{camp.primary}</div>
+              <div style={{ marginTop: 5 }}>
+                <BookingChip status={camp.bookingStatus} note={camp.bookingNote} />
+              </div>
               {stripPrice(camp.primaryNote) && <div style={{ fontFamily: font.serif, fontStyle: 'italic', fontSize: 12, color: c.inkMuted, marginTop: 4, lineHeight: 1.4 }}>{stripPrice(camp.primaryNote)}</div>}
               {isBrother && <VerifyRow camp={camp} />}
             </div>

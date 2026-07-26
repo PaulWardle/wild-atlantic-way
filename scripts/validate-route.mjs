@@ -47,10 +47,10 @@ const campCoords = {
   'Strandhill Caravan & Camping': [54.2699, -8.596],
   'Keel Sandybanks': [53.9737, -10.0855],
   'Clifden Eco Beach': [53.539, -10.113],
-  "Nagle's Doolin": [53.014, -9.389],
+  "O'Connors Riverside": [53.011, -9.387],
   'Campáil Teach an Aragail': [52.174, -10.348],
   'Hungry Hill Lodge': [51.689, -9.728],
-  "St Margaret's Beach": [52.1899, -6.3629],
+  'IOAC, Tagoat': [52.196, -6.386],
 }
 
 let fail = 0
@@ -86,7 +86,7 @@ data.days.forEach((d, i) => {
   if (!key) { warn(`day ${i + 1}: no coords for "${d.night.primary}" — skipped`); return }
   const { km, off } = chainage(...campCoords[key])
   const [a, b] = d.wawKm
-  if (key === "St Margaret's Beach") { ok(`day ${i + 1}: ${key} = transfer target (off-Way by design)`); return }
+  if (key === 'IOAC, Tagoat') { ok(`day ${i + 1}: ${key} = transfer target (off-Way by design)`); return }
   if (km < a - 8) bad(`day ${i + 1}: ${key} at km ${km.toFixed(0)} is BEHIND the day's window ${a}→${b}`)
   else if (km > b + 8) bad(`day ${i + 1}: ${key} at km ${km.toFixed(0)} is AHEAD of the day's window ${a}→${b}`)
   else {

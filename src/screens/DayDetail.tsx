@@ -4,7 +4,7 @@ import { tripData } from '../data/tripData'
 import { buildTags, isMarkable } from '../lib/tags'
 import { stripPrice } from '../lib/camps'
 import { summarizeDay, fmtH } from '../lib/daymath'
-import { TagChips } from '../components/ui'
+import { TagChips, BookingChip } from '../components/ui'
 import type { Stop } from '../types'
 
 /** Route-item badge: locked official road / on-route stop / optional extra / transfer. */
@@ -206,6 +206,12 @@ export function DayDetail() {
                 </div>
                 <div style={{ padding: '11px 13px' }}>
                   <div style={{ fontFamily: font.display, fontWeight: 600, fontSize: 16, textTransform: 'uppercase', color: c.ink, letterSpacing: '.01em', lineHeight: 1.1 }}>{night.primary}</div>
+                  {/* status from tripData.campsites — the single source of truth */}
+                  {isBrother && T.campsites[di] && (
+                    <div style={{ marginTop: 5 }}>
+                      <BookingChip status={T.campsites[di].bookingStatus} note={T.campsites[di].bookingNote} />
+                    </div>
+                  )}
                   {night.sellout && isBrother && (
                     <div style={{ display: 'inline-block', marginTop: 5, fontFamily: font.mono, fontSize: 8, fontWeight: 700, letterSpacing: '.1em', textTransform: 'uppercase', color: c.rust, border: `1px solid ${c.rust}`, borderRadius: 3, padding: '1px 5px' }}>
                       Book this week — sells out

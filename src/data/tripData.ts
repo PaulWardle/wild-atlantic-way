@@ -133,7 +133,7 @@ export const tripData: Trip = {
       "night": {
         "area": "Inishowen",
         "primary": "Binion Bay Camping, Clonmany",
-        "note": "BOOKED ✓ — beachside at Binnion strand, just round from Tullagh Bay. Cash (€) from here on.",
+        "note": "Beachside at Binnion strand, just round from Tullagh Bay. Cash (€) from here on.",
         "backup": "Tullagh Bay Camping (the next bay over)",
         "sellout": false,
         "deviationMi": 0.5,
@@ -252,7 +252,7 @@ export const tripData: Trip = {
       "night": {
         "area": "NW Donegal",
         "primary": "Corcreggan Mill, Dunfanaghy",
-        "note": "BOOKED ✓ — quirky and biker-friendly, in an old mill.",
+        "note": "Quirky and biker-friendly, in an old mill.",
         "backup": "Wild Atlantic Camp, Creeslough (pods = storm insurance)",
         "sellout": false,
         "deviationMi": 1.4,
@@ -527,7 +527,7 @@ export const tripData: Trip = {
       "night": {
         "area": "Achill Island",
         "primary": "Keel Sandybanks Caravan & Camping",
-        "note": "BOOKED ✓ — on Keel beach.",
+        "note": "On Keel beach.",
         "backup": "Seal Caves, Dugort",
         "sellout": true,
         "deviationMi": 0.1,
@@ -764,9 +764,9 @@ export const tripData: Trip = {
       ],
       "night": {
         "area": "Doolin",
-        "primary": "Nagle's Doolin",
-        "note": "Cliffs of Moher view from the tent.",
-        "backup": "O'Connors Riverside",
+        "primary": "O'Connors Riverside, Doolin",
+        "note": "Riverside in the village — the Cliffs are still 10 minutes south at 08:00, and the trad session still happens.",
+        "backup": "Nagle's Doolin — ❌ no availability (full)",
         "sellout": true,
         "deviationMi": 0.2,
         "retraceMi": 0
@@ -1197,10 +1197,10 @@ export const tripData: Trip = {
         }
       ],
       "night": {
-        "area": "Rosslare (for the boat)",
-        "primary": "St Margaret's Beach Camping, Rosslare",
-        "note": "~30 min from Rosslare Harbour. Sets up the 08:15 sailing.",
-        "backup": "Morriscastle Strand, Kilmuckridge",
+        "area": "Tagoat (for the boat)",
+        "primary": "IOAC, Tagoat",
+        "note": "Minutes from Rosslare Harbour. Sets up the 08:15 sailing.",
+        "backup": "St Margaret's Beach (superseded)",
         "sellout": false,
         "deviationMi": 0,
         "retraceMi": 0
@@ -1515,7 +1515,9 @@ export const tripData: Trip = {
       "open2026": "covers-august",
       "availability": "booked",
       "booking": "BOOKED ✓",
-      "source": "booked & confirmed by the brothers · 26 Jul 2026"
+      "source": "booked & confirmed by the brothers · 26 Jul 2026",
+      "bookingStatus": "booked",
+      "bookingNote": ""
     },
     {
       "night": "Tue 11",
@@ -1532,7 +1534,9 @@ export const tripData: Trip = {
       "availability": "booked",
       "price": "~€24 total / ~€12pp",
       "source": "booked & confirmed by the brothers · 26 Jul 2026",
-      "booking": "BOOKED ✓"
+      "booking": "BOOKED ✓",
+      "bookingStatus": "booked",
+      "bookingNote": ""
     },
     {
       "night": "Wed 12",
@@ -1546,9 +1550,11 @@ export const tripData: Trip = {
       "tents": "unknown",
       "bikes": "unknown",
       "open2026": "unknown",
-      "availability": "unknown",
+      "availability": "enquire",
       "price": "~€40 total / ~€20pp",
-      "source": "previous trip research (app v1 notes) · UNVERIFIED — phone to confirm"
+      "source": "previous trip research (app v1 notes) · UNVERIFIED — phone to confirm",
+      "bookingStatus": "pending",
+      "bookingNote": "CJ calling"
     },
     {
       "night": "Thu 13",
@@ -1565,7 +1571,9 @@ export const tripData: Trip = {
       "availability": "booked",
       "price": "~€36 total / ~€18pp",
       "source": "booked & confirmed by the brothers · 26 Jul 2026",
-      "booking": "BOOKED ✓"
+      "booking": "BOOKED ✓",
+      "bookingStatus": "booked",
+      "bookingNote": ""
     },
     {
       "night": "Fri 14",
@@ -1579,27 +1587,30 @@ export const tripData: Trip = {
       "tents": "unknown",
       "bikes": "unknown",
       "open2026": "unknown",
-      "availability": "unknown",
+      "availability": "enquire",
       "price": "~€40 total / ~€20pp",
       "booking": "advance booking only — no walk-ins",
-      "source": "previous trip research (app v1 notes) · UNVERIFIED — phone to confirm"
+      "source": "previous trip research (app v1 notes) · UNVERIFIED — phone to confirm",
+      "bookingStatus": "pending",
+      "bookingNote": "CJ calling"
     },
     {
       "night": "Sat 15",
       "base": "Doolin",
-      "primary": "Nagle's Doolin",
-      "primaryNote": "Cliffs view from the tent",
-      "backup": "O'Connors Riverside",
-      "sellout": true,
+      "primary": "O'Connors Riverside, Doolin",
+      "primaryNote": "Riverside in Doolin village — same forward position, Cliffs still 10 min south at 08:00",
+      "backup": "Nagle's Doolin — ❌ NO AVAILABILITY (full)",
+      "sellout": false,
       "deviationMi": 0.2,
       "retraceMi": 0,
       "tents": "unknown",
       "bikes": "unknown",
       "open2026": "unknown",
-      "availability": "unknown",
-      "price": "~€36 total / ~€18pp",
+      "availability": "enquire",
       "booking": "book now — peak Saturday, most contested pitch of the trip",
-      "source": "previous trip research (app v1 notes) · UNVERIFIED — phone to confirm"
+      "source": "email sent 26 Jul 2026 — awaiting reply",
+      "bookingStatus": "pending",
+      "bookingNote": "Awaiting campsite response (email sent)"
     },
     {
       "night": "Sun 16",
@@ -1609,12 +1620,15 @@ export const tripData: Trip = {
       "backup": "Dingle town campsite",
       "sellout": false,
       "deviationMi": 0.4,
-      "tents": "unknown",
-      "bikes": "unknown",
-      "open2026": "unknown",
-      "availability": "unknown",
+      "tents": "confirmed",
+      "bikes": "accepted",
+      "open2026": "covers-august",
+      "availability": "booked",
       "price": "~€30 total / ~€15pp",
-      "source": "previous trip research (app v1 notes) · UNVERIFIED — phone to confirm"
+      "source": "booked & confirmed by the brothers · 26 Jul 2026",
+      "bookingStatus": "booked",
+      "bookingNote": "",
+      "booking": "BOOKED ✓"
     },
     {
       "night": "Mon 17",
@@ -1625,28 +1639,32 @@ export const tripData: Trip = {
       "sellout": false,
       "deviationMi": 0.2,
       "retraceMi": 0,
-      "tents": "unknown",
-      "bikes": "unknown",
-      "open2026": "unknown",
-      "availability": "unknown",
-      "booking": "phone ahead — confirm tents + ~20:30 arrival",
-      "source": "route analysis only · price/tents UNVERIFIED — phone this week (the endgame leans on this night)"
+      "tents": "confirmed",
+      "bikes": "accepted",
+      "open2026": "covers-august",
+      "availability": "booked",
+      "booking": "BOOKED ✓",
+      "source": "booked & confirmed by the brothers · 26 Jul 2026 — the endgame is secured",
+      "bookingStatus": "booked",
+      "bookingNote": ""
     },
     {
       "night": "Tue 18",
-      "base": "Rosslare (for the boat)",
-      "primary": "St Margaret's Beach, Rosslare",
-      "primaryNote": "~30 min from the port",
-      "backup": "Morriscastle Strand, Kilmuckridge",
+      "base": "Tagoat (for the boat)",
+      "primary": "IOAC, Tagoat",
+      "primaryNote": "Minutes from Rosslare Harbour — sets up the 08:15 sailing",
+      "backup": "St Margaret's Beach, Rosslare (previous plan, superseded)",
       "sellout": false,
       "deviationMi": 0,
       "retraceMi": 0,
-      "tents": "unknown",
-      "bikes": "unknown",
-      "open2026": "unknown",
-      "availability": "unknown",
-      "price": "~€24 total / ~€12pp",
-      "source": "previous trip research (app v1 notes) · UNVERIFIED — phone to confirm"
+      "tents": "confirmed",
+      "bikes": "accepted",
+      "open2026": "covers-august",
+      "availability": "booked",
+      "source": "booked & confirmed by the brothers · 26 Jul 2026",
+      "bookingStatus": "booked",
+      "bookingNote": "",
+      "booking": "BOOKED ✓"
     }
   ],
   "campNotes": {
