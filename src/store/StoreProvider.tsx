@@ -139,6 +139,8 @@ export interface StoreContextValue {
   isBrother: boolean
   isGuest: boolean
   ready: boolean
+  /** null = unknown yet, true = reached the backend, false = unreachable (paused/offline). */
+  serverOk: boolean | null
 
   // navigation
   screen: Screen
@@ -384,6 +386,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [pwErr, setPwErr] = useState(false)
   const [copied, setCopied] = useState(false)
   const [linkPrompt, setLinkPrompt] = useState<LinkPrompt | null>(null)
+  const [serverOk, setServerOk] = useState<boolean | null>(null)
 
   const role = store.role
   const isBrother = role === 'brother'
@@ -406,6 +409,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     ])
       .then((res) => {
         const [p, l, n, m, g] = res
+        // If every table errored (e.g. project paused / no connection), flag the
+        // server as unreachable so the UI can say so.
+        setServerOk(!p.error || !l.error || !n.error || !m.error || !g.error)
         const next: Store = { ...storeRef.current }
         if (!p.error)
           next.posts = ((p.data || []) as Post[])
@@ -462,7 +468,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         next.notes.sort((a, b) => b.ts - a.ts)
         commit(next)
       })
-      .catch(() => {})
+      .catch(() => setServerOk(false))
   }, [commit])
 
   const runOp = useCallback((o: OutboxOp) => {
@@ -1059,6 +1065,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     isBrother,
     isGuest,
     ready: true,
+    serverOk,
     screen,
     day,
     kitTab,

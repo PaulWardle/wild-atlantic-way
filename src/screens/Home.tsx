@@ -77,6 +77,7 @@ export function Home() {
   const s = useStore()
   const {
     store,
+    serverOk,
     isBrother,
     isGuest,
     signOut,
@@ -177,6 +178,19 @@ export function Home() {
 
   return (
     <div style={{ animation: 'waw-fade .4s ease both' }}>
+      {serverOk === false && (
+        <div style={{ margin: '12px 16px 0', border: `1.5px solid ${c.inkFainter}`, background: c.paperMuted, borderRadius: 9, padding: '10px 13px', display: 'flex', gap: 9, alignItems: 'flex-start' }}>
+          <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke={c.inkFaint} strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" style={{ flex: '0 0 auto', marginTop: 1 }}>
+            <path d="M12 3a9 9 0 1 0 9 9" />
+            <path d="M12 8v4" />
+            <circle cx="12" cy="16" r="0.5" fill={c.inkFaint} />
+          </svg>
+          <div>
+            <div style={{ fontFamily: font.mono, fontSize: 8, fontWeight: 700, letterSpacing: '.12em', color: c.inkFaint, textTransform: 'uppercase', marginBottom: 3 }}>Can’t reach the trip server</div>
+            <div style={{ fontFamily: font.serif, fontSize: 12.5, color: '#5a4f3b', lineHeight: 1.45 }}>Showing this phone’s saved copy. Anything you post is safe and will sync the moment it’s back.</div>
+          </div>
+        </div>
+      )}
       {hasUnsent && (
         <div style={{ margin: '12px 16px 0', border: `1.5px solid ${c.amber}`, background: c.amberPanel, borderRadius: 9, padding: '10px 13px' }}>
           <div style={{ fontFamily: font.mono, fontSize: 8, fontWeight: 700, letterSpacing: '.12em', color: c.amber, textTransform: 'uppercase', marginBottom: 3 }}>
