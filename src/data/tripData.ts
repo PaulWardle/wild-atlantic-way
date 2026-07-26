@@ -1579,7 +1579,7 @@ export const tripData: Trip = {
         "t": "Derry",
         "lat": 54.997,
         "lon": -7.32,
-        "side": "left"
+        "side": "bottom"
       },
       {
         "t": "Muff",
@@ -1615,7 +1615,7 @@ export const tripData: Trip = {
         "t": "Killarney",
         "lat": 52.06,
         "lon": -9.5,
-        "side": "right"
+        "side": "bottom"
       },
       {
         "t": "Cork",
