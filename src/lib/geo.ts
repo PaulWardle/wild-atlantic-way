@@ -12,7 +12,6 @@ import type { Trip } from '../types'
 import { irelandCoast } from '../data/irelandCoast'
 import { journey } from '../data/journey'
 import { nearestJourneyIndex } from './geocode'
-import { wawSpine, chainageOf } from '../data/wawSpine'
 
 // Expanded projection bounds (wide sea margins for labels).
 const EB = { lonMin: -12.8, lonMax: -4.2, latMin: 51.0, latMax: 55.6, scale: 80, pad: 16 }
@@ -77,6 +76,9 @@ function arcIndices(i: number, j: number, forward: boolean): number[] {
   }
   return out
 }
+function avgLon(idx: number[]): number {
+  return idx.reduce((s, i) => s + ring[i][1], 0) / idx.length
+}
 function planarLen(idx: number[]): number {
   let s = 0
   for (let k = 1; k < idx.length; k++) {
@@ -85,11 +87,27 @@ function planarLen(idx: number[]): number {
   }
   return s
 }
+/** The arc between two ring points that runs along the western (Atlantic) coast. */
+function westArc(i: number, j: number): number[] {
+  const fwd = arcIndices(i, j, true)
+  const bwd = arcIndices(i, j, false)
+  return avgLon(fwd) <= avgLon(bwd) ? fwd : bwd
+}
 /** The shorter of the two arcs between two ring points. */
 function shortArc(i: number, j: number): number[] {
   const fwd = arcIndices(i, j, true)
   const bwd = arcIndices(i, j, false)
   return planarLen(fwd) <= planarLen(bwd) ? fwd : bwd
+}
+function nearestInList(list: [number, number][], lat: number, lon: number): number {
+  const cos = Math.cos((lat * Math.PI) / 180)
+  let best = 0, bd = Infinity
+  for (let i = 0; i < list.length; i++) {
+    const dlat = list[i][0] - lat, dlon = (list[i][1] - lon) * cos
+    const d = dlat * dlat + dlon * dlon
+    if (d < bd) { bd = d; best = i }
+  }
+  return best
 }
 // Only the two big east-coast cities the trip never visits are dropped.
 const DROP_CITIES = new Set(['Belfast', 'Dublin'])
@@ -154,25 +172,25 @@ const eSide: Record<string, { a: 'start' | 'middle' | 'end'; dx: number; dy: num
 export function computeMapGeometry(trip: Trip, current: CurrentPos | null): MapGeometry {
   const G = trip.geo
   const R = trip.route
+  const M = G.malin
   const fi = G.ferryIn
   const hf = G.homeFerry
   const liveActive = !!current
   const curIdx = current ? nearestJourneyIndex(current.lat, current.lon) : -1
   const curPhaseWaw = current ? journey[curIdx].phase === 'waw' : false
 
-  // The route line is the OFFICIAL Fáilte Ireland geometry (wawSpine), thinned
-  // for rendering. The lead-in is the coast arc from the ferry to Muff (km 0).
-  const wawCoords = wawSpine.filter((_, i) => i % 3 === 0 || i === wawSpine.length - 1).map((p) => [p[0], p[1]] as [number, number])
-  const idxMuff = nearestRingIndex(wawSpine[0][0], wawSpine[0][1])
+  // Route arcs along the real coast.
+  const idxMalin = nearestRingIndex(M.lat, M.lon)
+  const idxKinsale = nearestRingIndex(R[9].lat, R[9].lon)
   const idxLarne = nearestRingIndex(fi.lat, fi.lon)
-  const leadCoords = shortArc(idxLarne, idxMuff).map((i) => ring[i]) as [number, number][]
+  const wawCoords = westArc(idxMalin, idxKinsale).map((i) => ring[i]) as [number, number][]
+  const leadCoords = shortArc(idxLarne, idxMalin).map((i) => ring[i]) as [number, number][]
 
-  // Green "done" — the official line from Muff up to the live position's chainage.
+  // Green "done" — the coast arc from Malin up to the point nearest the live position.
   let eDone = ''
   if (current && curPhaseWaw) {
-    const curKm = chainageOf(current.lat, current.lon).km
-    const donePts = wawSpine.filter((p, i) => p[2] <= curKm && (i % 3 === 0 || p[2] > curKm - 6)).map((p) => [p[0], p[1]] as [number, number])
-    if (donePts.length > 1) eDone = splinePath(toXY(donePts), false)
+    const k = nearestInList(wawCoords, current.lat, current.lon)
+    eDone = splinePath(toXY(wawCoords.slice(0, k + 1)), false)
   }
 
   // Dots + labels: real coords sit on the accurate coast. "Done" = passed.

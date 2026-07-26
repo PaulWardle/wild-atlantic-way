@@ -30,49 +30,22 @@ export const tripData: Trip = {
       "n": "01",
       "dow": "MON",
       "date": "10 AUG",
-      "title": "Ferry → Antrim Coast → Inishowen",
-      "tagline": "Off the boat, the coast road, and the Way begins at Muff",
-      "miles": "~150mi + ferry",
+      "title": "Ferry → Larne → Muff → Inishowen",
+      "tagline": "Off the boat, straight to the start line at Muff",
+      "miles": "~135mi + ferry",
       "phase": "lead",
       "wawStart": true,
-      "warnBanner": "Locked day: Larne → Muff → Stroove → Farren’s → Malin Head → Binion, all on the official line from Muff. If the boat runs late, Torr Head (optional extra) goes first; every official mile still gets ridden.",
+      "warnBanner": "Locked day: Larne → Derry → Muff, then the official line through east Inishowen to Malin Head and the tent at Binion. If the boat runs late, the fallback is Muff → R238 direct to camp with Malin Head as a 25-mile spur at dawn — every official mile still gets ridden.",
       "stops": [
         {
           "n": "Douglas → Larne",
           "skip": true,
-          "d": "Steam Packet 09:30, into Larne 14:15 (~4h45). The ONLY Isle of Man→Ireland sailing — nothing runs Sunday, so the riding starts this afternoon.",
+          "d": "Steam Packet 09:30, into Larne 14:15 (~4h45). Then the transfer: Larne → Derry → Muff, ~75mi of main road, ~1h45 — no sightseeing, the trip starts at the Muff marker.",
           "warn": "Vehicle check-in closes 45 min before — be at Douglas for 08:45.",
           "tags": [
             "logistics"
           ],
           "kind": "transfer"
-        },
-        {
-          "n": "A2 Antrim Coast Road",
-          "d": "Straight off the boat onto one of Europe's great coast roads — built 1832, hugging the sea wall past Glenarm, Carnlough, Glenariff and Cushendun.",
-          "tags": [
-            "b",
-            "view"
-          ],
-          "kind": "transfer",
-          "stopMin": 0
-        },
-        {
-          "n": "Torr Head",
-          "d": "OPTIONAL EXTRA (pre-Muff, not WAW): the Torr Head scenic road off the A2 — Scotland 12mi across the water. Barely longer in miles than the A2, but single-track and slow: +3mi / +35min riding vs staying on the A2.",
-          "tags": [
-            "b",
-            "view"
-          ],
-          "kind": "extra",
-          "impactMi": 3,
-          "impactMin": 35,
-          "stopMin": 10,
-          "exit": "Cushendun (A2)",
-          "rejoin": "Ballyvoy (A2)",
-          "baseMi": 9,
-          "viaMi": 12,
-          "impactSrc": "manual road estimate · verify in Google Maps before the trip · checked 26 Jul 2026"
         },
         {
           "n": "Muff — the Way begins",
@@ -159,7 +132,7 @@ export const tripData: Trip = {
         0,
         120
       ],
-      "transferMi": 82
+      "transferMi": 75
     },
     {
       "n": "02",
@@ -1986,12 +1959,6 @@ export const tripData: Trip = {
         "lat": 55.38,
         "lon": -7.37,
         "side": "top"
-      },
-      {
-        "t": "Giant's Causeway",
-        "lat": 55.235,
-        "lon": -6.51,
-        "side": "right"
       },
       {
         "t": "Fanad Head",

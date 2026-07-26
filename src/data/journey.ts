@@ -18,8 +18,7 @@ export interface JourneyStop {
 
 export const journey: JourneyStop[] = [
   { label: 'Larne (ferry in)', lat: 54.85, lon: -5.81, phase: 'lead' },
-  { label: 'Antrim Coast', lat: 55.2, lon: -6.1, phase: 'lead' },
-  { label: 'Torr Head', lat: 55.2, lon: -6.06, phase: 'lead' },
+  { label: 'Derry (transfer)', lat: 54.997, lon: -7.32, phase: 'lead' },
   { label: 'Muff', lat: 55.07, lon: -7.27, phase: 'waw' },
   { label: 'Culdaff', lat: 55.29, lon: -7.16, phase: 'waw' },
   { label: 'Malin Head', lat: 55.38, lon: -7.37, phase: 'waw' },

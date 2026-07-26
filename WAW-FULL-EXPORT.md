@@ -19,7 +19,7 @@ Generated 26 Jul 2026 directly from the app's live data (single source of truth)
 The official start/end markers are at Muff and Kinsale. Southbound puts the fixed Larne landing at the correct end and finishes 130mi from the booked boat. No alternative considered viable.
 
 **D2. Day 1 LOCKED: Larne → Muff → Stroove/the Warren → Farren's → Malin Head → Binion**
-Riders' explicit instruction + Binion is the one booked night. Malin Head in the EVENING (~19:30) means Farren's Bar is open — the rejected alternative (Malin as a Day-2 dawn spur, proposed by one planning pass) was refuted in verification: the pub is shut at 09:30 AND it hides ~24mi of re-ridden road. Torr Head demoted to optional pre-Muff extra (+3mi/+35min — it is a time cost, not a distance cost).
+Riders' explicit instruction + Binion is the one booked night. Malin Head in the EVENING (~19:30) means Farren's Bar is open — the rejected alternative (Malin as a Day-2 dawn spur, proposed by one planning pass) was refuted in verification: the pub is shut at 09:30 AND it hides ~24mi of re-ridden road. Antrim Coast and Torr Head REMOVED from the app entirely (riders' call, 26 Jul): the trip starts at Muff; Larne→Muff is a plain 75mi transfer.
 
 **D3. Night 2 — Corcreggan Mill, Dunfanaghy (km 279)**
 Exactly at the end of the Fanad/Rosguill window, on the forward line; Horn Head (km 312) opens the next morning IN the direction of travel. The old plan's sin — visiting Bloody Foreland (km 346) then sleeping back at Dunfanaghy — is structurally impossible now.
@@ -68,31 +68,27 @@ The app enforces it: official road cannot be Cut or Maybe'd; on-route stops can 
 ## PART 3 — THE NINE DAYS, IN FULL
 All numbers generated from the live app data. "Official" mileage is the locked line window; extras are unmarked (= Maybe) unless stated; times assume 30mph coastal / 46mph transfer + listed stop times.
 
-### DAY 01 · MON 10 AUG — Ferry → Antrim Coast → Inishowen
-*Off the boat, the coast road, and the Way begins at Muff*
+### DAY 01 · MON 10 AUG — Ferry → Larne → Muff → Inishowen
+*Off the boat, straight to the start line at Muff*
 
-**Official window:** km 0 → 120 (74.6 mi locked) · **Transfer:** 82 mi · **Camp ±:** 0.5 mi
-**Planned:** 157 mi (max with all extras 160) · **Est:** riding 4h 17m + stops 1h 05m = 5h 22m (max 6h 07m) · **WAW after today: 4.8%**
+**Official window:** km 0 → 120 (74.6 mi locked) · **Transfer:** 75 mi · **Camp ±:** 0.5 mi
+**Planned:** 150 mi (max with all extras 150) · **Est:** riding 4h 08m + stops 1h 05m = 5h 13m (max 5h 13m) · **WAW after today: 4.8%**
 
-> ⚠ Locked day: Larne → Muff → Stroove → Farren’s → Malin Head → Binion, all on the official line from Muff. If the boat runs late, Torr Head (optional extra) goes first; every official mile still gets ridden.
+> ⚠ Locked day: Larne → Derry → Muff, then the official line through east Inishowen to Malin Head and the tent at Binion. If the boat runs late, the fallback is Muff → R238 direct to camp with Malin Head as a 25-mile spur at dawn — every official mile still gets ridden.
 
 | # | Stop | Type | Time/impact |
 |---|---|---|---|
 | 1 | **Douglas → Larne** | ⛴ TRANSFER (non-WAW) | — |
-| 2 | **A2 Antrim Coast Road** | ⛴ TRANSFER (non-WAW) | — |
-| 3 | **Torr Head** | 🏍 OPTIONAL EXTRA (Keep/Maybe/Cut) | +3mi est · +35min ride · ~10min stop |
-| 4 | **Muff — the Way begins** | 🔒 OFFICIAL WAW (locked road) | ~10min stop |
-| 5 | **East Inishowen shore & Stroove** | 🔒 OFFICIAL WAW (locked road) | ~5min stop |
-| 6 | **Kinnagoe Bay** | 📍 ON ROUTE (road locked, stop optional) | ~10min stop |
-| 7 | **Culdaff** | 📍 ON ROUTE (road locked, stop optional) | — |
-| 8 | **MALIN HEAD** | 📍 ON ROUTE (road locked, stop optional) | ~25min stop |
-| 9 | **Farren's Bar** | 📍 ON ROUTE (road locked, stop optional) | ~15min stop |
-| 10 | **Doagh → Pollan Bay → camp** | 🔒 OFFICIAL WAW (locked road) | — |
+| 2 | **Muff — the Way begins** | 🔒 OFFICIAL WAW (locked road) | ~10min stop |
+| 3 | **East Inishowen shore & Stroove** | 🔒 OFFICIAL WAW (locked road) | ~5min stop |
+| 4 | **Kinnagoe Bay** | 📍 ON ROUTE (road locked, stop optional) | ~10min stop |
+| 5 | **Culdaff** | 📍 ON ROUTE (road locked, stop optional) | — |
+| 6 | **MALIN HEAD** | 📍 ON ROUTE (road locked, stop optional) | ~25min stop |
+| 7 | **Farren's Bar** | 📍 ON ROUTE (road locked, stop optional) | ~15min stop |
+| 8 | **Doagh → Pollan Bay → camp** | 🔒 OFFICIAL WAW (locked road) | — |
 
 Stop detail:
-- **Douglas → Larne**: Steam Packet 09:30, into Larne 14:15 (~4h45). The ONLY Isle of Man→Ireland sailing — nothing runs Sunday, so the riding starts this afternoon. ⚠ Vehicle check-in closes 45 min before — be at Douglas for 08:45.
-- **A2 Antrim Coast Road**: Straight off the boat onto one of Europe's great coast roads — built 1832, hugging the sea wall past Glenarm, Carnlough, Glenariff and Cushendun.
-- **Torr Head**: OPTIONAL EXTRA (pre-Muff, not WAW): the Torr Head scenic road off the A2 — Scotland 12mi across the water. Barely longer in miles than the A2, but single-track and slow: +3mi / +35min riding vs staying on the A2.
+- **Douglas → Larne**: Steam Packet 09:30, into Larne 14:15 (~4h45). Then the transfer: Larne → Derry → Muff, ~75mi of main road, ~1h45 — no sightseeing, the trip starts at the Muff marker. ⚠ Vehicle check-in closes 45 min before — be at Douglas for 08:45.
 - **Muff — the Way begins**: Skirt Derry and cross into Donegal at Muff on Lough Foyle — the official start/end point of the Wild Atlantic Way, km zero. Currency and speed flip to € and km/h; home of the Muff Liquor Co. Photo at the marker.
 - **East Inishowen shore & Stroove**: The first miles of the Way proper: Moville, Greencastle, Stroove lighthouse and the Warren, out to the Inishowen Head corner — the first Discovery Points fall inside the opening hour.
 - **Kinnagoe Bay**: Steep drop to a huge empty beach — an Armada wreck site (La Trinidad Valencera, 1588).
@@ -476,7 +472,6 @@ Sources: night 1 = booked by riders; prices = previous trip research, UNVERIFIED
 
 | Extra | Day | Exit / rejoin | Base vs via | Impact | Method |
 |---|---|---|---|---|---|
-| Torr Head | 01 | Cushendun (A2) → Ballyvoy (A2) | 9 vs 12 mi | +3 mi / +35 min | manual road est · verify pre-trip |
 | Fort Dunree | 02 | Urris road (post-Mamore) → same (out-and-back) | 0 vs 4 mi | +4 mi / +12 min | manual road est · verify pre-trip |
 | Glenveagh / Errigal | 02 | Dunfanaghy (N56) → Gweedore (N56) | 15 vs 30 mi | +15 mi / +40 min | manual road est · verify pre-trip |
 | Poulnabrone dolmen | 06 | Ballyvaughan (R480) → same (out-and-back) | 0 vs 10 mi | +10 mi / +25 min | manual road est · verify pre-trip |
