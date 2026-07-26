@@ -1505,7 +1505,7 @@ export const tripData: Trip = {
       "night": "Mon 10",
       "base": "Inishowen",
       "primary": "Binion Bay Camping, Clonmany",
-      "primaryNote": "BOOKED ✓ — beachside at Binnion strand",
+      "primaryNote": "beachside at Binnion strand",
       "backup": "Tullagh Bay Camping (next bay over)",
       "sellout": false,
       "deviationMi": 0.5,

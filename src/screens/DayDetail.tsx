@@ -4,7 +4,7 @@ import { tripData } from '../data/tripData'
 import { buildTags, isMarkable } from '../lib/tags'
 import { stripPrice } from '../lib/camps'
 import { summarizeDay, fmtH } from '../lib/daymath'
-import { TagChips, BookingChip } from '../components/ui'
+import { TagChips } from '../components/ui'
 import type { Stop } from '../types'
 
 /** Route-item badge: locked official road / on-route stop / optional extra / transfer. */
@@ -189,16 +189,21 @@ export function DayDetail() {
         })}
       </div>
 
-      {night && (
+      {night && (() => {
+        // Colour is the booking status: green = booked, amber = unconfirmed.
+        const unconfirmed = T.campsites[di] && T.campsites[di].bookingStatus !== 'booked'
+        const nTint = unconfirmed ? c.amber : c.green
+        const nPanel = unconfirmed ? c.amberPanel : c.greenPanel
+        return (
         <div style={{ margin: '4px 18px 0' }}>
           <div style={{ display: 'flex', gap: 0 }}>
             <div style={{ flex: '0 0 26px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <div style={{ width: 14, height: 14, background: c.green, transform: 'rotate(45deg)', marginTop: 2, flex: '0 0 auto' }} />
+              <div style={{ width: 14, height: 14, background: nTint, transform: 'rotate(45deg)', marginTop: 2, flex: '0 0 auto' }} />
             </div>
             <div style={{ flex: 1, minWidth: 0, paddingLeft: 8 }}>
-              <div style={{ border: `1.5px solid ${c.green}`, borderRadius: 9, background: c.greenPanel, overflow: 'hidden' }}>
-                <div style={{ background: c.green, color: c.greenPanel, padding: '6px 12px', display: 'flex', alignItems: 'center', gap: 7 }}>
-                  <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke={c.greenPanel} strokeWidth={1.8} strokeLinejoin="round">
+              <div style={{ border: `1.5px solid ${nTint}`, borderRadius: 9, background: nPanel, overflow: 'hidden' }}>
+                <div style={{ background: nTint, color: nPanel, padding: '6px 12px', display: 'flex', alignItems: 'center', gap: 7 }}>
+                  <svg width={14} height={14} viewBox="0 0 24 24" fill="none" stroke={nPanel} strokeWidth={1.8} strokeLinejoin="round">
                     <path d="M12 4 L21 20 H3 Z" />
                     <path d="M12 4 V20" />
                   </svg>
@@ -206,10 +211,10 @@ export function DayDetail() {
                 </div>
                 <div style={{ padding: '11px 13px' }}>
                   <div style={{ fontFamily: font.display, fontWeight: 600, fontSize: 16, textTransform: 'uppercase', color: c.ink, letterSpacing: '.01em', lineHeight: 1.1 }}>{night.primary}</div>
-                  {/* status from tripData.campsites — the single source of truth */}
-                  {isBrother && T.campsites[di] && (
-                    <div style={{ marginTop: 5 }}>
-                      <BookingChip status={T.campsites[di].bookingStatus} note={T.campsites[di].bookingNote} />
+                  {/* colour is the status: amber note only while unconfirmed (from tripData.campsites) */}
+                  {isBrother && T.campsites[di] && T.campsites[di].bookingStatus !== 'booked' && (
+                    <div style={{ fontFamily: font.mono, fontSize: 8.5, color: c.amber, marginTop: 4, letterSpacing: '.04em' }}>
+                      {T.campsites[di].bookingNote || 'not yet confirmed'}
                     </div>
                   )}
                   {night.sellout && isBrother && (
@@ -233,7 +238,7 @@ export function DayDetail() {
             </div>
           </div>
         </div>
-      )}
+      )})()}
 
       <div style={{ display: 'flex', justifyContent: 'space-between', gap: 10, padding: '20px 18px 30px' }}>
         {hasPrev && (
