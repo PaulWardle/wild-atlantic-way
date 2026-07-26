@@ -33,7 +33,7 @@ function SectionLabel({ children }: { children: ReactNode }) {
 }
 
 function ResetPanel() {
-  const { clearPosts, clearUpdates, clearNotes, clearMarksSig, resetEverything } = useStore()
+  const { clearPosts, clearUpdates, clearNotes, clearMarksSig, clearGallery, resetEverything } = useStore()
   const smallBtn: React.CSSProperties = {
     border: `1.5px solid ${c.ink}`,
     borderRadius: 8,
@@ -59,6 +59,7 @@ function ResetPanel() {
           <button onClick={clearUpdates} style={smallBtn}>Clear pings</button>
           <button onClick={clearNotes} style={smallBtn}>Clear journal</button>
           <button onClick={clearMarksSig} style={smallBtn}>Clear marks</button>
+          <button onClick={clearGallery} style={{ ...smallBtn, gridColumn: '1 / -1' }}>Clear gallery (all photos)</button>
         </div>
         <button onClick={resetEverything} style={{ width: '100%', marginTop: 8, border: `1.5px solid ${c.rust}`, borderRadius: 8, background: c.rust, color: '#f6ecd6', padding: 12, fontFamily: font.display, fontWeight: 700, fontSize: 12.5, textTransform: 'uppercase', letterSpacing: '.05em', cursor: 'pointer' }}>
           Reset everything
@@ -112,6 +113,12 @@ export function Info() {
           <GuideRow title="The map">
             The shape of the whole journey — Malin Head down to Kinsale — with every headland and town, and the live pin marking where they are.
           </GuideRow>
+          <GuideRow title="Weather">
+            Right on the home screen: today’s forecast for where the lads are, and tomorrow’s for where they’re headed next — so you know if they’re getting a soaking.
+          </GuideRow>
+          <GuideRow title="The gallery">
+            Every photo from the road, newest first — sliding through on the home screen and as a grid in the Journal. Tap one to open it big and swipe through the lot.
+          </GuideRow>
           <GuideRow
             title="The postbox"
             chips={
@@ -124,7 +131,7 @@ export function Info() {
               </>
             }
           >
-            Leave a hello, a tip, a recommendation or a question. Add your name, pick what it is, write your message — it lands on the home screen for the whole crew to see. This is your way to cheer them on.
+            Leave a hello, a tip, a recommendation or a question. Add your name, pick what it is, write your message — and add a photo or two if you like — and it lands on the home screen for the whole crew to see. This is your way to cheer them on.
           </GuideRow>
           <GuideRow
             title="The journal"
@@ -143,7 +150,7 @@ export function Info() {
             Have a nose around: <b>Days</b> for the ride day by day, <b>Today</b> for what’s on now, and <b>Sights &amp; Roads</b> for the headline spots and biker passes. Campsites and the day plans are all there to explore.
           </GuideRow>
           <div style={{ marginTop: 14, fontFamily: font.serif, fontStyle: 'italic', fontSize: 12.5, color: c.inkFainter, lineHeight: 1.55 }}>
-            Tip: your messages and what you see are saved on this device. Keep the link handy to check back in.
+            Tip: add it to your home screen (Share → Add to Home Screen) to open it like an app — it even works offline. Your messages are saved on this device; keep the link handy to check back in.
           </div>
         </>
       )}
@@ -153,7 +160,10 @@ export function Info() {
           <SectionLabel>Every screen &amp; tool</SectionLabel>
           <GuideRow title="Home">Your dashboard: countdown, live location, the map, the postbox and journal feeds, and the pack of tools.</GuideRow>
           <GuideRow title="We are here">
-            Post your location so F&amp;F can follow: pick the spot, add a comment, tap <b>We are here</b>. It flashes on the map and heads up the journal.
+            Post where you are so F&amp;F can follow. Tap <b>Use my location</b> for a live GPS fix — it names the spot (a town, not coordinates) and asks you to <b>confirm before it posts</b>, so a stray tap never sends. No signal or off the route? <b>Set it by hand</b> instead. Add a comment and photos first and they ride along. It flashes on the map and heads up the journal.
+          </GuideRow>
+          <GuideRow title="Weather">
+            Today’s forecast for where you actually are — your live spot, or the day’s area before you’ve posted — and tomorrow’s for where you’re headed next. High/low, chance of rain and wind. It re-checks as you post locations, and the last reading stays put when you’ve no signal.
           </GuideRow>
           <GuideRow
             title="The ride (Days)"
@@ -170,7 +180,7 @@ export function Info() {
           <GuideRow title="Today">
             The live day, set by the date — and it follows your <b>Keep / Maybe / Cut</b> calls: stops you’ve cut drop off the glance and kept ones get flagged as don’t-miss. Shows the call to make, tonight’s camp and a jump into the full day. Before the off it’s a live countdown.
           </GuideRow>
-          <GuideRow title="Campsites">Every night’s pitch with backups and sell-out warnings. On the home grid and inside each day.</GuideRow>
+          <GuideRow title="Campsites">Every night’s confirmed pitch — one place per night, zero wild camping. On the home grid and inside each day. (Budget figures live on Kit &amp; Admin.)</GuideRow>
           <GuideRow
             title="Sights &amp; roads"
             chips={
@@ -196,14 +206,20 @@ export function Info() {
               </>
             }
           >
-            The full record. Add a note as <b>Paul</b> or <b>CJ</b> with a tag and a day, and it auto-pulls in your locations, Signature bags and the postbox — grouped day by day with times. Edit or remove your notes any time.
+            The full record. Add a note as <b>Paul</b> or <b>CJ</b> with a tag (or make your own with <b>+</b>), file it under any day <b>and time</b>, and attach photos — it auto-pulls in your locations, Signature bags and the postbox, grouped day by day with times. Edit or remove your notes any time. <b>Save Trip Book</b> exports the lot as a keepsake PDF.
           </GuideRow>
-          <GuideRow title="The map">The whole route with the live pin — from the home card or full-screen.</GuideRow>
+          <GuideRow title="The gallery">
+            Every photo from the trip in one place — a carousel on Home and a grid in the Journal. Tap any shot to open it full-screen and <b>swipe</b> through them all. Post up to four photos on a location, note or message.
+          </GuideRow>
+          <GuideRow title="The map">The whole route with the live pin — from the home card or full-screen. A fix that’s off the route or outside Ireland still posts, it just won’t sit on the route line.</GuideRow>
+          <GuideRow title="Install &amp; offline">
+            Add it to your home screen (Share → <b>Add to Home Screen</b>) and it runs like a proper app. It works with <b>no signal</b> — the whole thing loads offline, and anything you post (words and photos) is saved on the phone and syncs the moment you’re back on. A banner tells you when the trip server can’t be reached.
+          </GuideRow>
 
           <div style={{ marginTop: 18, border: `1.5px solid ${c.ink}`, borderRadius: 10, background: c.greenPanel, padding: '13px 14px' }}>
             <div style={{ fontFamily: font.mono, fontSize: 8, fontWeight: 700, letterSpacing: '.14em', color: c.green, textTransform: 'uppercase', marginBottom: 6 }}>What guests see</div>
             <div style={{ fontFamily: font.serif, fontSize: 13, color: c.inkSoft, lineHeight: 1.55 }}>
-              Friends &amp; family get a lighter, view-only version. They follow along — the countdown, the map and your live location, the postbox and the journal feed — and can leave you messages in the postbox. They can’t post locations, mark stops Keep/Maybe/Cut, see Kit &amp; Admin or edit the record; Signature 15 &amp; Passes show as a read-only “Sights &amp; Roads” list.
+              Friends &amp; family get a lighter, view-only version. They follow along — the countdown, the map and your live location, the weather, the photo gallery, the postbox and the journal feed — and can leave you messages (with photos) in the postbox. They can’t post locations, mark stops Keep/Maybe/Cut, see Kit &amp; Admin or edit the record, and any stop you’ve <b>Cut</b> disappears from their day view. Signature 15 &amp; Passes show as a read-only “Sights &amp; Roads” list.
             </div>
           </div>
           <div style={{ marginTop: 12, border: `1.5px dashed ${c.rust}`, borderRadius: 9, background: '#f7ecdd', padding: '11px 13px' }}>

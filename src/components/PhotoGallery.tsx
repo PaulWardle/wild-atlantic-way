@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { c, font } from '../theme'
 import { isLocalPhoto, localId, localObjectURL } from '../lib/photoQueue'
 import { photoList } from '../lib/photos'
@@ -66,14 +66,40 @@ function Lightbox({ photos, index, onClose, onNav }: { photos: GalleryPhoto[]; i
     return () => window.removeEventListener('keydown', onKey)
   }, [onClose, onNav])
 
+  const touch = useRef<{ x: number; y: number } | null>(null)
+  const swiped = useRef(false)
+
   return (
     <div
-      onClick={onClose}
+      onClick={() => {
+        if (swiped.current) {
+          swiped.current = false
+          return
+        }
+        onClose()
+      }}
+      onTouchStart={(e) => {
+        const t = e.touches[0]
+        touch.current = { x: t.clientX, y: t.clientY }
+        swiped.current = false
+      }}
+      onTouchEnd={(e) => {
+        const s = touch.current
+        touch.current = null
+        if (!s) return
+        const t = e.changedTouches[0]
+        const dx = t.clientX - s.x
+        const dy = t.clientY - s.y
+        if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+          swiped.current = true
+          onNav(dx < 0 ? 1 : -1)
+        }
+      }}
       className="waw-noprint"
       role="dialog"
       aria-modal="true"
       aria-label={photo.alt}
-      style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(12,10,7,.94)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 16, animation: 'waw-fade .2s ease both' }}
+      style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(12,10,7,.94)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 16, animation: 'waw-fade .2s ease both', touchAction: 'pan-y' }}
     >
       {src && <img src={src} alt={photo.alt} style={{ maxWidth: '100%', maxHeight: '78%', borderRadius: 6, objectFit: 'contain' }} />}
       <div style={{ marginTop: 12, textAlign: 'center', color: '#f0e6cf' }}>

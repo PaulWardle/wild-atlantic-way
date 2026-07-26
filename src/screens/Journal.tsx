@@ -25,8 +25,12 @@ export function Journal() {
     jTagOther,
     setJTagOther,
     selectJTag,
+    customTags,
+    addCustomTag,
     jDay,
     selectJDay,
+    jTime,
+    setJTime,
     addNote,
     jEditTs,
     jEditText,
@@ -82,6 +86,8 @@ export function Journal() {
     tripData.days.map((d, i) => ({ label: 'Day ' + d.n + ' · ' + d.dow + ' ' + d.date, val: jDepartMs + i * 86400000 })),
   )
   const jDayLabel = jDay === 'today' ? 'Today' : (jDayOptions.find((x) => x.val === jDay) || { label: 'Today' }).label
+  // Built-in tags + the brothers' own custom tags, with "Other" kept last.
+  const tagOpts = [...jTagOptions.filter((t) => t !== 'Other'), ...customTags, 'Other']
 
   const authTab = (label: string, active: boolean, onClick: () => void) => (
     <button onClick={onClick} style={{ flex: 1, borderRadius: 6, padding: '8px 4px', textAlign: 'center', fontFamily: font.display, fontWeight: 600, fontSize: 12.5, textTransform: 'uppercase', letterSpacing: '.03em', background: active ? c.ink : 'transparent', color: active ? c.paper : c.inkMuted }}>
@@ -181,17 +187,42 @@ export function Journal() {
             style={{ width: '100%', border: `1.5px solid ${c.ink}`, borderRadius: 7, background: c.inputBg, padding: '10px 12px', fontFamily: font.serif, fontSize: 13.5, color: c.inkSoft, outline: 'none', resize: 'none', lineHeight: 1.5 }}
           />
           <div style={{ fontFamily: font.mono, fontSize: 8, letterSpacing: '.14em', color: c.inkFaintest, textTransform: 'uppercase', margin: '11px 0 6px' }}>Tag</div>
-          <Dropdown label={jTag || 'Update'} open={openDD === 'jtag'} onToggle={() => toggleDD('jtag')} options={jTagOptions.map((t) => ({ label: t, pick: () => selectJTag(t) }))} />
+          <Dropdown label={jTag || 'Update'} open={openDD === 'jtag'} onToggle={() => toggleDD('jtag')} options={tagOpts.map((t) => ({ label: t, pick: () => selectJTag(t) }))} />
           {(jTag || 'Update') === 'Other' && (
-            <input
-              value={jTagOther}
-              onChange={(e) => setJTagOther(e.target.value)}
-              placeholder="Custom tag"
-              style={{ width: '100%', marginTop: 8, border: `1.5px solid ${c.ink}`, borderRadius: 7, background: c.inputBg, padding: '9px 11px', fontFamily: font.display, fontWeight: 600, fontSize: 13, textTransform: 'uppercase', color: c.ink, outline: 'none' }}
-            />
+            <div style={{ display: 'flex', gap: 6, marginTop: 8 }}>
+              <input
+                value={jTagOther}
+                onChange={(e) => setJTagOther(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter' && jTagOther.trim()) addCustomTag(jTagOther) }}
+                placeholder="Name your tag"
+                style={{ flex: 1, minWidth: 0, border: `1.5px solid ${c.ink}`, borderRadius: 7, background: c.inputBg, padding: '9px 11px', fontFamily: font.display, fontWeight: 600, fontSize: 13, textTransform: 'uppercase', color: c.ink, outline: 'none' }}
+              />
+              <button
+                onClick={() => jTagOther.trim() && addCustomTag(jTagOther)}
+                aria-label="Add this tag to the list"
+                title="Add to tag list"
+                style={{ flex: '0 0 auto', border: `1.5px solid ${c.ink}`, borderRadius: 7, background: c.ink, color: c.paper, padding: '0 15px', fontFamily: font.display, fontWeight: 700, fontSize: 18, lineHeight: 1 }}
+              >
+                +
+              </button>
+            </div>
           )}
-          <div style={{ fontFamily: font.mono, fontSize: 8, letterSpacing: '.14em', color: c.inkFaintest, textTransform: 'uppercase', margin: '11px 0 6px' }}>File under</div>
-          <Dropdown label={jDayLabel} open={openDD === 'jday'} onToggle={() => toggleDD('jday')} options={jDayOptions.map((o) => ({ label: o.label, pick: () => selectJDay(o.val) }))} />
+          <div style={{ display: 'flex', gap: 10 }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontFamily: font.mono, fontSize: 8, letterSpacing: '.14em', color: c.inkFaintest, textTransform: 'uppercase', margin: '11px 0 6px' }}>File under</div>
+              <Dropdown label={jDayLabel} open={openDD === 'jday'} onToggle={() => toggleDD('jday')} options={jDayOptions.map((o) => ({ label: o.label, pick: () => selectJDay(o.val) }))} />
+            </div>
+            <div style={{ flex: '0 0 108px' }}>
+              <div style={{ fontFamily: font.mono, fontSize: 8, letterSpacing: '.14em', color: c.inkFaintest, textTransform: 'uppercase', margin: '11px 0 6px' }}>At time</div>
+              <input
+                type="time"
+                value={jTime}
+                onChange={(e) => setJTime(e.target.value)}
+                aria-label="Time for this entry"
+                style={{ width: '100%', border: `1.5px solid ${c.ink}`, borderRadius: 7, background: c.inputBg, padding: '8px 9px', fontFamily: font.mono, fontSize: 13, color: c.ink, outline: 'none' }}
+              />
+            </div>
+          </div>
           <PhotoInput
             files={files}
             onAdd={(fs) => setFiles((prev) => [...prev, ...fs])}

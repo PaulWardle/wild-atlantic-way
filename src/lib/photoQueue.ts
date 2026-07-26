@@ -75,6 +75,17 @@ export async function removePhoto(id: string): Promise<void> {
   }
 }
 
+/** Wipe every queued photo blob (used by "clear gallery" / reset everything). */
+export async function clearAllPending(): Promise<void> {
+  try {
+    await tx('readwrite', (s) => s.clear())
+  } catch {
+    /* noop */
+  }
+  urlCache.forEach((url) => URL.revokeObjectURL(url))
+  urlCache.clear()
+}
+
 // Object-URL cache so a given local photo resolves to a stable URL for the
 // lifetime of the page (created once, reused across renders).
 const urlCache = new Map<string, string>()

@@ -13,7 +13,7 @@ import { getSupabase } from '../lib/supabase'
 import { tripData } from '../data/tripData'
 import { journey, journeyToSig } from '../data/journey'
 import { attachPhotos, uploadBlob, photoList, photoField } from '../lib/photos'
-import { isLocalPhoto, localId, loadPhoto, removePhoto } from '../lib/photoQueue'
+import { isLocalPhoto, localId, loadPhoto, removePhoto, clearAllPending } from '../lib/photoQueue'
 import { nearestJourneyIndex, reverseGeocode, isInIreland } from '../lib/geocode'
 import type {
   Note,
@@ -84,6 +84,7 @@ function emptyStore(role: Role = null): Store {
     dec: {},
     ferry: null,
     outbox: [],
+    customTags: [],
   }
 }
 
@@ -102,6 +103,7 @@ function normalize(raw: unknown): Store {
     dec: s.dec ?? {},
     ferry: s.ferry ?? null,
     outbox: s.outbox ?? [],
+    customTags: s.customTags ?? [],
   }
 }
 
@@ -211,16 +213,20 @@ export interface StoreContextValue {
   jFeedSwipeEnd: (e: React.TouchEvent | React.MouseEvent) => void
   jNote: string
   jDay: number | string
+  jTime: string
   jAuthor: string
   jTag: string
   jTagOther: string
+  customTags: string[]
   jEditTs: number | null
   jEditText: string
   setJNote: (v: string) => void
   selectJDay: (v: number | string) => void
+  setJTime: (v: string) => void
   selectAuthor: (a: string) => void
   selectJTag: (t: string) => void
   setJTagOther: (v: string) => void
+  addCustomTag: (tag: string) => void
   addNote: (files?: File[] | null) => Promise<void>
   startEditNote: (ts: number, text: string) => void
   setJEditText: (v: string) => void
@@ -245,6 +251,7 @@ export interface StoreContextValue {
   clearNotes: () => void
   clearMarksSig: () => void
   clearUpdates: () => void
+  clearGallery: () => void
   resetEverything: () => void
 
   // export / share
@@ -397,6 +404,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [jAuthor, setJAuthor] = useState('Paul')
   const [jTag, setJTag] = useState('Update')
   const [jTagOther, setJTagOtherState] = useState('')
+  const [jTime, setJTimeState] = useState('')
   const [jEditTs, setJEditTs] = useState<number | null>(null)
   const [jEditText, setJEditTextState] = useState('')
   const [pwOpen, setPwOpen] = useState(false)
@@ -881,11 +889,19 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       const text = (jNote || '').trim()
       if (!text && !(files && files.length)) return
       const jd = jDay ?? 'today'
-      const date = jd === 'today' ? Date.now() : (jd as number)
+      // Day the entry belongs to (midnight), used for grouping.
+      const now = new Date()
+      const todayMid = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime()
+      const dayMid = jd === 'today' ? todayMid : (jd as number)
+      // Optional time-of-day → an exact timestamp so it lands in the right slot.
+      const tm = /^(\d{1,2}):(\d{2})$/.exec(jTime || '')
+      let ts: number
+      if (tm) ts = dayMid + Number(tm[1]) * 3600000 + Number(tm[2]) * 60000
+      else ts = jd === 'today' ? Date.now() : dayMid + 12 * 3600000 // noon if a past day has no time
+      const date = dayMid
       let tag = jTag || 'Update'
       if (tag === 'Other') tag = (jTagOther || '').trim() || 'Other'
       const author = jAuthor || 'Paul'
-      const ts = Date.now()
       const photo = files && files.length ? await attachPhotos(files) : undefined
       const note: Note = { text, ts, date, author, tag, ...(photo ? { photo } : {}) }
       set({ notes: [note, ...(storeRef.current.notes || [])] })
@@ -893,7 +909,24 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       setJNoteState('')
       setJTagOtherState('')
     },
-    [jNote, jDay, jTag, jTagOther, jAuthor, set, insertRow],
+    [jNote, jDay, jTag, jTagOther, jTime, jAuthor, set, insertRow],
+  )
+
+  // Save a brother's own tag (from "Other → +") so it's reusable in the list.
+  const addCustomTag = useCallback(
+    (tag: string) => {
+      const t = (tag || '').trim()
+      if (!t) return
+      const cur: Store = { ...storeRef.current }
+      const existing = cur.customTags || []
+      if (!existing.some((x) => x.toLowerCase() === t.toLowerCase())) {
+        cur.customTags = [...existing, t]
+        commit(cur)
+      }
+      setJTag(t)
+      setJTagOtherState('')
+    },
+    [commit],
   )
 
   const startEditNote = useCallback((ts: number, text: string) => {
@@ -956,6 +989,22 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     }
   }, [set, deleteAll])
 
+  const clearGallery = useCallback(() => {
+    if (typeof window !== 'undefined' && !window.confirm('Clear every photo from the trip? The notes and messages stay — only the pictures go. This can’t be undone.')) return
+    const sb = sbRef.current
+    if (sb) {
+      sb.from('posts').update({ photo: null }).not('photo', 'is', null).then(() => {}, () => {})
+      sb.from('notes').update({ photo: null }).not('photo', 'is', null).then(() => {}, () => {})
+      sb.from('locations').update({ photo: null }).not('photo', 'is', null).then(() => {}, () => {})
+    }
+    const cur: Store = { ...storeRef.current }
+    cur.posts = (cur.posts || []).map((p) => ({ ...p, photo: undefined }))
+    cur.notes = (cur.notes || []).map((n) => ({ ...n, photo: undefined }))
+    cur.updates = (cur.updates || []).map((u) => ({ ...u, photo: undefined }))
+    commit(cur)
+    clearAllPending()
+  }, [commit])
+
   const resetEverything = useCallback(() => {
     if (typeof window === 'undefined') return
     if (
@@ -967,6 +1016,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     if (!window.confirm('Last chance — really wipe it all? Tap Cancel to grab a Backup first.')) return
     const keepRole = storeRef.current.role || null
     commit(emptyStore(keepRole))
+    clearAllPending()
     deleteAll('posts')
     deleteAll('locations')
     deleteAll('notes')
@@ -1173,16 +1223,20 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     jFeedSwipeEnd,
     jNote,
     jDay,
+    jTime,
     jAuthor,
     jTag,
     jTagOther,
+    customTags: store.customTags || [],
     jEditTs,
     jEditText,
     setJNote: setJNoteState,
     selectJDay,
+    setJTime: setJTimeState,
     selectAuthor,
     selectJTag,
     setJTagOther: setJTagOtherState,
+    addCustomTag,
     addNote,
     startEditNote,
     setJEditText: setJEditTextState,
@@ -1201,6 +1255,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     clearNotes,
     clearMarksSig,
     clearUpdates,
+    clearGallery,
     resetEverything,
     savePDF,
     downloadBackup,

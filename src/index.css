@@ -102,6 +102,14 @@ textarea {
   display: none;
 }
 @media print {
+  /* Print the Trip Book on the app's warm paper, not stark white, and force
+     browsers to actually render the background/card colours into the PDF. */
+  *,
+  *::before,
+  *::after {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
   .waw-noprint {
     display: none !important;
   }
@@ -110,11 +118,11 @@ textarea {
   }
   html,
   body {
-    background: #fff !important;
+    background: #ece0c2 !important;
   }
   .waw-desk {
     display: block !important;
-    background: #fff !important;
+    background: #ece0c2 !important;
     padding: 0 !important;
     min-height: 0 !important;
   }

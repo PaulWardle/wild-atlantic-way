@@ -267,4 +267,6 @@ export interface Store {
   dec: Record<string, number>
   ferry: string | null
   outbox: OutboxOp[]
+  /** Brother-authored custom journal tags (device-local), added via "Other → +". */
+  customTags: string[]
 }

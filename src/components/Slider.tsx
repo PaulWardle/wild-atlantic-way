@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import { useRef, type ReactNode } from 'react'
 import { c } from '../theme'
 
 function Dots({ n, active, onDot }: { n: number; active: number; onDot?: (i: number) => void }) {
@@ -44,12 +44,26 @@ export function Slider({
   const n = slides.length
   const step = n > 0 ? 100 / n : 100
   const active = n > 0 ? (((idx % n) + n) % n) : 0
+  // Built-in horizontal swipe for any carousel that owns an `onDot` setter
+  // (gallery, postbox). The journal passes its own onSwipeStart/End instead.
+  const startX = useRef<number | null>(null)
   return (
     <>
       <div
         style={{ overflow: 'hidden', touchAction: 'pan-y', cursor: onSwipeStart ? 'grab' : undefined }}
-        onTouchStart={onSwipeStart}
-        onTouchEnd={onSwipeEnd}
+        onTouchStart={(e) => {
+          startX.current = e.touches[0].clientX
+          onSwipeStart?.(e)
+        }}
+        onTouchEnd={(e) => {
+          const sx = startX.current
+          startX.current = null
+          if (sx != null && onDot && n > 1) {
+            const dx = e.changedTouches[0].clientX - sx
+            if (Math.abs(dx) > 40) onDot(active + (dx < 0 ? 1 : -1))
+          }
+          onSwipeEnd?.(e)
+        }}
       >
         <div
           style={{
