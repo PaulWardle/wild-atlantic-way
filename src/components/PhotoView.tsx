@@ -1,9 +1,14 @@
 import { useEffect, useState } from 'react'
-import { c } from '../theme'
+import { c, font } from '../theme'
+import { isLocalPhoto, localId, localObjectURL } from '../lib/photoQueue'
 
 /** An inline trip photo. Tap (or Enter/Space) to open a full-screen lightbox;
  *  Escape or a tap anywhere closes it. `alt` describes the photo for screen
- *  readers — pass the place/caption when there is one. */
+ *  readers — pass the place/caption when there is one.
+ *
+ *  `url` may be a public URL or a `local:<id>` token for a photo that's still
+ *  queued for upload (offline) — the token is resolved to an in-memory object
+ *  URL so the picture shows immediately, with a subtle "waiting to upload" mark. */
 export function PhotoView({
   url,
   alt = 'Trip photo',
@@ -16,6 +21,23 @@ export function PhotoView({
   rounded?: number
 }) {
   const [open, setOpen] = useState(false)
+  const pending = isLocalPhoto(url)
+  const [resolved, setResolved] = useState<string | null>(pending ? null : url)
+
+  useEffect(() => {
+    let alive = true
+    if (isLocalPhoto(url)) {
+      setResolved(null)
+      localObjectURL(localId(url)).then((u) => {
+        if (alive) setResolved(u)
+      })
+    } else {
+      setResolved(url)
+    }
+    return () => {
+      alive = false
+    }
+  }, [url])
 
   useEffect(() => {
     if (!open) return
@@ -26,21 +48,38 @@ export function PhotoView({
     return () => window.removeEventListener('keydown', onKey)
   }, [open])
 
+  // Nothing to show yet (local blob still loading, or already gone).
+  if (!resolved) {
+    if (!pending) return null
+    return (
+      <div style={{ marginTop: 8, borderRadius: rounded, border: `1.5px dashed ${c.inkFainter}`, background: c.paperMuted, padding: '14px 12px', textAlign: 'center', fontFamily: font.mono, fontSize: 8.5, letterSpacing: '.1em', color: c.inkFainter, textTransform: 'uppercase' }}>
+        Photo waiting to upload
+      </div>
+    )
+  }
+
   return (
     <>
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        aria-label={`${alt} — tap to enlarge`}
-        style={{ display: 'block', width: '100%', padding: 0, cursor: 'zoom-in' }}
-      >
-        <img
-          src={url}
-          alt={alt}
-          loading="lazy"
-          style={{ width: '100%', borderRadius: rounded, border: `1.5px solid ${c.ink}`, display: 'block', marginTop: 8, maxHeight, objectFit: 'cover' }}
-        />
-      </button>
+      <div style={{ position: 'relative' }}>
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          aria-label={`${alt} — tap to enlarge`}
+          style={{ display: 'block', width: '100%', padding: 0, cursor: 'zoom-in' }}
+        >
+          <img
+            src={resolved}
+            alt={alt}
+            loading="lazy"
+            style={{ width: '100%', borderRadius: rounded, border: `1.5px solid ${c.ink}`, display: 'block', marginTop: 8, maxHeight, objectFit: 'cover' }}
+          />
+        </button>
+        {pending && (
+          <span style={{ position: 'absolute', top: 14, right: 8, fontFamily: font.mono, fontSize: 7.5, fontWeight: 700, letterSpacing: '.08em', textTransform: 'uppercase', color: '#f6ecd6', background: 'rgba(38,32,26,.82)', borderRadius: 4, padding: '2px 6px' }}>
+            Uploading soon
+          </span>
+        )}
+      </div>
       {open && (
         <div
           onClick={() => setOpen(false)}
@@ -50,7 +89,7 @@ export function PhotoView({
           aria-label={alt}
           style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(12,10,7,.92)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16, animation: 'waw-fade .2s ease both' }}
         >
-          <img src={url} alt={alt} style={{ maxWidth: '100%', maxHeight: '100%', borderRadius: 6, objectFit: 'contain' }} />
+          <img src={resolved} alt={alt} style={{ maxWidth: '100%', maxHeight: '100%', borderRadius: 6, objectFit: 'contain' }} />
         </div>
       )}
     </>

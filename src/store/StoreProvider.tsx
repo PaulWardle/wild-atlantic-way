@@ -12,7 +12,8 @@ import type { RealtimeChannel, SupabaseClient } from '@supabase/supabase-js'
 import { getSupabase } from '../lib/supabase'
 import { tripData } from '../data/tripData'
 import { journey, journeyToSig } from '../data/journey'
-import { uploadPhoto } from '../lib/photos'
+import { attachPhoto, uploadBlob } from '../lib/photos'
+import { isLocalPhoto, localId, loadPhoto, removePhoto } from '../lib/photoQueue'
 import { nearestJourneyIndex, reverseGeocode } from '../lib/geocode'
 import type {
   Note,
@@ -471,11 +472,29 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       .catch(() => setServerOk(false))
   }, [commit])
 
-  const runOp = useCallback((o: OutboxOp) => {
+  const runOp = useCallback(async (o: OutboxOp): Promise<{ error: unknown } | { error: null }> => {
     const sb = sbRef.current as SupabaseClient
+    let row = o.row as Record<string, unknown> | undefined
+    // A queued offline photo (photo = "local:<id>"): upload the stashed blob now
+    // and swap the token for its public URL before the row reaches the table.
+    if (row && isLocalPhoto(row.photo as string)) {
+      const id = localId(row.photo as string)
+      const blob = await loadPhoto(id)
+      if (!blob) {
+        // Blob is gone — send the row without the photo rather than lose the post.
+        row = { ...row }
+        delete row.photo
+      } else {
+        const url = await uploadBlob(blob)
+        // Upload still failing (offline / storage down): keep the op queued.
+        if (!url) return { error: { message: 'photo upload pending' } }
+        row = { ...row, photo: url }
+        removePhoto(id)
+      }
+    }
     const q = sb.from(o.t)
-    if (o.op === 'insert') return q.insert(o.row as Record<string, unknown>)
-    if (o.op === 'upsert') return q.upsert(o.row as Record<string, unknown>)
+    if (o.op === 'insert') return q.insert(row as Record<string, unknown>)
+    if (o.op === 'upsert') return q.upsert(row as Record<string, unknown>)
     return q.delete().eq(o.col as string, o.val as string | number)
   }, [])
 
@@ -641,7 +660,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
             const lon = posn.coords.longitude
             const si = nearestJourneyIndex(lat, lon)
             const place = (await reverseGeocode(lat, lon)) || journey[si].label
-            const photo = file ? (await uploadPhoto(file)) || undefined : undefined
+            const photo = file ? await attachPhoto(file) : undefined
             postLocationAt(si, note, photo, { lat, lon, place })
             // If this is a Signature 15 spot and not yet bagged, offer to bag it.
             const sigId = journeyToSig[journey[si].label]
@@ -674,7 +693,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const postHere = useCallback(
     async (file?: File | null) => {
       const si = Math.max(0, typeof draftI === 'number' ? draftI : parseInt(String(draftI), 10) || 0)
-      const photo = file ? (await uploadPhoto(file)) || undefined : undefined
+      const photo = file ? await attachPhoto(file) : undefined
       postLocationAt(si, draftNote, photo)
       setDraftNoteState('')
       // If this spot is one of the Signature 15 and not yet bagged, offer to bag it.
@@ -790,7 +809,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         return
       }
       const reason = postReason || 'Recommendation'
-      const photo = file ? (await uploadPhoto(file)) || undefined : undefined
+      const photo = file ? await attachPhoto(file) : undefined
       const row: Post = { name, reason, msg, ts: Date.now(), ...(photo ? { photo } : {}) }
       const posts = [row, ...(storeRef.current.posts || [])].slice(0, 40)
       set({ posts })
@@ -829,7 +848,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       if (tag === 'Other') tag = (jTagOther || '').trim() || 'Other'
       const author = jAuthor || 'Paul'
       const ts = Date.now()
-      const photo = file ? (await uploadPhoto(file)) || undefined : undefined
+      const photo = file ? await attachPhoto(file) : undefined
       const note: Note = { text, ts, date, author, tag, ...(photo ? { photo } : {}) }
       set({ notes: [note, ...(storeRef.current.notes || [])] })
       insertRow('notes', { body: text, author, tag, day: date, ts, ...(photo ? { photo } : {}) })

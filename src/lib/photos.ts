@@ -1,4 +1,7 @@
 import { getSupabase } from './supabase'
+import { queuePhoto } from './photoQueue'
+
+const isOffline = () => typeof navigator !== 'undefined' && navigator.onLine === false
 
 /**
  * Downscale + re-orient a picked/taken photo to a reasonable size and re-encode
@@ -37,10 +40,10 @@ export async function processImage(file: File, maxDim = 1600, quality = 0.82): P
   }
 }
 
-/** Process + upload a photo to the public `photos` bucket; returns its public URL. */
-export async function uploadPhoto(file: File): Promise<string | null> {
+/** Upload an already-processed blob to the public `photos` bucket; returns its
+ *  public URL, or null on failure. */
+export async function uploadBlob(blob: Blob): Promise<string | null> {
   try {
-    const blob = await processImage(file)
     const sb = getSupabase()
     const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.jpg`
     const { error } = await sb.storage.from('photos').upload(path, blob, { contentType: 'image/jpeg', upsert: false })
@@ -49,4 +52,27 @@ export async function uploadPhoto(file: File): Promise<string | null> {
   } catch {
     return null
   }
+}
+
+/**
+ * Attach a picked photo to a post/note/location. Resizes it, then:
+ *  - online: uploads straight away and returns the public URL;
+ *  - offline / upload failed: stashes the blob in the offline queue and returns
+ *    a `local:<id>` token. The outbox uploads it and swaps in the real URL when
+ *    the connection returns — the photo is never lost.
+ * Returns undefined only if the image couldn't even be processed.
+ */
+export async function attachPhoto(file: File): Promise<string | undefined> {
+  let blob: Blob
+  try {
+    blob = await processImage(file)
+  } catch {
+    return undefined
+  }
+  if (!isOffline()) {
+    const url = await uploadBlob(blob)
+    if (url) return url
+  }
+  // No signal, or the upload failed — queue it locally for the outbox.
+  return await queuePhoto(blob)
 }
