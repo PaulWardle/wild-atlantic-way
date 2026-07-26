@@ -155,7 +155,7 @@ export const tripData: Trip = {
         },
         {
           "n": "Round the Swilly",
-          "d": "Buncrana, Lisfannon beach, Inch Island — then the one inland dip of the whole Way: there is no bridge over Lough Swilly, so the line rounds it through Letterkenny and back out to Rathmullan.",
+          "d": "Buncrana, Lisfannon beach, Inch Island — then the one inland dip of the whole Way: there is no bridge over Lough Swilly, so the line rounds it through Letterkenny and back out to Rathmullan. (A summer Buncrana–Rathmullan foot-and-bike ferry sometimes runs — worth checking; it saves ~25mi.)",
           "tags": [
             "b"
           ]

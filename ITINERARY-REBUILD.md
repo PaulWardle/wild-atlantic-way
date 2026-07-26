@@ -33,6 +33,8 @@ The good news: **your campsites were almost all right.** Eight of nine nights st
 
 **The honest headline:** the full official line is 2,507 km (≈1,560 mi) + spur returns ≈ 1,700+ mi across 8½ riding days ≈ **190–200 mi/day at 28–32 mph coastal average**. That is a hard trip. It *works* in August daylight, but only with the release valves below pre-agreed — decide them at breakfast, not at 6pm mid-crisis.
 
+**Independent verification:** this plan was adversarially checked by three separate review passes (route order / time arithmetic / coverage): verdicts **sound** on ordering and coverage, **fixable** on time — the fix being honesty about the finale: days 7, 8 and 9 are roughly **12 h, 12 h and 13½ h door-to-door back-to-back**. Individually each survives; together they are the price of the full Way in nine days. If that's too much, the pre-agreed valves (Mullet, Glencolmcille, the Carna loop, Valentia, Old Head spur) are the levers — pull them the night before, not mid-day. One bonus find: a **summer Buncrana–Rathmullan ferry** sometimes runs across Lough Swilly — if it's sailing in 2026 it saves ~25 mi on Day 2.
+
 ---
 
 ## 3. The nine days
