@@ -145,8 +145,11 @@ export function DayDetail() {
         </div>
         {(dy.stops || []).map((st, si) => {
           const key = 'd' + di + 's' + si
-          const mk = marks[key] || null
-          // Guests never see a stop the brothers have cut.
+          // 100% WAW mode: only optional extras can carry a mark. Locked
+          // official stops IGNORE marks entirely — this also makes stale
+          // position-keyed marks from older itinerary versions inert.
+          const mk = isMarkable(dy, st) ? marks[key] || null : null
+          // Guests never see an extra the brothers have cut.
           if (!isBrother && mk === 'cut') return null
           const dot = mk === 'keep' ? c.green : mk === 'maybe' ? c.amber : mk === 'cut' ? c.rust : c.paperDeep
           const canMark = isMarkable(dy, st) && isBrother

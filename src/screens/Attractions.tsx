@@ -1,6 +1,7 @@
 import { c, font } from '../theme'
 import { useStore } from '../store/StoreProvider'
 import { tripData } from '../data/tripData'
+import { isMarkable } from '../lib/tags'
 import { Kicker, ScreenTitle, Lede } from '../components/ui'
 
 export function Attractions() {
@@ -40,7 +41,9 @@ export function Attractions() {
         const tg = st.tags || []
         const sg = tg.indexOf('s') >= 0
         const bk = tg.indexOf('b') >= 0
-        const cut = marks['d' + ai + 's' + x.si] === 'cut'
+        // Only optional extras can be cut — locked official stops ignore marks
+        // (also inoculates against stale position-keyed marks from old versions).
+        const cut = isMarkable(d2, st) && marks['d' + ai + 's' + x.si] === 'cut'
         return { n: st.n, d: st.d, sig: sg, biker: bk, finish: !!st.finish, cut, op: cut ? 0.5 : 1, deco: cut ? 'line-through' : 'none', dot: cut ? '#c9ba94' : sg ? c.rust : bk ? c.teal : '#c9ba94' }
       })
     if (stops.length) attractDays.push({ dn: d2.n, dow: d2.dow, date: d2.date, title: d2.title, idx: ai, stops })

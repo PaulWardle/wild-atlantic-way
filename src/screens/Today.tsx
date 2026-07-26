@@ -1,6 +1,7 @@
 import { c, font, phaseInfo } from '../theme'
 import { useStore } from '../store/StoreProvider'
 import { tripData } from '../data/tripData'
+import { isMarkable } from '../lib/tags'
 import { countdownParts } from '../lib/countdown'
 
 const meta = tripData.meta
@@ -155,11 +156,13 @@ export function Today() {
   // The day's plan as a timeline: every stop the brothers haven't cut, in order.
   // Cut stops drop out entirely; a "maybe" is highlighted; keeps/undecided are plain.
   const timelineStops = (tdy.stops || [])
-    .map((st, si) => ({ st, mk: marks['d' + todayIdx + 's' + si] || null }))
+    // Marks only apply to optional extras — locked official stops ignore them
+    // (and stale position-keyed marks from older itineraries stay inert).
+    .map((st, si) => ({ st, mk: isMarkable(tdy, st) ? marks['d' + todayIdx + 's' + si] || null : null }))
     .filter((x) => x.mk !== 'cut')
     .map((x) => ({ n: x.st.n, maybe: x.mk === 'maybe', skip: !!x.st.skip }))
   const highlights = (tdy.stops || [])
-    .filter((st, si) => (st.tags || []).indexOf('s') >= 0 && marks['d' + todayIdx + 's' + si] !== 'cut')
+    .filter((st, si) => (st.tags || []).indexOf('s') >= 0 && !(isMarkable(tdy, st) && marks['d' + todayIdx + 's' + si] === 'cut'))
     .map((st) => st.n)
   const night = tdy.night
   const hasCall = !!tdy.warnBanner && isBrother
