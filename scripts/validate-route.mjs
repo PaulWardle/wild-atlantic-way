@@ -47,7 +47,7 @@ const campCoords = {
   'Strandhill Caravan & Camping': [54.2699, -8.596],
   'Keel Sandybanks': [53.9737, -10.0855],
   'Clifden Eco Beach': [53.539, -10.113],
-  "O'Connors Riverside": [53.011, -9.387],
+  'Aille River Camping': [53.013, -9.377],
   'Campáil Teach an Aragail': [52.174, -10.348],
   'Hungry Hill Lodge': [51.689, -9.728],
   'IOAC, Tagoat': [52.196, -6.386],

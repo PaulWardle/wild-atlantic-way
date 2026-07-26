@@ -34,7 +34,7 @@ End of the Mayo window. Keem Bay (km 1053) is deliberately NOT visited the same 
 The tent is ON the official line, one km BEFORE Sky Road/Derrigimlagh which open Day 6 — the old plan visited them first and slept backwards. Also the designated recovery night (Day 5 is the short day by design — see Decision 12).
 
 **D7. Night 6 — Nagle's, Doolin (km 1486)**
-Cliffs of Moher sit effectively adjacent on the line (the two are ~1.5km apart in chainage) — sleeping at Doolin buys the Cliffs at 08:00 before the coaches, zero dead leg, plus the trad session. Most contested booking of the trip (peak Saturday). UPDATE 26 Jul: Nagle's is FULL — the stored alternative O'Connors Riverside, Doolin (same forward position) is now the selected site, PENDING email response.
+Cliffs of Moher sit effectively adjacent on the line (the two are ~1.5km apart in chainage) — sleeping at Doolin buys the Cliffs at 08:00 before the coaches, zero dead leg, plus the trad session. Most contested booking of the trip (peak Saturday). UPDATE 26 Jul: Nagle's is FULL. FINAL: Aille River Camping, Doolin — BOOKED & CONFIRMED (ailleriverhosteldoolin.ie/camping). Riverside in the village, same forward position, zero route impact.
 
 **D8. Night 7 — Campáil Teach an Aragail, Gallarus (km 1867) — ZERO retrace (corrected 26 Jul)**
 Chainage proof: the official line runs Dingle (1810) → Slea Head → Blasket (1856) → Gallarus (1867) → BACK through Dingle (1890) → Inch — the loop's return leg is forward official line. So the Slea Head Drive is ridden on DAY 7 EVENING (golden hour, buses gone) ending at the tent, and Day 8 exits forward Gallarus → Dingle → Inch with no repeated road at all. The earlier declared 5mi retrace was an artefact of describing a dawn loop the windows never required.
@@ -293,9 +293,9 @@ Stop detail:
 - **Black Head R477**: The limestone shore road under Gleninagh — grey pavement into grey sea, Aran across the sound. One of the Way’s best riding stretches.
 - **Fanore → Doolin**: Down the coast to the trad capital of Ireland. Session in McDermott’s or Gus O’Connor’s tonight — the Cliffs are 10 minutes south, saved for 08:00.
 
-**NIGHT: O'Connors Riverside, Doolin** (Doolin) — Riverside in the village — the Cliffs are still 10 minutes south at 08:00, and the trad session still happens.
+**NIGHT: Aille River Camping, Doolin** (Doolin) — Riverside in the village on the Aille — the Cliffs are still 10 minutes south at 08:00, and the trad session still happens.
 - Route impact: deviation +0.2 mi · ✓ forward progression
-- Backup: Nagle's Doolin — ❌ no availability (full)
+- Backup: Nagle's — ❌ full
 
 **Official Discovery Points in this window (22, of which ★1 Signature):** Sky Road (km 1213) · Derrigimlagh (km 1218) · ★Derrigmlagh Bog (km 1218) · Bunowen Bay (km 1234) · Port na Feadóige (km 1246) · Glinsce (km 1273) · Teach an Phiarsaigh (km 1304) · Droichead Charraig an Logáin (km 1321) · Trá an Dóilín (km 1328) · Calafort Ros an Mhíl (km 1334) · Céibh Bhaile nahAbhann (km 1354) · Aerfort Réigiúnach Chonamara (km 1356) · Seanchéibh an Spidéil (km 1369) · Trá na gCeann (km 1382) · Salthill Promenade (km 1386) · Rinville Park (km 1403) · Traught (km 1431) · Flaggy Shore (km 1434) · Ballyvaughan Pier (km 1447) · Murrooghtoohy (km 1458) · Fanore Beach (km 1461) · Doolin Pier (km 1477)
 
@@ -469,7 +469,7 @@ Stop detail:
 | Wed 12 | Strandhill Caravan & Camping | — | phone to book | ~€40 total / ~€20pp | +0.1 mi / forward ✓ |
 | Thu 13 | Keel Sandybanks | — | **BOOKED ✓** (tents+bikes confirmed) | ~€36 total / ~€18pp | +0.1 mi / forward ✓ |
 | Fri 14 | Clifden Eco Beach Camping | — | advance booking only — no walk-ins | ~€40 total / ~€20pp | +0.8 mi / forward ✓ |
-| Sat 15 | O'Connors Riverside, Doolin | — | book now — peak Saturday, most contested pitch of the trip | unknown — ask | +0.2 mi / forward ✓ |
+| Sat 15 | Aille River Camping, Doolin | — | **BOOKED ✓** (tents+bikes confirmed) | unknown — ask | +0.2 mi / forward ✓ |
 | Sun 16 | Campáil Teach an Aragail, Gallarus | — | **BOOKED ✓** (tents+bikes confirmed) | ~€30 total / ~€15pp | +0.4 mi / forward ✓ |
 | Mon 17 | Hungry Hill Lodge & Camping | — | **BOOKED ✓** (tents+bikes confirmed) | unknown — ask | +0.2 mi / forward ✓ |
 | Tue 18 | IOAC, Tagoat | — | **BOOKED ✓** (tents+bikes confirmed) | unknown — ask | +0 mi / forward ✓ |
