@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import { App } from './App'
 import { StoreProvider } from './store/StoreProvider'
+import { registerSW } from './lib/registerSW'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -11,3 +12,5 @@ createRoot(document.getElementById('root')!).render(
     </StoreProvider>
   </StrictMode>,
 )
+
+registerSW()
