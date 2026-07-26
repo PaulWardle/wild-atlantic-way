@@ -2,6 +2,7 @@ import { c, font, phaseInfo } from '../theme'
 import { useStore } from '../store/StoreProvider'
 import { tripData } from '../data/tripData'
 import { buildTags, isMarkable } from '../lib/tags'
+import { stripPrice } from '../lib/camps'
 import { TagChips } from '../components/ui'
 
 function MarkButton({ label, color, bg, fg, onClick }: { label: string; color: string; bg: string; fg: string; onClick: () => void }) {
@@ -77,6 +78,8 @@ export function DayDetail() {
         {(dy.stops || []).map((st, si) => {
           const key = 'd' + di + 's' + si
           const mk = marks[key] || null
+          // Guests never see a stop the brothers have cut.
+          if (!isBrother && mk === 'cut') return null
           const dot = mk === 'keep' ? c.green : mk === 'maybe' ? c.amber : mk === 'cut' ? c.rust : c.paperDeep
           const canMark = isMarkable(dy, st) && isBrother
           const isCut = mk === 'cut'
@@ -133,8 +136,7 @@ export function DayDetail() {
                       Book this week — sells out
                     </div>
                   )}
-                  <div style={{ fontFamily: font.serif, fontSize: 13, color: '#5a5140', lineHeight: 1.5, marginTop: 6 }}>{night.note}</div>
-                  <div style={{ fontFamily: font.mono, fontSize: 10, color: c.inkFaint, marginTop: 7, borderTop: '1px dashed #b9c0a0', paddingTop: 6 }}>BACKUP · {night.backup}</div>
+                  {stripPrice(night.note) && <div style={{ fontFamily: font.serif, fontSize: 13, color: '#5a5140', lineHeight: 1.5, marginTop: 6 }}>{stripPrice(night.note)}</div>}
                 </div>
               </div>
             </div>

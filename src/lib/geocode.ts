@@ -1,5 +1,11 @@
 import { journey } from '../data/journey'
 
+/** Rough "is this on the island of Ireland" box — used to spot a live position
+ *  that's off the route / not in Ireland so the map doesn't plot it misleadingly. */
+export function isInIreland(lat: number, lon: number): boolean {
+  return lat >= 51.2 && lat <= 55.6 && lon >= -11.0 && lon <= -5.2
+}
+
 /** Nearest journey stop index to a lat/lon (longitude compressed by cos(lat)). */
 export function nearestJourneyIndex(lat: number, lon: number): number {
   const cos = Math.cos((lat * Math.PI) / 180)

@@ -1,6 +1,7 @@
-import { useEffect, useState, type ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 import { c, font } from '../theme'
-import { useStore } from '../store/StoreProvider'
+import { photoList } from '../lib/photos'
+import { useStore, type CurrentPlace } from '../store/StoreProvider'
 import { tripData } from '../data/tripData'
 import { trackStops } from '../data/derived'
 import { daysToGo } from '../lib/countdown'
@@ -88,12 +89,15 @@ export function Home() {
     draftNote,
     setDraftNote,
     postHere,
-    postCurrentLocation,
+    resolveCurrentPlace,
+    postResolvedPlace,
     clearUpdates,
     openDD,
     toggleDD,
     postIdx,
     setPostIdx,
+    galIdx,
+    setGalIdx,
     jFeedIdx,
     jFeedSwipeStart,
     jFeedSwipeEnd,
@@ -119,22 +123,17 @@ export function Home() {
   const liveFeed = updates.slice(1).map(pingRow) // brother "earlier pings"
   const allPings = updates.map(pingRow) // guest "today the brothers have been"
 
-  // ---- photo gallery (all trip photos, newest first) ----
+  // ---- photo gallery (every trip photo, newest first; a row may hold several) ----
   const gallery: { url: string; caption: string; when: string; ts: number }[] = []
-  updates.forEach((u) => { if (u.photo) gallery.push({ url: u.photo, caption: u.place || (trackStops[u.si] || { label: 'On the road' }).label || 'On the road', when: relTime(u.ts), ts: u.ts }) })
-  ;(store.notes || []).forEach((n) => { if (n.photo) gallery.push({ url: n.photo, caption: n.author ? `${n.author} · ${n.tag}` : n.tag, when: relTime(n.ts), ts: n.ts }) })
-  posts.forEach((p) => { if (p.photo) gallery.push({ url: p.photo, caption: p.name, when: relTime(p.ts), ts: p.ts }) })
+  updates.forEach((u) => photoList(u.photo).forEach((url) => gallery.push({ url, caption: u.place || (trackStops[u.si] || { label: 'On the road' }).label || 'On the road', when: relTime(u.ts), ts: u.ts })))
+  ;(store.notes || []).forEach((n) => photoList(n.photo).forEach((url) => gallery.push({ url, caption: n.author ? `${n.author} · ${n.tag}` : n.tag, when: relTime(n.ts), ts: n.ts })))
+  posts.forEach((p) => photoList(p.photo).forEach((url) => gallery.push({ url, caption: p.name, when: relTime(p.ts), ts: p.ts })))
   gallery.sort((a, b) => b.ts - a.ts)
-  const [galIdx, setGalIdx] = useState(0)
-  useEffect(() => {
-    if (gallery.length < 2) return
-    const t = window.setInterval(() => setGalIdx((i) => i + 1), 4000)
-    return () => window.clearInterval(t)
-  }, [gallery.length])
 
   const [locFiles, setLocFiles] = useState<File[]>([])
   const [locBusy, setLocBusy] = useState(false)
   const [locErr, setLocErr] = useState('')
+  const [pendingPos, setPendingPos] = useState<CurrentPlace | null>(null)
   const doPostHere = async () => {
     if (locBusy) return
     setLocBusy(true)
@@ -143,15 +142,18 @@ export function Home() {
     setLocFiles([])
     setLocBusy(false)
   }
+  // Tapping "Use my location" resolves the GPS fix but does NOT send — it shows
+  // a confirmation card first (so a stray tap never posts, and you can see the
+  // place name / spot an off-route fix before it goes live).
   const doUseLocation = async () => {
     if (locBusy) return
     setLocBusy(true)
     setLocErr('')
-    const res = await postCurrentLocation(draftNote, locFiles)
+    setPendingPos(null)
+    const res = await resolveCurrentPlace()
     setLocBusy(false)
-    if (res === 'ok') {
-      setLocFiles([])
-      setDraftNote('')
+    if (typeof res !== 'string') {
+      setPendingPos(res)
     } else if (res === 'denied') {
       setLocErr('Location permission is off — turn it on for this site, or set the spot by hand below.')
     } else if (res === 'nogeo') {
@@ -160,8 +162,17 @@ export function Home() {
       setLocErr('Couldn’t get a GPS fix just now — try again, or set the spot by hand below.')
     }
   }
+  const confirmUseLocation = async () => {
+    if (!pendingPos || locBusy) return
+    setLocBusy(true)
+    await postResolvedPlace(pendingPos, draftNote, locFiles)
+    setPendingPos(null)
+    setLocFiles([])
+    setDraftNote('')
+    setLocBusy(false)
+  }
 
-  const postList = posts.slice(0, 12).map((p) => {
+  const postList = posts.slice(0, 10).map((p) => {
     const m = reasonMeta[p.reason] || reasonMeta.Comment
     return { name: p.name, verb: m.verb, reason: p.reason, msg: p.msg, when: relTime(p.ts), tagInk: m.ink, tagBg: m.bg }
   })
@@ -169,13 +180,29 @@ export function Home() {
   const postCountLabel = postCount + (postCount === 1 ? ' message' : ' messages')
 
   const events = buildEvents(store, tripData)
-  const feed = buildFeed(events).slice(0, 5)
+  const feed = buildFeed(events).slice(0, 10)
   const jFeedCountLabel = events.length + (events.length === 1 ? ' entry' : ' entries')
 
   const locOptions = trackStops.map((st, i) => ({ label: st.label, pick: () => setDraftI(i) }))
   const locLabel = (trackStops[draftI != null ? draftI : 0] || trackStops[0] || { label: 'Pick a spot' }).label || 'Pick a spot'
 
-  const countdown = daysToGo(meta.depart)
+  // Countdown card adapts across the trip: counting down before, "Day N of 10"
+  // during, and a done state after the last day.
+  const cd = (() => {
+    const total = tripData.days.length
+    let departMs = 0
+    try {
+      departMs = new Date(meta.depart + 'T00:00:00').getTime()
+    } catch {
+      departMs = 0
+    }
+    const now = new Date()
+    const todayMs = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime()
+    const dayIdx = Math.floor((todayMs - departMs) / 86400000) // 0-based
+    if (dayIdx < 0) return { big: String(daysToGo(meta.depart)), label: 'Days to go', sub: 'until the Wild Atlantic Way' }
+    if (dayIdx >= total) return { big: '✓', label: 'Trip complete', sub: 'The Wild Atlantic Way — done' }
+    return { big: String(dayIdx + 1), label: 'On the road', sub: `Day ${dayIdx + 1} of ${total} · Wild Atlantic Way` }
+  })()
 
   return (
     <div style={{ animation: 'waw-fade .4s ease both' }}>
@@ -278,11 +305,11 @@ export function Home() {
       {/* countdown card */}
       <div style={{ margin: '16px 20px 0', border: `1.5px solid ${c.ink}`, background: c.paper, borderRadius: 9, display: 'flex', alignItems: 'stretch', overflow: 'hidden' }}>
         <div style={{ background: c.rust, color: '#f6ecd6', padding: '12px 16px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minWidth: 74 }}>
-          <div style={{ fontFamily: font.display, fontWeight: 700, fontSize: 32, lineHeight: 0.9 }}>{countdown}</div>
+          <div style={{ fontFamily: font.display, fontWeight: 700, fontSize: 32, lineHeight: 0.9 }}>{cd.big}</div>
         </div>
         <div style={{ padding: '11px 14px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-          <div style={{ fontFamily: font.mono, fontSize: 9.5, letterSpacing: '.18em', color: c.ink, textTransform: 'uppercase' }}>Days to go</div>
-          <div style={{ fontFamily: font.serif, fontSize: 13, color: c.inkMuted, marginTop: 2 }}>until the Wild Atlantic Way</div>
+          <div style={{ fontFamily: font.mono, fontSize: 9.5, letterSpacing: '.18em', color: c.ink, textTransform: 'uppercase' }}>{cd.label}</div>
+          <div style={{ fontFamily: font.serif, fontSize: 13, color: c.inkMuted, marginTop: 2 }}>{cd.sub}</div>
         </div>
       </div>
 
@@ -351,6 +378,7 @@ export function Home() {
             <div style={{ fontFamily: font.mono, fontSize: 8, letterSpacing: '.14em', color: c.inkFaintest, textTransform: 'uppercase', marginBottom: 8 }}>
               Today the brothers have been
             </div>
+            <div style={allPings.length > 3 ? { maxHeight: 276, overflowY: 'auto', margin: '0 -4px', padding: '0 4px' } : undefined}>
             {allPings.map((u, i) => (
               <div key={i} style={{ display: 'flex', gap: 10, padding: '5px 0' }}>
                 <div style={{ flex: '0 0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -365,6 +393,7 @@ export function Home() {
                 </div>
               </div>
             ))}
+            </div>
           </div>
         )}
 
@@ -433,8 +462,40 @@ export function Home() {
                 <path d="M12 22s7-6.6 7-12a7 7 0 1 0-14 0c0 5.4 7 12 7 12Z" />
                 <circle cx="12" cy="10" r="2.6" />
               </svg>
-              {locBusy ? 'Getting your spot…' : 'Use my location'}
+              {locBusy && !pendingPos ? 'Getting your spot…' : 'Use my location'}
             </button>
+
+            {/* Confirmation — nothing is posted until you tap Post it. */}
+            {pendingPos && (
+              <div style={{ marginTop: 9, border: `1.5px solid ${c.ink}`, background: c.paperMuted, borderRadius: 9, padding: '11px 13px' }}>
+                <div style={{ fontFamily: font.mono, fontSize: 8, fontWeight: 700, letterSpacing: '.12em', color: c.inkFaint, textTransform: 'uppercase', marginBottom: 4 }}>Post your location?</div>
+                <div style={{ fontFamily: font.display, fontWeight: 700, fontSize: 18, textTransform: 'uppercase', color: c.ink, lineHeight: 1.05, letterSpacing: '.01em' }}>{pendingPos.place}</div>
+                {!pendingPos.inIreland && (
+                  <div style={{ fontFamily: font.serif, fontStyle: 'italic', fontSize: 12, color: c.rust, lineHeight: 1.4, marginTop: 4 }}>
+                    This looks like it’s off the Wild Atlantic Way — it’ll still post, just won’t sit on the route line.
+                  </div>
+                )}
+                <div style={{ fontFamily: font.serif, fontSize: 12, color: c.inkMuted, lineHeight: 1.4, marginTop: 4 }}>
+                  {(draftNote || locFiles.length) ? 'Your note and photos will go with it.' : 'Add a comment or photo above first if you like.'}
+                </div>
+                <div style={{ display: 'flex', gap: 8, marginTop: 10 }}>
+                  <button
+                    onClick={confirmUseLocation}
+                    disabled={locBusy}
+                    style={{ flex: 1, border: `1.5px solid ${c.ink}`, borderRadius: 7, background: c.rust, color: '#f6ecd6', padding: 10, textAlign: 'center', fontFamily: font.display, fontWeight: 700, fontSize: 12.5, textTransform: 'uppercase', letterSpacing: '.05em' }}
+                  >
+                    {locBusy ? 'Posting…' : 'Post it'}
+                  </button>
+                  <button
+                    onClick={() => setPendingPos(null)}
+                    disabled={locBusy}
+                    style={{ flex: '0 0 auto', border: `1.5px solid ${c.ink}`, borderRadius: 7, background: 'transparent', color: c.ink, padding: '10px 16px', textAlign: 'center', fontFamily: font.display, fontWeight: 600, fontSize: 12.5, textTransform: 'uppercase', letterSpacing: '.05em' }}
+                  >
+                    Not yet
+                  </button>
+                </div>
+              </div>
+            )}
             {locErr && <div style={{ fontFamily: font.serif, fontSize: 12, color: c.rust, lineHeight: 1.45, marginTop: 7 }}>{locErr}</div>}
 
             {/* Secondary: pick a spot by hand. */}

@@ -1180,7 +1180,7 @@ export const tripData: Trip = {
     }
   ],
   "campNotes": {
-    "intro": "Every night is an established, bookable campsite — zero wild camping, no turning up hoping. All €10–20pp. Book the primary; if it's full, book the listed backup on the same call.",
+    "intro": "Every night is an established, pre-booked campsite — zero wild camping, no turning up hoping. Each one's the confirmed spot for that night.",
     "weather": "Weather insurance: Wild Atlantic Camp (Creeslough) and several others have pods / glamping from ~€60/night. If a named Atlantic storm appears on the forecast, one phone call upgrades you out of canvas without changing the plan.",
     "late": "Small Irish sites often have short reception hours. If you'll arrive after ~19:00, phone ahead with an ETA so your pitch is held."
   },

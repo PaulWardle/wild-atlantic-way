@@ -1,5 +1,6 @@
 import { c, font } from '../theme'
 import { tripData } from '../data/tripData'
+import { stripPrice } from '../lib/camps'
 import { Kicker, ScreenTitle } from '../components/ui'
 
 export function Camp() {
@@ -23,8 +24,7 @@ export function Camp() {
             <div style={{ flex: 1, minWidth: 0, padding: '10px 12px' }}>
               <div style={{ fontFamily: font.mono, fontSize: 8.5, letterSpacing: '.1em', color: c.inkFainter, textTransform: 'uppercase' }}>{camp.base}</div>
               <div style={{ fontFamily: font.display, fontWeight: 600, fontSize: 14.5, textTransform: 'uppercase', color: c.ink, lineHeight: 1.12, marginTop: 2 }}>{camp.primary}</div>
-              {camp.primaryNote && <div style={{ fontFamily: font.serif, fontStyle: 'italic', fontSize: 12, color: c.inkMuted, marginTop: 4, lineHeight: 1.4 }}>{camp.primaryNote}</div>}
-              <div style={{ fontFamily: font.mono, fontSize: 9.5, color: c.inkFaint, marginTop: 6, borderTop: '1px dashed #c9ba94', paddingTop: 5 }}>BACKUP · {camp.backup}</div>
+              {stripPrice(camp.primaryNote) && <div style={{ fontFamily: font.serif, fontStyle: 'italic', fontSize: 12, color: c.inkMuted, marginTop: 4, lineHeight: 1.4 }}>{stripPrice(camp.primaryNote)}</div>}
             </div>
           </div>
         ))}

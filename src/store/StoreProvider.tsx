@@ -14,7 +14,7 @@ import { tripData } from '../data/tripData'
 import { journey, journeyToSig } from '../data/journey'
 import { attachPhotos, uploadBlob, photoList, photoField } from '../lib/photos'
 import { isLocalPhoto, localId, loadPhoto, removePhoto } from '../lib/photoQueue'
-import { nearestJourneyIndex, reverseGeocode } from '../lib/geocode'
+import { nearestJourneyIndex, reverseGeocode, isInIreland } from '../lib/geocode'
 import type {
   Note,
   OutboxOp,
@@ -44,6 +44,17 @@ export type Screen =
 
 const LS_KEY = 'waw2026:v1'
 const isOffline = () => typeof navigator !== 'undefined' && navigator.onLine === false
+
+/** A GPS position resolved to a friendly place name, awaiting the user's
+ *  confirmation before it's posted. `inIreland` is false when the fix is off
+ *  the route entirely (so the map can avoid plotting it misleadingly). */
+export interface CurrentPlace {
+  lat: number
+  lon: number
+  place: string
+  si: number
+  inIreland: boolean
+}
 
 /** An in-theme prompt linking a Signature bag with a "we are here" post. */
 export interface LinkPrompt {
@@ -167,7 +178,8 @@ export interface StoreContextValue {
   setDraftI: (i: number) => void
   setDraftNote: (v: string) => void
   postHere: (files?: File[] | null) => Promise<void>
-  postCurrentLocation: (note: string, files?: File[] | null) => Promise<'ok' | 'denied' | 'unavailable' | 'nogeo'>
+  resolveCurrentPlace: () => Promise<CurrentPlace | 'denied' | 'unavailable' | 'nogeo'>
+  postResolvedPlace: (pos: CurrentPlace, note: string, files?: File[] | null) => Promise<void>
 
   // custom dropdowns
   openDD: string | null
@@ -187,6 +199,10 @@ export interface StoreContextValue {
   removePost: (ts: number) => void
   clearPosts: () => void
   setPostIdx: (i: number) => void
+
+  // home gallery carousel (kept in sync with the postbox/journal carousels)
+  galIdx: number
+  setGalIdx: (i: number) => void
 
   // journal composer / edit
   jFeedIdx: number
@@ -375,6 +391,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [postErr, setPostErr] = useState(false)
   const [postIdx, setPostIdxState] = useState(0)
   const [jFeedIdx, setJFeedIdxState] = useState(0)
+  const [galIdx, setGalIdxState] = useState(0)
   const [jNote, setJNoteState] = useState('')
   const [jDay, setJDay] = useState<number | string>('today')
   const [jAuthor, setJAuthor] = useState('Paul')
@@ -620,22 +637,27 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     return () => window.clearInterval(tick)
   }, [])
 
-  // auto-advancing carousels on Home
+  // auto-advancing carousels on Home — one timer drives the postbox, journal
+  // and gallery together so they all turn on the same beat (never drifting).
   useEffect(() => {
     const car = window.setInterval(() => {
       if (screenRef.current !== 'home') return
       const s = storeRef.current
-      const posts = s.posts || []
-      const n = Math.min(12, posts.length)
+      const n = Math.min(10, (s.posts || []).length)
       if (n > 1) setPostIdxState((i) => (i + 1) % n)
       const jn = Math.min(
-        12,
+        10,
         (s.updates || []).length +
           (s.posts || []).length +
           (s.notes || []).length +
           Object.keys(s.sig || {}).filter((k) => typeof s.sig[k] === 'number').length,
       )
       if (jn > 1) setJFeedIdxState((i) => i + 1)
+      const photoCount =
+        (s.updates || []).reduce((t, u) => t + photoList(u.photo).length, 0) +
+        (s.notes || []).reduce((t, x) => t + photoList(x.photo).length, 0) +
+        (s.posts || []).reduce((t, p) => t + photoList(p.photo).length, 0)
+      if (photoCount > 1) setGalIdxState((i) => i + 1)
     }, 4500)
     return () => window.clearInterval(car)
   }, [])
@@ -657,9 +679,10 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     [set, insertRow],
   )
 
-  // Post the device's exact GPS position (reverse-geocoded to a friendly name).
-  const postCurrentLocation = useCallback(
-    (note: string, files?: File[] | null): Promise<'ok' | 'denied' | 'unavailable' | 'nogeo'> => {
+  // Resolve the device's exact GPS position + friendly place name — WITHOUT
+  // posting. The composer shows a confirmation, then calls postResolvedPlace.
+  const resolveCurrentPlace = useCallback(
+    (): Promise<CurrentPlace | 'denied' | 'unavailable' | 'nogeo'> => {
       if (typeof navigator === 'undefined' || !navigator.geolocation) return Promise.resolve('nogeo')
       return new Promise((resolve) => {
         navigator.geolocation.getCurrentPosition(
@@ -668,19 +691,26 @@ export function StoreProvider({ children }: { children: ReactNode }) {
             const lon = posn.coords.longitude
             const si = nearestJourneyIndex(lat, lon)
             const place = (await reverseGeocode(lat, lon)) || journey[si].label
-            const photo = files && files.length ? await attachPhotos(files) : undefined
-            postLocationAt(si, note, photo, { lat, lon, place })
-            // If this is a Signature 15 spot and not yet bagged, offer to bag it.
-            const sigId = journeyToSig[journey[si].label]
-            if (sigId && !storeRef.current.sig[sigId]) {
-              setLinkPrompt({ kind: 'offerBag', name: journey[si].label, sigId })
-            }
-            resolve('ok')
+            resolve({ lat, lon, place, si, inIreland: isInIreland(lat, lon) })
           },
           (err) => resolve(err.code === 1 ? 'denied' : 'unavailable'),
           { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
         )
       })
+    },
+    [],
+  )
+
+  // Post a position the composer already resolved + the user confirmed.
+  const postResolvedPlace = useCallback(
+    async (pos: CurrentPlace, note: string, files?: File[] | null) => {
+      const photo = files && files.length ? await attachPhotos(files) : undefined
+      postLocationAt(pos.si, note, photo, { lat: pos.lat, lon: pos.lon, place: pos.place })
+      // If this is a Signature 15 spot and not yet bagged, offer to bag it.
+      const sigId = journeyToSig[journey[pos.si].label]
+      if (sigId && !storeRef.current.sig[sigId]) {
+        setLinkPrompt({ kind: 'offerBag', name: journey[pos.si].label, sigId })
+      }
     },
     [postLocationAt],
   )
@@ -1112,7 +1142,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     setDraftI,
     setDraftNote: setDraftNoteState,
     postHere,
-    postCurrentLocation,
+    resolveCurrentPlace,
+    postResolvedPlace,
     openDD,
     toggleDD,
     closeDD,
@@ -1134,6 +1165,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     removePost,
     clearPosts,
     setPostIdx: setPostIdxState,
+    galIdx,
+    setGalIdx: setGalIdxState,
     jFeedIdx,
     setJFeedIdx: setJFeedIdxState,
     jFeedSwipeStart,
