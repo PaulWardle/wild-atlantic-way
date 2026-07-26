@@ -176,6 +176,13 @@ Port 07:15 → Stena 08:15 → Fishguard 11:45 → M4/M5/M6 → home. Unchanged.
 
 Why the change: sleeping at Kenmare makes Tuesday impossible (373 km of official line + the 130 mi transfer). Sleeping at Adrigole banks Beara on Monday evening (bagging Dursey Sound + McCarthy's on the way through) and gifts you the Healy Pass at sunrise. It is the single highest-value edit in this document.
 
+**Booking priorities & checks (this week):**
+1. **Hungry Hill Lodge, Adrigole** — the whole endgame leans on this night. Confirm the 2026 season, tents, and a ~20:30 arrival. Fallbacks: Berehaven (Castletownbere) or Glengarriff.
+2. **Nagle's Doolin, Sat 15 Aug** — peak-season Saturday, the most contested pitch of the trip. Book immediately.
+3. **Clifden Eco Beach** — advance booking only, no walk-ins.
+4. **Omey Island tide table, Fri 14 Aug** — the strand is only crossable ~3h either side of low water; the short Day 5 is built to flex around it.
+5. **Sliabh Liag / Bunglass road** — shuttle-bus management has applied in recent summers; arriving before ~10:00 usually solves it (you'll be there mid-afternoon — check current rules, worst case it's the shuttle).
+
 ## 6. On what3words
 
 Deliberately **not** included: w3w codes are arbitrary word-triples that can't be safely written from memory — one wrong word is a pin in the wrong county. Every waypoint above is an unambiguous place name that Google Maps geocodes directly (the `google.com/maps/dir/...` strings are pasteable as-is). If you want w3w pins for the group: open each Google Maps point, drop it into the w3w app, and it generates the code — 10 minutes for the whole trip, zero transcription risk.
