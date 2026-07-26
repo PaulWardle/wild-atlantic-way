@@ -10,7 +10,8 @@
 
 import type { Trip } from '../types'
 import { irelandCoast } from '../data/irelandCoast'
-import { journey, type JourneyStop } from '../data/journey'
+import { journey } from '../data/journey'
+import { nearestJourneyIndex } from './geocode'
 
 // Expanded projection bounds (wide sea margins for labels).
 const EB = { lonMin: -12.8, lonMax: -4.2, latMin: 51.0, latMax: 55.6, scale: 80, pad: 16 }
@@ -108,27 +109,13 @@ function nearestInList(list: [number, number][], lat: number, lon: number): numb
   }
   return best
 }
-function nearestJourneyIndex(lat: number, lon: number): number {
-  const cos = Math.cos((lat * Math.PI) / 180)
-  let best = 0, bd = Infinity
-  for (let i = 0; i < journey.length; i++) {
-    const dlat = journey[i].lat - lat, dlon = (journey[i].lon - lon) * cos
-    const d = dlat * dlat + dlon * dlon
-    if (d < bd) { bd = d; best = i }
-  }
-  return best
-}
-
 // Only the two big east-coast cities the trip never visits are dropped.
 const DROP_CITIES = new Set(['Belfast', 'Dublin'])
 
-export type TrackStop = JourneyStop
-
-/** The current stop from the latest ping's journey index (clamped). */
-export function currentStop(si: number | undefined): { stop: JourneyStop; index: number } | null {
-  if (si == null) return null
-  const index = Math.max(0, Math.min(journey.length - 1, si | 0))
-  return { stop: journey[index], index }
+/** Exact current position (from GPS, or the nearest journey stop's coords). */
+export interface CurrentPos {
+  lat: number
+  lon: number
 }
 
 export interface MapDot {
@@ -181,15 +168,16 @@ const eSide: Record<string, { a: 'start' | 'middle' | 'end'; dx: number; dy: num
   tr: { a: 'start', dx: 7, dy: -5 },
 }
 
-/** Compute all map geometry, given the current journey index (or null = not live). */
-export function computeMapGeometry(trip: Trip, si: number | null): MapGeometry {
+/** Compute all map geometry, given the exact current position (or null = not live). */
+export function computeMapGeometry(trip: Trip, current: CurrentPos | null): MapGeometry {
   const G = trip.geo
   const R = trip.route
   const M = G.malin
   const fi = G.ferryIn
   const hf = G.homeFerry
-  const cur = si == null ? null : currentStop(si)
-  const liveActive = !!cur
+  const liveActive = !!current
+  const curIdx = current ? nearestJourneyIndex(current.lat, current.lon) : -1
+  const curPhaseWaw = current ? journey[curIdx].phase === 'waw' : false
 
   // Route arcs along the real coast.
   const idxMalin = nearestRingIndex(M.lat, M.lon)
@@ -200,8 +188,8 @@ export function computeMapGeometry(trip: Trip, si: number | null): MapGeometry {
 
   // Green "done" — the coast arc from Malin up to the point nearest the live position.
   let eDone = ''
-  if (cur && cur.stop.phase === 'waw') {
-    const k = nearestInList(wawCoords, cur.stop.lat, cur.stop.lon)
+  if (current && curPhaseWaw) {
+    const k = nearestInList(wawCoords, current.lat, current.lon)
     eDone = splinePath(toXY(wawCoords.slice(0, k + 1)), false)
   }
 
@@ -210,7 +198,7 @@ export function computeMapGeometry(trip: Trip, si: number | null): MapGeometry {
     const x = +EPX(p.lat, p.lon).toFixed(1)
     const y = +EPY(p.lat, p.lon).toFixed(1)
     const sd = eSide[p.side] || eSide.left
-    const done = !!(cur && nearestJourneyIndex(p.lat, p.lon) <= cur.index)
+    const done = !!(current && nearestJourneyIndex(p.lat, p.lon) <= curIdx)
     return { x, y, r: p.finish ? 5.5 : r, t: (p.t || '').toUpperCase(), lx: +(x + sd.dx).toFixed(1), ly: +(y + sd.dy).toFixed(1), anchor: sd.a, done }
   }
   const landmarksRaw = (G.landmarks || []).map((p) => eMk(p, 3.4))
@@ -256,7 +244,7 @@ export function computeMapGeometry(trip: Trip, si: number | null): MapGeometry {
     eFerryInLabelY: +(eLarneY - 9).toFixed(1),
     eFerryHomeLabelY: +(eRosY + 16).toFixed(1),
     eLiveActive: liveActive,
-    eLiveX: cur ? +EPX(cur.stop.lat, cur.stop.lon).toFixed(1) : 0,
-    eLiveY: cur ? +EPY(cur.stop.lat, cur.stop.lon).toFixed(1) : 0,
+    eLiveX: current ? +EPX(current.lat, current.lon).toFixed(1) : 0,
+    eLiveY: current ? +EPY(current.lat, current.lon).toFixed(1) : 0,
   }
 }

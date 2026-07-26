@@ -215,12 +215,17 @@ export interface Post {
   pending?: boolean
 }
 
-/** "We are here" location ping. `si` = index into the trip-order journey list. */
+/** "We are here" location ping. `si` = nearest trip-order journey stop (for progress
+ * + fallback label). When posted via GPS, `lat`/`lon` hold the exact position and
+ * `place` the friendly reverse-geocoded name (e.g. "Sneem"). */
 export interface Update {
   si: number
   note: string
   ts: number
   photo?: string
+  lat?: number
+  lon?: number
+  place?: string
   pending?: boolean
 }
 

@@ -70,7 +70,7 @@ export function buildEvents(store: Store, trip: Trip): JEvent[] {
   const sig = store.sig || {}
   ;(store.updates || []).forEach((u) => {
     const st = trackStops[u.si] || { label: '' }
-    events.push({ kind: 'loc', ts: u.ts || 0, gms: u.ts || 0, label: st.label || '', note: u.note || '', photo: u.photo })
+    events.push({ kind: 'loc', ts: u.ts || 0, gms: u.ts || 0, label: u.place || st.label || '', note: u.note || '', photo: u.photo })
   })
   ;(store.posts || []).forEach((p) => {
     const m = reasonMeta[p.reason] || reasonMeta.Comment

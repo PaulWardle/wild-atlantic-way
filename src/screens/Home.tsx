@@ -86,6 +86,7 @@ export function Home() {
     draftNote,
     setDraftNote,
     postHere,
+    postCurrentLocation,
     clearUpdates,
     openDD,
     toggleDD,
@@ -95,7 +96,7 @@ export function Home() {
     jFeedSwipeStart,
     jFeedSwipeEnd,
   } = s
-  const { geo, curStop, liveActive } = useMap()
+  const { geo, curLabel, liveActive } = useMap()
 
   const updates = store.updates || []
   const posts = store.posts || []
@@ -104,11 +105,11 @@ export function Home() {
 
   const whereHeading = isGuest ? 'Where they’ve been' : 'Where we are'
   const liveHereLabel = isGuest ? 'The brothers are here' : 'We’re here'
-  const liveArea = curStop ? curStop.label : ''
+  const liveArea = curLabel
   const liveWhen = liveActive ? relTime(updates[0].ts) : ''
   const liveNote = (updates[0] && updates[0].note) || ''
   const pingRow = (u: (typeof updates)[number]) => ({
-    loc: (trackStops[u.si] || { label: '' }).label || '',
+    loc: u.place || (trackStops[u.si] || { label: '' }).label || '',
     when: relTime(u.ts),
     note: u.note || '',
     photo: u.photo,
@@ -118,7 +119,7 @@ export function Home() {
 
   // ---- photo gallery (all trip photos, newest first) ----
   const gallery: { url: string; caption: string; when: string; ts: number }[] = []
-  updates.forEach((u) => { if (u.photo) gallery.push({ url: u.photo, caption: (trackStops[u.si] || { label: 'On the road' }).label || 'On the road', when: relTime(u.ts), ts: u.ts }) })
+  updates.forEach((u) => { if (u.photo) gallery.push({ url: u.photo, caption: u.place || (trackStops[u.si] || { label: 'On the road' }).label || 'On the road', when: relTime(u.ts), ts: u.ts }) })
   ;(store.notes || []).forEach((n) => { if (n.photo) gallery.push({ url: n.photo, caption: n.author ? `${n.author} · ${n.tag}` : n.tag, when: relTime(n.ts), ts: n.ts }) })
   posts.forEach((p) => { if (p.photo) gallery.push({ url: p.photo, caption: p.name, when: relTime(p.ts), ts: p.ts }) })
   gallery.sort((a, b) => b.ts - a.ts)
@@ -131,12 +132,31 @@ export function Home() {
 
   const [locFile, setLocFile] = useState<File | null>(null)
   const [locBusy, setLocBusy] = useState(false)
+  const [locErr, setLocErr] = useState('')
   const doPostHere = async () => {
     if (locBusy) return
     setLocBusy(true)
+    setLocErr('')
     await postHere(locFile)
     setLocFile(null)
     setLocBusy(false)
+  }
+  const doUseLocation = async () => {
+    if (locBusy) return
+    setLocBusy(true)
+    setLocErr('')
+    const res = await postCurrentLocation(draftNote, locFile)
+    setLocBusy(false)
+    if (res === 'ok') {
+      setLocFile(null)
+      setDraftNote('')
+    } else if (res === 'denied') {
+      setLocErr('Location permission is off — turn it on for this site, or set the spot by hand below.')
+    } else if (res === 'nogeo') {
+      setLocErr('This device can’t share GPS — set the spot by hand below.')
+    } else {
+      setLocErr('Couldn’t get a GPS fix just now — try again, or set the spot by hand below.')
+    }
   }
 
   const postList = posts.slice(0, 12).map((p) => {
@@ -344,14 +364,13 @@ export function Home() {
         {isBrother && (
           <div style={{ padding: '11px 14px 13px' }}>
             <div style={{ fontFamily: font.mono, fontSize: 8, letterSpacing: '.14em', color: c.inkFaintest, textTransform: 'uppercase', marginBottom: 6 }}>Post an update</div>
-            <Dropdown label={locLabel} open={openDD === 'loc'} onToggle={() => toggleDD('loc')} options={locOptions} />
             <input
               value={draftNote}
               onChange={(e) => setDraftNote(e.target.value)}
               placeholder="Add a comment (optional)"
+              aria-label="Comment for this location update"
               style={{
                 width: '100%',
-                marginTop: 8,
                 border: `1.5px solid ${c.ink}`,
                 borderRadius: 7,
                 background: c.inputBg,
@@ -363,8 +382,10 @@ export function Home() {
               }}
             />
             <PhotoInput file={locFile} onPick={setLocFile} onClear={() => setLocFile(null)} disabled={locBusy} />
+
+            {/* Primary: exact GPS position. */}
             <button
-              onClick={doPostHere}
+              onClick={doUseLocation}
               disabled={locBusy}
               style={{
                 width: '100%',
@@ -374,15 +395,52 @@ export function Home() {
                 background: locBusy ? c.inkFainter : c.rust,
                 color: '#f6ecd6',
                 padding: 12,
-                textAlign: 'center',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 7,
                 fontFamily: font.display,
                 fontWeight: 700,
                 fontSize: 14,
                 textTransform: 'uppercase',
-                letterSpacing: '.06em',
+                letterSpacing: '.05em',
               }}
             >
-              {locBusy ? 'Posting…' : '⚑ We are here'}
+              <svg width={16} height={16} viewBox="0 0 24 24" fill="none" stroke="#f6ecd6" strokeWidth={1.9} strokeLinejoin="round" strokeLinecap="round">
+                <path d="M12 22s7-6.6 7-12a7 7 0 1 0-14 0c0 5.4 7 12 7 12Z" />
+                <circle cx="12" cy="10" r="2.6" />
+              </svg>
+              {locBusy ? 'Getting your spot…' : 'Use my location'}
+            </button>
+            {locErr && <div style={{ fontFamily: font.serif, fontSize: 12, color: c.rust, lineHeight: 1.45, marginTop: 7 }}>{locErr}</div>}
+
+            {/* Secondary: pick a spot by hand. */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, margin: '12px 0 8px' }}>
+              <div style={{ flex: 1, height: 1, background: c.line }} />
+              <span style={{ fontFamily: font.mono, fontSize: 8, letterSpacing: '.1em', color: c.inkFaintest, textTransform: 'uppercase' }}>or set it by hand</span>
+              <div style={{ flex: 1, height: 1, background: c.line }} />
+            </div>
+            <Dropdown label={locLabel} open={openDD === 'loc'} onToggle={() => toggleDD('loc')} options={locOptions} />
+            <button
+              onClick={doPostHere}
+              disabled={locBusy}
+              style={{
+                width: '100%',
+                marginTop: 8,
+                border: `1.5px solid ${c.ink}`,
+                borderRadius: 8,
+                background: 'transparent',
+                color: c.ink,
+                padding: 11,
+                textAlign: 'center',
+                fontFamily: font.display,
+                fontWeight: 600,
+                fontSize: 13,
+                textTransform: 'uppercase',
+                letterSpacing: '.05em',
+              }}
+            >
+              ⚑ Post this spot
             </button>
             {liveActive && (
               <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 10 }}>

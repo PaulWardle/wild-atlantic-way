@@ -13,6 +13,7 @@ import { getSupabase } from '../lib/supabase'
 import { tripData } from '../data/tripData'
 import { journey, journeyToSig } from '../data/journey'
 import { uploadPhoto } from '../lib/photos'
+import { nearestJourneyIndex, reverseGeocode } from '../lib/geocode'
 import type {
   Note,
   OutboxOp,
@@ -163,6 +164,7 @@ export interface StoreContextValue {
   setDraftI: (i: number) => void
   setDraftNote: (v: string) => void
   postHere: (file?: File | null) => Promise<void>
+  postCurrentLocation: (note: string, file?: File | null) => Promise<'ok' | 'denied' | 'unavailable' | 'nogeo'>
 
   // custom dropdowns
   openDD: string | null
@@ -411,7 +413,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
             .sort((a, b) => b.ts - a.ts)
         if (!l.error)
           next.updates = ((l.data || []) as Update[])
-            .map((r) => ({ si: r.si, note: r.note, ts: r.ts, photo: r.photo }))
+            .map((r) => ({ si: r.si, note: r.note, ts: r.ts, photo: r.photo, lat: r.lat, lon: r.lon, place: r.place }))
             .sort((a, b) => b.ts - a.ts)
         if (!n.error)
           next.notes = ((n.data || []) as Array<{ body: string; author: string; tag: string; day: number | string; ts: number; photo?: string }>)
@@ -607,14 +609,47 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   // ---- mutations ----
   // Post a location ping at a given journey index (used by the cross-link too).
+  // `pos` carries an exact GPS position + friendly place name when available.
   const postLocationAt = useCallback(
-    (si: number, note: string, photo?: string) => {
-      const row: Update = { si, note: (note || '').trim(), ts: Date.now(), ...(photo ? { photo } : {}) }
+    (si: number, note: string, photo?: string, pos?: { lat: number; lon: number; place: string }) => {
+      const extra = {
+        ...(photo ? { photo } : {}),
+        ...(pos ? { lat: pos.lat, lon: pos.lon, place: pos.place } : {}),
+      }
+      const row: Update = { si, note: (note || '').trim(), ts: Date.now(), ...extra }
       const updates = [row, ...(storeRef.current.updates || [])].slice(0, 8)
       set({ updates })
-      insertRow('locations', { si: row.si, note: row.note, ts: row.ts, ...(photo ? { photo } : {}) })
+      insertRow('locations', { si: row.si, note: row.note, ts: row.ts, ...extra })
     },
     [set, insertRow],
+  )
+
+  // Post the device's exact GPS position (reverse-geocoded to a friendly name).
+  const postCurrentLocation = useCallback(
+    (note: string, file?: File | null): Promise<'ok' | 'denied' | 'unavailable' | 'nogeo'> => {
+      if (typeof navigator === 'undefined' || !navigator.geolocation) return Promise.resolve('nogeo')
+      return new Promise((resolve) => {
+        navigator.geolocation.getCurrentPosition(
+          async (posn) => {
+            const lat = posn.coords.latitude
+            const lon = posn.coords.longitude
+            const si = nearestJourneyIndex(lat, lon)
+            const place = (await reverseGeocode(lat, lon)) || journey[si].label
+            const photo = file ? (await uploadPhoto(file)) || undefined : undefined
+            postLocationAt(si, note, photo, { lat, lon, place })
+            // If this is a Signature 15 spot and not yet bagged, offer to bag it.
+            const sigId = journeyToSig[journey[si].label]
+            if (sigId && !storeRef.current.sig[sigId]) {
+              setLinkPrompt({ kind: 'offerBag', name: journey[si].label, sigId })
+            }
+            resolve('ok')
+          },
+          (err) => resolve(err.code === 1 ? 'denied' : 'unavailable'),
+          { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
+        )
+      })
+    },
+    [postLocationAt],
   )
 
   // Bag a Signature spot without triggering the cross-link prompt (used by the modal).
@@ -1043,6 +1078,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     setDraftI,
     setDraftNote: setDraftNoteState,
     postHere,
+    postCurrentLocation,
     openDD,
     toggleDD,
     closeDD,

@@ -1,21 +1,33 @@
 import { useMemo } from 'react'
 import { useStore } from '../store/StoreProvider'
 import { tripData } from '../data/tripData'
-import { computeMapGeometry, currentStop, type MapGeometry } from '../lib/geo'
-import type { JourneyStop } from '../data/journey'
+import { journey } from '../data/journey'
+import { computeMapGeometry, type CurrentPos, type MapGeometry } from '../lib/geo'
 
 export interface MapState {
   geo: MapGeometry
-  curStop: JourneyStop | null
+  curLabel: string
   liveActive: boolean
 }
 
-/** Current map geometry derived from the latest location ping. */
+/** Current map geometry derived from the latest location ping (exact GPS when
+ * available, otherwise the nearest journey stop). */
 export function useMap(): MapState {
   const { store } = useStore()
   const updates = store.updates || []
-  const si = updates.length ? updates[0].si : null
-  const geo = useMemo(() => computeMapGeometry(tripData, si), [si])
-  const cur = currentStop(si ?? undefined)
-  return { geo, curStop: cur ? cur.stop : null, liveActive: updates.length > 0 }
+  const u = updates.length ? updates[0] : null
+
+  const stop = u ? journey[Math.max(0, Math.min(journey.length - 1, u.si | 0))] : null
+  const current: CurrentPos | null = u
+    ? u.lat != null && u.lon != null
+      ? { lat: u.lat, lon: u.lon }
+      : stop
+        ? { lat: stop.lat, lon: stop.lon }
+        : null
+    : null
+  const curLabel = u ? u.place || stop?.label || '' : ''
+
+  const geo = useMemo(() => computeMapGeometry(tripData, current), [current?.lat, current?.lon])
+
+  return { geo, curLabel, liveActive: updates.length > 0 }
 }
