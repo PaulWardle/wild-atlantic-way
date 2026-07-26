@@ -3,10 +3,11 @@ import { c, font } from '../theme'
 import { useStore } from '../store/StoreProvider'
 import { tripData } from '../data/tripData'
 import { isMarkable, jTagOptions } from '../lib/tags'
-import { buildEvents, buildFeed, buildGroups } from '../lib/journal'
+import { buildEvents, buildFeed, buildGallery, buildGroups } from '../lib/journal'
 import { Kicker, ScreenTitle, Lede, Dropdown } from '../components/ui'
 import { PhotoInput } from '../components/PhotoInput'
 import { PhotoView } from '../components/PhotoView'
+import { PhotoGallery } from '../components/PhotoGallery'
 
 const meta = tripData.meta
 
@@ -53,6 +54,8 @@ export function Journal() {
   const feed = buildFeed(events)
   const latest = feed[0]
   const groups = buildGroups(events, tripData)
+  const gallery = buildGallery(events)
+  const [showGallery, setShowGallery] = useState(false)
 
   // marks summary
   const marks = store.marks || {}
@@ -131,6 +134,35 @@ export function Journal() {
             {latest.hasBody && <div style={{ fontFamily: font.serif, fontSize: 13.5, color: c.inkBody2, lineHeight: 1.5, marginTop: 6 }}>{latest.body}</div>}
             {latest.photo && <PhotoView url={latest.photo} alt={latest.title ? `Photo — ${latest.title}` : 'Trip photo'} maxHeight={220} />}
           </div>
+        </div>
+      )}
+
+      {gallery.length > 0 && (
+        <div className="waw-noprint" style={{ marginTop: 18 }}>
+          <button
+            onClick={() => setShowGallery((v) => !v)}
+            aria-expanded={showGallery}
+            style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, border: `1.5px solid ${c.ink}`, borderRadius: 9, background: c.paperMuted, padding: '10px 13px' }}
+          >
+            <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke={c.ink} strokeWidth={1.8} strokeLinejoin="round" aria-hidden="true">
+                <rect x={3} y={3} width={7.5} height={7.5} rx={1.2} />
+                <rect x={13.5} y={3} width={7.5} height={7.5} rx={1.2} />
+                <rect x={3} y={13.5} width={7.5} height={7.5} rx={1.2} />
+                <rect x={13.5} y={13.5} width={7.5} height={7.5} rx={1.2} />
+              </svg>
+              <span style={{ fontFamily: font.display, fontWeight: 600, fontSize: 13, textTransform: 'uppercase', letterSpacing: '.03em', color: c.ink }}>
+                Gallery
+              </span>
+              <span style={{ fontFamily: font.mono, fontSize: 9, color: c.inkFainter }}>{gallery.length} photo{gallery.length === 1 ? '' : 's'}</span>
+            </span>
+            <span style={{ fontFamily: font.mono, fontSize: 9, letterSpacing: '.06em', color: c.rust, textTransform: 'uppercase' }}>{showGallery ? 'Hide' : 'View grid'}</span>
+          </button>
+          {showGallery && (
+            <div style={{ marginTop: 10 }}>
+              <PhotoGallery photos={gallery} />
+            </div>
+          )}
         </div>
       )}
 

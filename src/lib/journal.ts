@@ -131,6 +131,18 @@ export function buildFeed(events: JEvent[], limit = 12): FeedItem[] {
     })
 }
 
+/** Every photo across the trip (pings, posts, notes), newest first, with a
+ *  caption + date — for the gallery grid. */
+export function buildGallery(events: JEvent[]): { url: string; alt: string; when: string }[] {
+  return events
+    .filter((e) => !!e.photo)
+    .sort((a, b) => b.gms - a.gms || b.ts - a.ts)
+    .map((e) => {
+      const { title } = titleBody(e)
+      return { url: e.photo as string, alt: title || 'Trip photo', when: fmtDate(e.gms) }
+    })
+}
+
 /** dayKey → { n, dow } for each trip day (to label journal groups "Day 03"). */
 export function tripDayByKey(trip: Trip): Record<string, { n: string; dow: string }> {
   let jDepartMs = 0
