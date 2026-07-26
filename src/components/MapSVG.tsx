@@ -58,6 +58,9 @@ export function MapSVG({ geo, maxWidth }: { geo: MapGeometry; maxWidth?: number 
         <circle key={`l${i}`} cx={p.x} cy={p.y} r={p.r} fill={p.fill} stroke={c.paperMapFill} strokeWidth={1} />
       ))}
 
+      {/* Labels carry a paper-coloured halo (paint-order: stroke) so the route
+          line visibly breaks behind the words instead of running through them —
+          standard cartographic knockout. */}
       {geo.eLabels.map((l, i) => (
         <text
           key={`t${i}`}
@@ -68,6 +71,11 @@ export function MapSVG({ geo, maxWidth }: { geo: MapGeometry; maxWidth?: number 
           fontWeight={l.w}
           fontSize={10.5}
           fill={l.f}
+          stroke="#e9ddbd"
+          strokeWidth={3}
+          strokeLinejoin="round"
+          opacity={1}
+          style={{ paintOrder: 'stroke' }}
         >
           {l.t}
         </text>
