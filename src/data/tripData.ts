@@ -319,7 +319,7 @@ export const tripData: Trip = {
         },
         {
           "n": "Drumcliffe → Strandhill",
-          "d": "Yeats’ grave under bare Benbulben’s head at Drumcliffe, Rosses Point, then into Strandhill for the night — surf town, seaweed baths if the legs are done.",
+          "d": "Yeats’ grave under bare Benbulben’s head at Drumcliffe, Rosses Point, then into Strandhill for the night — surf town, seaweed baths if the legs are done. (Carrowmore megalithic cemetery — among the oldest in Ireland — is 5 min inland from camp: an evening leg-stretch, not a riding stop.)",
           "tags": [
             "history",
             "town"
@@ -746,6 +746,14 @@ export const tripData: Trip = {
           "d": "The Blasket Centre, Kruger’s (Ireland’s westernmost pub — too early, note it for next time), round to Ballyferriter and past the tent to Dingle for coffee.",
           "tags": [
             "view",
+            "history"
+          ]
+        },
+        {
+          "n": "South Pole Inn, Annascaul",
+          "d": "Tom Crean's own pub, directly on the exit road east — the Antarctic legend's statue outside. Shut at this hour (the pint was last night in Dingle), but the photo is free and costs zero miles.",
+          "tags": [
+            "pub",
             "history"
           ]
         },

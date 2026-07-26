@@ -117,12 +117,12 @@ Aughris Head (661) → Easkey (677) → Enniscrone (692) → Ballina (703) → K
 
 **Slea Head Drive at dawn, clockwise (the official/bus direction), with the luggage on:** Gallarus → Dingle → Ventry → Dunbeg → **Slea Head + ★ Blasket View, Dunmore Head (1856)** → Dunquin → Ballyferriter → past Gallarus again → Dingle (~09:00, coffee) — 35 mi of the best of it, empty at that hour.
 
-East on the R561 **past Inch Strand (1910) — zero dead leg, it's on the way out** → Castlemaine → Milltown → Killorglin → the coastal N70: Glenbeigh/Rossbeigh (1932) → Kells → Cahersiveen → Portmagee → **Kerry Cliffs (1995) + ★ Skellig viewpoint** (the islands, from the mainland — landing boats sold out months ago, this is the honest version) → **Coomanaspig Pass (1997)** → St Finian's Bay → Waterville → **Coomakista Pass (2031)** → **Derrynane, Caherdaniel (2044)** → Sneem → Kenmare (~17:00, fuel + food) → R571 down Beara's north side: Tuosist → Kilmakilloge (2131) → Ardgroom → Eyeries → **★ Dursey Sound (2164)** — the cable-car station and the island across the sound (crossing it eats 2 h you don't have; seeing it doesn't) → **Castletownbere (2187) — the pint at McCarthy's Bar, of the book cover** → **Adrigole (2198)**.
+East out of Dingle on the N86 — **South Pole Inn, Annascaul** (Tom Crean's pub, statue outside; shut at this hour but directly on the road) → **past Inch Strand (1910) — zero dead leg, it's on the way out** → Castlemaine → Milltown → Killorglin → the coastal N70: Glenbeigh/Rossbeigh (1932) → Kells → Cahersiveen → Portmagee → **Kerry Cliffs (1995) + ★ Skellig viewpoint** (the islands, from the mainland — landing boats sold out months ago, this is the honest version) → **Coomanaspig Pass (1997)** → St Finian's Bay → Waterville → **Coomakista Pass (2031)** → **Derrynane, Caherdaniel (2044)** → Sneem → Kenmare (~17:00, fuel + food) → R571 down Beara's north side: Tuosist → Kilmakilloge (2131) → Ardgroom → Eyeries → **★ Dursey Sound (2164)** — the cable-car station and the island across the sound (crossing it eats 2 h you don't have; seeing it doesn't) → **Castletownbere (2187) — the pint at McCarthy's Bar, of the book cover** → **Adrigole (2198)**.
 
 - **Every Ring of Kerry mile is ridden once, in one direction.** No Killarney NP, no Ballaghbeama — they were never on the Way.
 - **Release valves (in bail order):** skip Valentia Island loop — Kerry Cliffs covers the Skellig view (–14 mi); skip Ballinskelligs pier (–8 mi); **emergency only:** N70 direct Cahersiveen → Waterville, dropping the whole Skellig Ring (–28 mi — this loses an SDP viewpoint, last resort).
 - Sunset at Dursey Sound is ~20:45 in mid-August. You'll make it.
-- Google Maps, leg A: `google.com/maps/dir/Gallarus+Oratory/Dingle/Ventry/Slea+Head/Dunquin/Ballyferriter/Dingle/Inch+Beach/Killorglin`
+- Google Maps, leg A: `google.com/maps/dir/Gallarus+Oratory/Dingle/Ventry/Slea+Head/Dunquin/Ballyferriter/Dingle/Annascaul/Inch+Beach/Killorglin`
 - Leg B: `google.com/maps/dir/Killorglin/Glenbeigh/Cahersiveen/Portmagee/Kerry+Cliffs/Waterville/Caherdaniel/Sneem/Kenmare`
 - Leg C: `google.com/maps/dir/Kenmare/Lauragh/Ardgroom/Eyeries/Dursey+Sound/Castletownbere/Adrigole`
 
@@ -185,13 +185,55 @@ Why the change: sleeping at Kenmare makes Tuesday impossible (373 km of official
 4. **Omey Island tide table, Fri 14 Aug** — the strand is only crossable ~3h either side of low water; the short Day 5 is built to flex around it.
 5. **Sliabh Liag / Bunglass road** — shuttle-bus management has applied in recent summers; arriving before ~10:00 usually solves it (you'll be there mid-afternoon — check current rules, worst case it's the shuttle).
 
+## 5b. The complete cut ledger — every omission, why, and what restoring it costs
+
+**Official route line not ridden (the honest accounting):**
+
+| Cut | Official line lost | Why | To restore |
+|---|---|---|---|
+| Sheep's Head loop | ~35 mi | Nothing from your list on it; it's the loop that makes the boat missable | +2 h on Day 9 — not possible |
+| Baltimore & Lough Hyne | ~20 mi | Same day, same reason | +1¼ h on Day 9 — the first thing back if you're early at Skibbereen |
+| Rosses pier lanes (Day 3 valve) | ~25 mi | Low headline-density; ridden by default, valve if behind | It's IN by default — only lost if you pull the valve |
+| Carna loop (Day 6 valve) | ~22 mi | Same — in by default, valve if behind | Same |
+| Mullet western lanes | ~15 mi | Spine of the peninsula ridden to Blacksod; the outer lanes add little | +45 min on Day 4 |
+| Valentia Island loop (Day 8 valve) | ~14 mi | Kerry Cliffs covers the Skellig view; in by default, first valve pulled if behind | In by default |
+| Caha Pass N71 tunnels | ~18 mi | You cross Beara at Healy Pass instead — a straight upgrade for a rider; riding both = riding Beara twice | Can't have both without +1½ h on Day 9 |
+
+**Wish-list items — status of every single one:** everything from your original list is IN except these five, each with the reason:
+
+| Wish | Status | Why |
+|---|---|---|
+| Skellig Michael (landing) | Viewpoint only | Boats sold out months ago; landing = 5 h. Physics, not preference |
+| Dursey cable car (crossing) | Sound + station viewpoint | Crossing = 2 h queue+return; the Sound at sunset is the bag |
+| Killarney NP + Ballaghbeama | Cut | Never on the Wild Atlantic Way — this was the old plan riding the Ring twice |
+| Corkscrew Hill | Cut | Inland N67 hairpins; you ride Black Head R477 instead — the better road, and it's the official line |
+| Aran Islands | Cut | Full-day ferry item (was "optional" in the old plan too) |
+| Baltimore | Cut (Day 9) | See ledger above — restorable if ahead of clock at Skibbereen |
+| Caha tunnels | Cut (Day 9) | Replaced by Healy Pass sunrise — see above |
+
+*(South Pole Inn and Carrowmore were missing from the first draft of this document by omission, not decision — both are now in: Annascaul is directly on Day 8's exit road, Carrowmore is a 5-minute evening walk from the Strandhill campsite.)*
+
+## 5c. "Should we re-jig the whole plan because days 7–9 are 12–13 h?" — checked properly
+
+Short answer: **a re-jig cannot flatten the finale — the hours are conserved, not misallocated.** Here's the proof:
+
+- The southern anchors are fixed: Doolin (the only sane Cliffs base) → Gallarus (the only campsite ON the Slea loop) → Adrigole (the only night that makes Day 9 possible) → Rosslare (the boat). Moving any night either **forfeits a dawn set-piece** (Cliffs at 08:00, Slea Head empty at 07:00) or **adds the miles right back** somewhere worse.
+- Sleeping past Gallarus on Day 7 pushes the Slea loop INTO Day 7 → Day 7 becomes 14 h. Sleeping short of Adrigole on Day 8 pushes Beara into Day 9 → Day 9 becomes physically impossible (that was the old plan's fatal flaw).
+- Day 9's 13½ h is **not** 13½ h of hard riding: ~8 h is coastal, ~2¾ h is the N25 transfer (main-road cruising), the rest is stops. And it ends at a ferry with a 7-hour sleep buffer, not another riding day.
+- The genuine levers, if the hours are too much *(decide before the trip, not during)*:
+  1. **Pull the named valves** — that alone brings D7→~11 h, D8→~11 h, D9→~12 h at a cost of ~6 named sights.
+  2. **The one structural swap:** drop the Skellig Ring (Day 8 −28 mi/−1½ h) — but that loses Kerry Cliffs, Coomanaspig and the Skellig view. I wouldn't.
+  3. **Day 5 stays light on purpose** — it is the mid-trip recovery that makes the finale survivable. Loading it "to balance" would be a mistake.
+
+If ChatGPT proposes a re-jig, test it against those three bullets — any version that claims an easier finale is either deleting Signature Points or hiding the miles somewhere else.
+
 ## 6. On what3words
 
 Deliberately **not** included: w3w codes are arbitrary word-triples that can't be safely written from memory — one wrong word is a pin in the wrong county. Every waypoint above is an unambiguous place name that Google Maps geocodes directly (the `google.com/maps/dir/...` strings are pasteable as-is). If you want w3w pins for the group: open each Google Maps point, drop it into the w3w app, and it generates the code — 10 minutes for the whole trip, zero transcription risk.
 
 ## 7. Paste-this-to-ChatGPT cross-check brief
 
-> I'm riding the full Wild Atlantic Way southbound plus the Antrim lead-in, Mon 10–Wed 19 Aug 2026, two motorcyclists. Fixed: land Larne 14:15 Mon 10; night 1 booked at Binion Bay campsite, Clonmany; Stena Rosslare→Fishguard 08:15 Wed 19 (at port 07:15). Plan (official-route order, campsite each night): **D1** Larne→A2/Torr Head→Derry→Muff→east Inishowen (Kinnagoe, Culdaff)→Malin Head + Farren's Bar→Binion (~150mi from 14:30). **D2** Mamore Gap→Dunree→Letterkenny→Rathmullan→Portsalon→Fanad Head→Blaney Bridge→Rosguill Atlantic Drive→Corcreggan Mill, Dunfanaghy (~120mi). **D3** Horn Head→Bloody Foreland→the Rosses→Narin/Portnoo→Ardara→Maghera→Glengesh→Glencolmcille→Malin Beg→Slieve League→Killybegs→Donegal→Bundoran→Mullaghmore→Drumcliffe→Strandhill (~190mi). **D4** Easkey→Enniscrone→Ballina→Killala→Downpatrick Head→Céide→Belmullet→Blacksod (optional)→Ballycroy→Mulranny→Achill Atlantic Drive→Keel (~185mi). **D5** Keem dawn→Westport→Doolough→Killary→Letterfrack→Cleggan→Claddaghduff/Clifden Eco Beach (~110mi). **D6** Sky Road→Derrigimlagh→Roundstone→south Connemara R340/R336→Galway→Kinvara→Black Head R477→Doolin (~170mi). **D7** Cliffs of Moher 08:00→Kilkee→Loop Head→Killimer–Tarbert ferry→Ballybunion→Tralee→Conor Pass inbound→Dingle→Gallarus (~195mi). **D8** Slea Head Drive clockwise at dawn→Inch→Killorglin→N70→Portmagee→Kerry Cliffs/Skellig Ring→Coomanaspig→Waterville→Caherdaniel→Sneem→Kenmare→R571 north Beara→Dursey Sound→Castletownbere (McCarthy's)→Hungry Hill Lodge, Adrigole (~210mi). **D9** Healy Pass sunrise out-and-back→Glengarriff→Bantry→Mizen Head→Schull→Skibbereen→Drombeg→Clonakilty→Timoleague→Old Head of Kinsale→KINSALE finish ~16:00→N25→St Margaret's, Rosslare (~290mi incl 130mi transfer). Cuts accepted: Skellig landing, Dursey cable-car crossing, Sheep's Head, Baltimore/Lough Hyne, Caha tunnels (replaced by Healy), Killarney NP (not on the WAW). **Questions: (1) any leg where my stop order fights the geography or one-way/bus flow? (2) are D3/D4/D7/D8/D9 mileages honest at 28–32 mph coastal averages, and where do they break? (3) any campsite mispositioned relative to the direction of travel? (4) is the D9 timeline (06:30 Adrigole → 16:00 Kinsale → 19:30 Rosslare) realistic in mid-August traffic? (5) what would you cut first on each of the three biggest days?**
+> I'm riding the full Wild Atlantic Way southbound plus the Antrim lead-in, Mon 10–Wed 19 Aug 2026, two motorcyclists. Fixed: land Larne 14:15 Mon 10; night 1 booked at Binion Bay campsite, Clonmany; Stena Rosslare→Fishguard 08:15 Wed 19 (at port 07:15). Plan (official-route order, campsite each night): **D1** Larne→A2/Torr Head→Derry→Muff→east Inishowen (Kinnagoe, Culdaff)→Malin Head + Farren's Bar→Binion (~150mi from 14:30). **D2** Mamore Gap→Dunree→Letterkenny→Rathmullan→Portsalon→Fanad Head→Blaney Bridge→Rosguill Atlantic Drive→Corcreggan Mill, Dunfanaghy (~120mi). **D3** Horn Head→Bloody Foreland→the Rosses→Narin/Portnoo→Ardara→Maghera→Glengesh→Glencolmcille→Malin Beg→Slieve League→Killybegs→Donegal→Bundoran→Mullaghmore→Drumcliffe→Strandhill (~190mi). **D4** Easkey→Enniscrone→Ballina→Killala→Downpatrick Head→Céide→Belmullet→Blacksod (optional)→Ballycroy→Mulranny→Achill Atlantic Drive→Keel (~185mi). **D5** Keem dawn→Westport→Doolough→Killary→Letterfrack→Cleggan→Claddaghduff/Clifden Eco Beach (~110mi). **D6** Sky Road→Derrigimlagh→Roundstone→south Connemara R340/R336→Galway→Kinvara→Black Head R477→Doolin (~170mi). **D7** Cliffs of Moher 08:00→Kilkee→Loop Head→Killimer–Tarbert ferry→Ballybunion→Tralee→Conor Pass inbound→Dingle→Gallarus (~195mi). **D8** Slea Head Drive clockwise at dawn→Annascaul (South Pole Inn)→Inch→Killorglin→N70→Portmagee→Kerry Cliffs/Skellig Ring→Coomanaspig→Waterville→Caherdaniel→Sneem→Kenmare→R571 north Beara→Dursey Sound→Castletownbere (McCarthy's)→Hungry Hill Lodge, Adrigole (~210mi). **D9** Healy Pass sunrise out-and-back→Glengarriff→Bantry→Mizen Head→Schull→Skibbereen→Drombeg→Clonakilty→Timoleague→Old Head of Kinsale→KINSALE finish ~16:00→N25→St Margaret's, Rosslare (~290mi incl 130mi transfer). Cuts accepted: Skellig landing, Dursey cable-car crossing, Sheep's Head, Baltimore/Lough Hyne, Caha tunnels (replaced by Healy), Killarney NP (not on the WAW). **Questions: (1) any leg where my stop order fights the geography or one-way/bus flow? (2) are D3/D4/D7/D8/D9 mileages honest at 28–32 mph coastal averages, and where do they break? (3) any campsite mispositioned relative to the direction of travel? (4) is the D9 timeline (06:30 Adrigole → 16:00 Kinsale → 19:30 Rosslare) realistic in mid-August traffic? (5) what would you cut first on each of the three biggest days?**
 
 ## 8. Later (optional, separate job)
 
