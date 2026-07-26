@@ -5,7 +5,7 @@ import { reasonList, reasonMeta } from '../lib/tags'
 import { relTime } from '../lib/time'
 import { Kicker, ScreenTitle, Lede, Dropdown } from '../components/ui'
 import { PhotoInput } from '../components/PhotoInput'
-import { PhotoView } from '../components/PhotoView'
+import { Photos } from '../components/PhotoGallery'
 
 export function Postbox() {
   const s = useStore()
@@ -28,13 +28,13 @@ export function Postbox() {
     closeDD,
   } = s
 
-  const [file, setFile] = useState<File | null>(null)
+  const [files, setFiles] = useState<File[]>([])
   const [busy, setBusy] = useState(false)
   const doSubmit = async () => {
     if (busy) return
     setBusy(true)
-    await submitPost(file)
-    setFile(null)
+    await submitPost(files)
+    setFiles([])
     setBusy(false)
   }
 
@@ -83,7 +83,12 @@ export function Postbox() {
             style={{ width: '100%', border: `1.5px solid ${c.ink}`, borderRadius: 7, background: c.inputBg, padding: '10px 12px', fontFamily: font.serif, fontSize: 13.5, color: c.inkSoft, outline: 'none', resize: 'none', lineHeight: 1.5 }}
           />
 
-          <PhotoInput file={file} onPick={setFile} onClear={() => setFile(null)} disabled={busy} />
+          <PhotoInput
+            files={files}
+            onAdd={(fs) => setFiles((prev) => [...prev, ...fs])}
+            onRemove={(i) => setFiles((prev) => prev.filter((_, j) => j !== i))}
+            disabled={busy}
+          />
 
           {postErr && <div style={{ fontFamily: font.mono, fontSize: 9, letterSpacing: '.04em', color: c.rust, marginTop: 8 }}>Add your name and a message first.</div>}
           <button
@@ -126,7 +131,7 @@ export function Postbox() {
                 </b>{' '}
                 {p.msg}
               </div>
-              {p.photo && <PhotoView url={p.photo} alt={p.name ? `Photo from ${p.name}` : 'Trip photo'} maxHeight={240} />}
+              <Photos photo={p.photo} alt={p.name ? `Photo from ${p.name}` : 'Trip photo'} maxHeight={240} />
             </div>
           ))}
         </>

@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { c, font } from '../theme'
 import { isLocalPhoto, localId, localObjectURL } from '../lib/photoQueue'
+import { photoList } from '../lib/photos'
+import { PhotoView } from './PhotoView'
 
 export interface GalleryPhoto {
   url: string
@@ -102,8 +104,8 @@ function Lightbox({ photos, index, onClose, onNav }: { photos: GalleryPhoto[]; i
   )
 }
 
-/** A responsive grid of trip photos; tap any tile for a navigable lightbox. */
-export function PhotoGallery({ photos }: { photos: GalleryPhoto[] }) {
+/** A grid of photo tiles with a shared navigable lightbox. */
+function TileGrid({ photos, cols }: { photos: GalleryPhoto[]; cols: number }) {
   const [open, setOpen] = useState<number | null>(null)
   if (!photos.length) return null
 
@@ -112,12 +114,31 @@ export function PhotoGallery({ photos }: { photos: GalleryPhoto[] }) {
 
   return (
     <>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 7 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: `repeat(${cols}, 1fr)`, gap: 7 }}>
         {photos.map((p, i) => (
           <Tile key={i} photo={p} onOpen={() => setOpen(i)} />
         ))}
       </div>
       {open !== null && <Lightbox photos={photos} index={open} onClose={() => setOpen(null)} onNav={nav} />}
     </>
+  )
+}
+
+/** A responsive 3-column grid of every trip photo (the Journal gallery). */
+export function PhotoGallery({ photos }: { photos: GalleryPhoto[] }) {
+  return <TileGrid photos={photos} cols={3} />
+}
+
+/** Render a row's `photo` field (one or many): a single photo shows full-width
+ *  as before; several show as a 2-column grid, each opening a lightbox. */
+export function Photos({ photo, alt, when = '', maxHeight }: { photo?: string; alt: string; when?: string; maxHeight?: number }) {
+  const list = photoList(photo)
+  if (!list.length) return null
+  if (list.length === 1) return <PhotoView url={list[0]} alt={alt} maxHeight={maxHeight} />
+  const photos: GalleryPhoto[] = list.map((url, i) => ({ url, alt: `${alt} (${i + 1} of ${list.length})`, when }))
+  return (
+    <div style={{ marginTop: 8 }}>
+      <TileGrid photos={photos} cols={2} />
+    </div>
   )
 }

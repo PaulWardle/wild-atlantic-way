@@ -3,6 +3,31 @@ import { queuePhoto } from './photoQueue'
 
 const isOffline = () => typeof navigator !== 'undefined' && navigator.onLine === false
 
+/* Multiple photos share the single existing `photo` text column: one photo is
+ * stored as a bare URL/token (as before), several as a JSON array string. This
+ * keeps the shared backend unchanged and every old single-photo row valid. */
+
+/** Decode a `photo` field into a list of URLs/tokens (0, 1 or many). */
+export function photoList(photo: string | undefined | null): string[] {
+  if (!photo) return []
+  if (photo[0] === '[') {
+    try {
+      const a = JSON.parse(photo)
+      if (Array.isArray(a)) return a.filter((x) => typeof x === 'string' && x)
+    } catch {
+      /* not JSON — treat as a single URL */
+    }
+  }
+  return [photo]
+}
+
+/** Encode a list of URLs/tokens back into the `photo` field (undefined if empty). */
+export function photoField(list: string[]): string | undefined {
+  const clean = list.filter(Boolean)
+  if (!clean.length) return undefined
+  return clean.length === 1 ? clean[0] : JSON.stringify(clean)
+}
+
 /**
  * Downscale + re-orient a picked/taken photo to a reasonable size and re-encode
  * as JPEG. Keeps uploads small (F&F on mobile data) and normalises iPhone HEIC /
@@ -75,4 +100,11 @@ export async function attachPhoto(file: File): Promise<string | undefined> {
   }
   // No signal, or the upload failed — queue it locally for the outbox.
   return await queuePhoto(blob)
+}
+
+/** Attach several picked photos; returns the packed `photo` field (or undefined). */
+export async function attachPhotos(files: File[]): Promise<string | undefined> {
+  if (!files.length) return undefined
+  const tokens = await Promise.all(files.map((f) => attachPhoto(f)))
+  return photoField(tokens.filter((t): t is string => !!t))
 }

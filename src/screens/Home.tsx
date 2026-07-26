@@ -12,7 +12,7 @@ import { MapSVG, MapLegend } from '../components/MapSVG'
 import { Slider } from '../components/Slider'
 import { Dropdown } from '../components/ui'
 import { PhotoInput } from '../components/PhotoInput'
-import { PhotoView } from '../components/PhotoView'
+import { Photos } from '../components/PhotoGallery'
 import { WeatherStrip } from '../components/WeatherStrip'
 
 const meta = tripData.meta
@@ -132,25 +132,25 @@ export function Home() {
     return () => window.clearInterval(t)
   }, [gallery.length])
 
-  const [locFile, setLocFile] = useState<File | null>(null)
+  const [locFiles, setLocFiles] = useState<File[]>([])
   const [locBusy, setLocBusy] = useState(false)
   const [locErr, setLocErr] = useState('')
   const doPostHere = async () => {
     if (locBusy) return
     setLocBusy(true)
     setLocErr('')
-    await postHere(locFile)
-    setLocFile(null)
+    await postHere(locFiles)
+    setLocFiles([])
     setLocBusy(false)
   }
   const doUseLocation = async () => {
     if (locBusy) return
     setLocBusy(true)
     setLocErr('')
-    const res = await postCurrentLocation(draftNote, locFile)
+    const res = await postCurrentLocation(draftNote, locFiles)
     setLocBusy(false)
     if (res === 'ok') {
-      setLocFile(null)
+      setLocFiles([])
       setDraftNote('')
     } else if (res === 'denied') {
       setLocErr('Location permission is off — turn it on for this site, or set the spot by hand below.')
@@ -325,7 +325,7 @@ export function Home() {
                 <div style={{ fontFamily: font.display, fontWeight: 700, fontSize: 21, textTransform: 'uppercase', color: c.ink, lineHeight: 1.02, letterSpacing: '.01em' }}>{liveArea}</div>
               </div>
               {liveNote && <div style={{ marginTop: 8, fontFamily: font.serif, fontSize: 13.5, color: c.inkBody2, lineHeight: 1.5 }}>“{liveNote}”</div>}
-              {updates[0]?.photo && <PhotoView url={updates[0].photo} alt={`Photo from ${liveArea}`} maxHeight={220} />}
+              <Photos photo={updates[0]?.photo} alt={`Photo from ${liveArea}`} maxHeight={220} />
             </div>
             {updates.length > 1 && (
               <div style={{ margin: '11px 14px 0', borderTop: `1px dashed ${c.line}`, paddingTop: 9 }}>
@@ -361,7 +361,7 @@ export function Home() {
                   <div style={{ fontFamily: font.display, fontWeight: 600, fontSize: 13.5, textTransform: 'uppercase', color: c.ink, lineHeight: 1.15, letterSpacing: '.01em' }}>{u.loc}</div>
                   <div style={{ fontFamily: font.mono, fontSize: 8, color: c.inkFaintest, marginTop: 1 }}>{u.when}</div>
                   {u.note && <div style={{ fontFamily: font.serif, fontSize: 12.5, color: c.inkMuted, lineHeight: 1.45, marginTop: 2 }}>“{u.note}”</div>}
-                  {u.photo && <PhotoView url={u.photo} alt={`Photo from ${u.loc}`} maxHeight={180} />}
+                  <Photos photo={u.photo} alt={`Photo from ${u.loc}`} maxHeight={180} />
                 </div>
               </div>
             ))}
@@ -399,7 +399,12 @@ export function Home() {
                 outline: 'none',
               }}
             />
-            <PhotoInput file={locFile} onPick={setLocFile} onClear={() => setLocFile(null)} disabled={locBusy} />
+            <PhotoInput
+              files={locFiles}
+              onAdd={(fs) => setLocFiles((prev) => [...prev, ...fs])}
+              onRemove={(i) => setLocFiles((prev) => prev.filter((_, j) => j !== i))}
+              disabled={locBusy}
+            />
 
             {/* Primary: exact GPS position. */}
             <button

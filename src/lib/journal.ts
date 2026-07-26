@@ -5,6 +5,7 @@
 import type { Store, Trip } from '../types'
 import { trackStops } from '../data/derived'
 import { jKindMeta, reasonMeta } from './tags'
+import { photoList } from './photos'
 import { dayKey, fmtDate, fmtTime } from './time'
 
 export interface JEvent {
@@ -132,14 +133,16 @@ export function buildFeed(events: JEvent[], limit = 12): FeedItem[] {
 }
 
 /** Every photo across the trip (pings, posts, notes), newest first, with a
- *  caption + date — for the gallery grid. */
+ *  caption + date — for the gallery grid. A single event may carry several
+ *  photos (packed field), each becoming its own tile. */
 export function buildGallery(events: JEvent[]): { url: string; alt: string; when: string }[] {
   return events
     .filter((e) => !!e.photo)
     .sort((a, b) => b.gms - a.gms || b.ts - a.ts)
-    .map((e) => {
+    .flatMap((e) => {
       const { title } = titleBody(e)
-      return { url: e.photo as string, alt: title || 'Trip photo', when: fmtDate(e.gms) }
+      const when = fmtDate(e.gms)
+      return photoList(e.photo).map((url) => ({ url, alt: title || 'Trip photo', when }))
     })
 }
 
