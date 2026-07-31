@@ -413,6 +413,11 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [copied, setCopied] = useState(false)
   const [linkPrompt, setLinkPrompt] = useState<LinkPrompt | null>(null)
   const [serverOk, setServerOk] = useState<boolean | null>(null)
+  const serverOkRef = useRef<boolean | null>(null)
+  serverOkRef.current = serverOk
+  /** Re-subscribes the realtime channel — set by the init effect, called when a
+   *  pull succeeds after downtime (the old channel may be permanently dead). */
+  const resubFnRef = useRef<(() => void) | null>(null)
 
   const role = store.role
   const isBrother = role === 'brother'
@@ -437,7 +442,10 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         const [p, l, n, m, g] = res
         // If every table errored (e.g. project paused / no connection), flag the
         // server as unreachable so the UI can say so.
-        setServerOk(!p.error || !l.error || !n.error || !m.error || !g.error)
+        const okNow = !p.error || !l.error || !n.error || !m.error || !g.error
+        // Recovered after downtime → the realtime channel may be dead; rejoin it.
+        if (okNow && serverOkRef.current === false) resubFnRef.current?.()
+        setServerOk(okNow)
         const next: Store = { ...storeRef.current }
         if (!p.error)
           next.posts = ((p.data || []) as Post[])
@@ -585,17 +593,33 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     if (!ob.length) return
     flushingRef.current = true
     Promise.all(
-      ob.map((o) => runOp(o).then((r) => (r && !r.error ? o._k : null), () => null)),
-    ).then((res) => {
-      flushingRef.current = false
-      const doneKeys = res.filter(Boolean) as string[]
-      if (doneKeys.length) {
-        const cur: Store = { ...storeRef.current }
-        cur.outbox = (cur.outbox || []).filter((x) => doneKeys.indexOf(x._k) < 0)
-        commit(cur)
-        pullAll()
-      }
-    })
+      ob.map((o) =>
+        runOp(o).then((r) => {
+          if (r && !r.error) return o._k
+          // "Already exists" (unique violation) means an earlier send DID land
+          // before the connection/server dropped — the row is on the server, so
+          // the op is done. Without this, a half-sent op re-queues forever.
+          const code = (r?.error as { code?: string } | null)?.code
+          if (o.op === 'insert' && code === '23505') return o._k
+          return null
+        }, () => null),
+      ),
+    ).then(
+      (res) => {
+        flushingRef.current = false
+        const doneKeys = res.filter(Boolean) as string[]
+        if (doneKeys.length) {
+          const cur: Store = { ...storeRef.current }
+          cur.outbox = (cur.outbox || []).filter((x) => doneKeys.indexOf(x._k) < 0)
+          commit(cur)
+          pullAll()
+        }
+      },
+      () => {
+        // Never leave the flush latch stuck — a wedged latch kills all retries.
+        flushingRef.current = false
+      },
+    )
   }, [runOp, commit, pullAll])
 
   // init supabase + realtime, intervals, listeners
@@ -609,9 +633,29 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         .on('postgres_changes', { event: '*', schema: 'public' }, () => pullAll())
         .subscribe()
     }
-    const onOnline = () => flush()
+    resubFnRef.current = () => {
+      try {
+        if (subRef.current) sb.removeChannel(subRef.current)
+      } catch {
+        /* noop */
+      }
+      subRef.current = sb
+        .channel('waw')
+        .on('postgres_changes', { event: '*', schema: 'public' }, () => pullAll())
+        .subscribe()
+    }
+    const onOnline = () => {
+      flush()
+      pullAll()
+    }
     window.addEventListener('online', onOnline)
-    const flushInt = window.setInterval(() => flush(), 20000)
+    // Every 20s: flush the outbox, and — while the server looks unreachable —
+    // keep re-pulling so recovery (e.g. Supabase un-pausing) is noticed without
+    // needing a realtime event or a page reload.
+    const flushInt = window.setInterval(() => {
+      flush()
+      if (serverOkRef.current === false) pullAll()
+    }, 20000)
     const onResize = () => {
       const w = window.innerWidth
       setVw((prev) => (Math.abs(w - prev) > 2 ? w : prev))
