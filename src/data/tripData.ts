@@ -1819,37 +1819,24 @@ export const tripData: Trip = {
       ]
     },
     {
-      "group": "Camping",
+      "group": "Camping (each)",
       "items": [
-        "Lightweight 2–3 man tent (or split a 3-man)",
         "3-season sleeping bag",
         "Inflatable mat",
         "Compact pillow",
         "Headtorch + spare batteries",
-        "Stove + gas (buy screw-on canisters after the ferry if challenged)",
-        "Pot / mug / spork",
-        "Lighter ×2",
         "Dry bags for EVERYTHING",
-        "Small tarp",
         "Travel towel",
-        "Camp sandals",
-        "20m paracord (drying line)"
+        "Camp sandals"
       ]
     },
     {
-      "group": "Bike kit",
+      "group": "Bike & security (each bike)",
       "items": [
-        "Puncture repair kit + mini compressor / CO₂",
-        "Chain lube + rag (rain + 2,000mi)",
-        "Cable ties",
-        "Gaffer tape",
-        "Spare bulbs & fuses",
-        "Tool roll",
         "Disc lock + reminder cable",
         "Bungees / cargo net",
         "Phone mount + USB power",
-        "Spare key (carried by the OTHER brother)",
-        "Ratchet strap for ferry decks"
+        "Spare key (carried by the OTHER brother)"
       ]
     },
     {
@@ -1870,12 +1857,8 @@ export const tripData: Trip = {
       "items": [
         "Quick-dry clothing ×3 rotations",
         "Swim shorts (Keem Bay, seaweed baths)",
-        "Midge repellent (Smidge)",
-        "Suncream (yes, actually)",
-        "First-aid kit",
         "Power bank 20,000mAh",
         "Painkillers / ibuprofen",
-        "Sewing kit",
         "Small padlocks"
       ]
     },
@@ -2521,6 +2504,41 @@ export const tripData: Trip = {
       "area": "Kinsale — the finish",
       "phase": "waw",
       "finish": true
+    }
+  ],
+  "sharedKit": [
+    {
+      "group": "Camp kit",
+      "items": [
+        "Lightweight 2–3 man tent",
+        "Stove + gas (buy screw-on canisters after the ferry if challenged)",
+        "Pots / mugs / sporks",
+        "Lighter ×2",
+        "Small tarp",
+        "20m paracord (drying line)"
+      ]
+    },
+    {
+      "group": "Tools & spares",
+      "items": [
+        "Puncture repair kit + mini compressor / CO₂",
+        "Chain lube + rag (rain + 2,000mi)",
+        "Cable ties",
+        "Gaffer tape",
+        "Spare bulbs & fuses",
+        "Tool roll",
+        "Ratchet strap for ferry decks"
+      ]
+    },
+    {
+      "group": "Shared sundries",
+      "items": [
+        "First-aid kit",
+        "Sewing kit",
+        "Midge repellent (Smidge)",
+        "Suncream (yes, actually)",
+        "iPad + charger"
+      ]
     }
   ]
 }

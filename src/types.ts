@@ -253,7 +253,10 @@ export interface Trip {
   passes: Pass[]
   campsites: Campsite[]
   campNotes: CampNotes
+  /** Per-brother checklist — each of Paul and CJ ticks his own copy. */
   packing: PackGroup[]
+  /** One-between-two kit (tent, tools, cooking) — allocated to a brother. */
+  sharedKit: PackGroup[]
   costs: Costs
   bookings: Booking[]
   intel: IntelCard[]
@@ -315,7 +318,7 @@ export interface OutboxOp {
   val?: unknown
 }
 
-export type TableName = 'posts' | 'locations' | 'notes' | 'marks' | 'sig'
+export type TableName = 'posts' | 'locations' | 'notes' | 'marks' | 'sig' | 'kit'
 
 export interface Store {
   role: Role
@@ -326,6 +329,9 @@ export interface Store {
   sig: Sig
   pack: Record<string, boolean>
   book: Record<string, boolean>
+  /** Synced key→value kit state: per-brother packing ticks ("pk:P:0_3" = "1")
+   * and shared-item allocations ("al:1_2" = "P" | "C"). Cloud table `kit`. */
+  kit: Record<string, string>
   dec: Record<string, number>
   ferry: string | null
   outbox: OutboxOp[]

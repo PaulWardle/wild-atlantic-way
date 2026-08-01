@@ -81,6 +81,7 @@ function emptyStore(role: Role = null): Store {
     sig: {},
     pack: {},
     book: {},
+    kit: {},
     dec: {},
     ferry: null,
     outbox: [],
@@ -100,6 +101,7 @@ function normalize(raw: unknown): Store {
     sig: s.sig ?? {},
     pack: s.pack ?? {},
     book: s.book ?? {},
+    kit: s.kit ?? {},
     dec: s.dec ?? {},
     ferry: s.ferry ?? null,
     outbox: s.outbox ?? [],
@@ -243,6 +245,7 @@ export interface StoreContextValue {
   confirmLink: () => void
   dismissLink: () => void
   togglePack: (k: string) => void
+  setKit: (k: string, v: string | null) => void
   toggleBook: (id: string) => void
   pickFerry: (v: string) => void
   pickDec: (id: string, idx: number) => void
@@ -437,12 +440,13 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       sb.from('notes').select('*'),
       sb.from('marks').select('*'),
       sb.from('sig').select('*'),
+      sb.from('kit').select('*'),
     ])
       .then((res) => {
-        const [p, l, n, m, g] = res
+        const [p, l, n, m, g, kt] = res
         // If every table errored (e.g. project paused / no connection), flag the
         // server as unreachable so the UI can say so.
-        const okNow = !p.error || !l.error || !n.error || !m.error || !g.error
+        const okNow = !p.error || !l.error || !n.error || !m.error || !g.error || !kt.error
         // Recovered after downtime → the realtime channel may be dead; rejoin it.
         if (okNow && serverOkRef.current === false) resubFnRef.current?.()
         setServerOk(okNow)
@@ -472,6 +476,13 @@ export function StoreProvider({ children }: { children: ReactNode }) {
             ss[r.sid] = r.ts
           })
           next.sig = ss
+        }
+        if (!kt.error) {
+          const kk: Store['kit'] = {}
+          ;((kt.data || []) as Array<{ k: string; v: string }>).forEach((r) => {
+            kk[r.k] = r.v
+          })
+          next.kit = kk
         }
         // Re-apply optimistic (unsent) inserts on top of the cloud pull.
         const ob = storeRef.current.outbox || []
@@ -542,7 +553,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const queueOp = useCallback((o: Omit<OutboxOp, '_k'>, flag: boolean) => {
     const cur: Store = { ...storeRef.current }
     const key =
-      o.op + ':' + o.t + ':' + (o.row ? o.row.ts || o.row.stop || o.row.sid : o.col + '=' + o.val)
+      o.op + ':' + o.t + ':' + (o.row ? o.row.ts || o.row.stop || o.row.sid || o.row.k : o.col + '=' + o.val)
     const ob = (cur.outbox || []).filter((x) => x._k !== key)
     ob.push({ _k: String(key), ...o })
     cur.outbox = ob
@@ -855,6 +866,23 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     [set],
   )
 
+  /** Synced kit state (per-brother packing ticks + shared-item allocations).
+   * null clears the key. Optimistic locally; upsert/delete rides the outbox. */
+  const setKit = useCallback(
+    (k: string, v: string | null) => {
+      const kit = { ...storeRef.current.kit }
+      if (v == null) {
+        delete kit[k]
+        deleteRow('kit', 'k', k)
+      } else {
+        kit[k] = v
+        upsertRow('kit', { k, v })
+      }
+      set({ kit })
+    },
+    [set, deleteRow, upsertRow],
+  )
+
   const toggleBook = useCallback(
     (id: string) => {
       const book = { ...storeRef.current.book }
@@ -1066,6 +1094,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     deleteAll('notes')
     wipe('marks', 'stop')
     wipe('sig', 'sid')
+    wipe('kit', 'k')
     setTimeout(() => {
       try {
         location.reload()
@@ -1293,6 +1322,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     confirmLink,
     dismissLink,
     togglePack,
+    setKit,
     toggleBook,
     pickFerry,
     pickDec,
