@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { c, font } from '../theme'
 import { photoList } from '../lib/photos'
 import { useStore, type CurrentPlace } from '../store/StoreProvider'
@@ -109,6 +109,34 @@ export function Home() {
   const outbox = store.outbox || []
   const hasUnsent = outbox.length > 0
 
+  // "Back online" confirmation: flash green when the queue drains after being
+  // stuck, or when the server comes back with nothing queued — so it's visible
+  // that reconnecting worked AND the saved stuff actually went.
+  const [syncFlash, setSyncFlash] = useState<string | null>(null)
+  const prevOutRef = useRef(outbox.length)
+  const prevSrvRef = useRef(serverOk)
+  const drainedRef = useRef(0) // queue emptied while the server still looked down
+  useEffect(() => {
+    const was = prevOutRef.current
+    const srvWas = prevSrvRef.current
+    prevOutRef.current = outbox.length
+    prevSrvRef.current = serverOk
+    const delivered = (n: number) => (n === 1 ? 'Back online — your queued update was delivered.' : `Back online — all ${n} queued updates delivered.`)
+    if (was > 0 && outbox.length === 0) {
+      if (serverOk !== false) setSyncFlash(delivered(was))
+      else drainedRef.current = was // announce once the server flag catches up
+    } else if (srvWas === false && serverOk === true && outbox.length === 0) {
+      const n = drainedRef.current
+      drainedRef.current = 0
+      setSyncFlash(n > 0 ? delivered(n) : 'Back online — synced with the trip server.')
+    }
+  }, [outbox.length, serverOk])
+  useEffect(() => {
+    if (!syncFlash) return
+    const t = window.setTimeout(() => setSyncFlash(null), 7000)
+    return () => window.clearTimeout(t)
+  }, [syncFlash])
+
   const whereHeading = isGuest ? 'Where they’ve been' : 'Where we are'
   const liveHereLabel = isGuest ? 'The brothers are here' : 'We’re here'
   const liveArea = curLabel
@@ -206,6 +234,17 @@ export function Home() {
 
   return (
     <div style={{ animation: 'waw-fade .4s ease both' }}>
+      {syncFlash && (
+        <div style={{ margin: '12px 16px 0', border: `1.5px solid ${c.green}`, background: c.greenPanel, borderRadius: 9, padding: '10px 13px', display: 'flex', gap: 9, alignItems: 'center', animation: 'waw-fade .35s ease both' }}>
+          <div style={{ flex: '0 0 17px', height: 17, borderRadius: '50%', background: c.green, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <span style={{ color: c.greenPanel, fontFamily: font.display, fontWeight: 700, fontSize: 11, lineHeight: 1 }}>✓</span>
+          </div>
+          <div>
+            <div style={{ fontFamily: font.mono, fontSize: 8, fontWeight: 700, letterSpacing: '.12em', color: c.green, textTransform: 'uppercase', marginBottom: 2 }}>All synced</div>
+            <div style={{ fontFamily: font.serif, fontSize: 12.5, color: '#5a4f3b', lineHeight: 1.4 }}>{syncFlash}</div>
+          </div>
+        </div>
+      )}
       {serverOk === false && (
         <div style={{ margin: '12px 16px 0', border: `1.5px solid ${c.inkFainter}`, background: c.paperMuted, borderRadius: 9, padding: '10px 13px', display: 'flex', gap: 9, alignItems: 'flex-start' }}>
           <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke={c.inkFaint} strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" style={{ flex: '0 0 auto', marginTop: 1 }}>

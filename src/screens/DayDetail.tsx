@@ -4,8 +4,60 @@ import { tripData } from '../data/tripData'
 import { buildTags, isMarkable } from '../lib/tags'
 import { stripPrice } from '../lib/camps'
 import { summarizeDay, fmtH } from '../lib/daymath'
+import { dayLegs, dayKml, tripKml, downloadKml } from '../lib/nav'
 import { TagChips } from '../components/ui'
 import type { Stop } from '../types'
+
+/** Google Maps hand-off: ride legs pinned to the official line + KML for My Maps. */
+function NavPanel({ di }: { di: number }) {
+  const legs = dayLegs(di)
+  if (!legs.length) return null
+  const dy = tripData.days[di]
+  return (
+    <div style={{ margin: '14px 18px 0', border: `1.5px solid ${c.ink}`, borderRadius: 9, overflow: 'hidden' }}>
+      <div style={{ background: c.teal, color: c.cream, padding: '6px 12px', fontFamily: font.mono, fontSize: 8.5, fontWeight: 700, letterSpacing: '.14em', textTransform: 'uppercase' }}>
+        Navigate · Google Maps
+      </div>
+      <div style={{ background: c.paper, padding: '9px 11px 11px' }}>
+        {legs.map((leg, i) => (
+          <a
+            key={i}
+            href={leg.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ display: 'flex', alignItems: 'center', gap: 10, border: `1.5px solid ${c.teal}`, borderRadius: 7, background: c.tealPanel, padding: '9px 12px', marginBottom: 6, textDecoration: 'none' }}
+          >
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontFamily: font.display, fontWeight: 600, fontSize: 13, textTransform: 'uppercase', color: c.teal, letterSpacing: '.02em', lineHeight: 1.15 }}>{leg.label}</div>
+              <div style={{ fontFamily: font.mono, fontSize: 8.5, color: c.inkFaint, marginTop: 2 }}>{leg.sub}</div>
+            </div>
+            <span style={{ fontFamily: font.display, fontWeight: 700, fontSize: 16, color: c.teal }}>›</span>
+          </a>
+        ))}
+        <div style={{ display: 'flex', gap: 6, marginTop: 2 }}>
+          <button
+            onClick={() => {
+              const k = dayKml(di)
+              if (k) downloadKml(`waw-day-${dy.n}.kml`, k)
+            }}
+            style={{ flex: 1, border: `1.5px solid ${c.ink}`, borderRadius: 7, background: c.paper, padding: '7px 6px', fontFamily: font.mono, fontSize: 9, fontWeight: 700, letterSpacing: '.06em', textTransform: 'uppercase', color: c.ink }}
+          >
+            Day {dy.n} line (KML)
+          </button>
+          <button
+            onClick={() => downloadKml('wild-atlantic-way-full.kml', tripKml())}
+            style={{ flex: 1, border: `1.5px solid ${c.ink}`, borderRadius: 7, background: c.paper, padding: '7px 6px', fontFamily: font.mono, fontSize: 9, fontWeight: 700, letterSpacing: '.06em', textTransform: 'uppercase', color: c.ink }}
+          >
+            Full route (KML)
+          </button>
+        </div>
+        <div style={{ fontFamily: font.serif, fontStyle: 'italic', fontSize: 11.5, color: c.inkFainter, lineHeight: 1.45, marginTop: 8 }}>
+          Legs open in Google Maps with the official line pinned as waypoints. KML files import into Google My Maps (Create map → Import) and show as a layer in the Maps app — the exact line, every stop, every camp.
+        </div>
+      </div>
+    </div>
+  )
+}
 
 /** Route-item badge: locked official road / on-route stop / optional extra / transfer. */
 function KindBadge({ st }: { st: Stop }) {
@@ -138,6 +190,8 @@ export function DayDetail() {
           </div>
         </div>
       )}
+
+      {isBrother && <NavPanel di={di} />}
 
       <div style={{ padding: '18px 18px 4px' }}>
         <div style={{ fontFamily: font.mono, fontSize: 8.5, letterSpacing: '.16em', color: c.inkFaintest, textTransform: 'uppercase', marginBottom: 12 }}>

@@ -40,18 +40,8 @@ const chainage = (lat, lon) => {
   return { km: best, off: bd }
 }
 
-// campsite coordinates (site gate, best-known)
-const campCoords = {
-  'Binion Bay Camping': [55.2571, -7.4258],
-  'Corcreggan Mill': [55.174, -7.863],
-  'Strandhill Caravan & Camping': [54.2699, -8.596],
-  'Keel Sandybanks': [53.9737, -10.0855],
-  'Clifden Eco Beach': [53.539, -10.113],
-  'Aille River Camping': [53.013, -9.377],
-  'Campáil Teach an Aragail': [52.174, -10.348],
-  'Hungry Hill Lodge': [51.689, -9.728],
-  'IOAC, Tagoat': [52.196, -6.386],
-}
+// Campsite coordinates live in tripData.campsites (lat/lon) — one source of
+// truth shared with the in-app Google Maps navigation.
 
 let fail = 0
 const ok = (m) => console.log('  ✓', m)
@@ -82,11 +72,12 @@ else ok(`coverage complete: windows end at km ${cursor} of ${TOTAL} → 100.0%`)
 console.log('\n-- campsites --')
 data.days.forEach((d, i) => {
   if (!d.night || !d.wawKm) return
-  const key = Object.keys(campCoords).find((k) => d.night.primary.startsWith(k))
-  if (!key) { warn(`day ${i + 1}: no coords for "${d.night.primary}" — skipped`); return }
-  const { km, off } = chainage(...campCoords[key])
+  const cs = data.campsites[i]
+  if (!cs || cs.lat == null || cs.lon == null) { bad(`day ${i + 1}: campsite "${d.night.primary}" has no lat/lon in tripData.campsites`); return }
+  const key = cs.primary
+  const { km, off } = chainage(cs.lat, cs.lon)
   const [a, b] = d.wawKm
-  if (key === 'IOAC, Tagoat') { ok(`day ${i + 1}: ${key} = transfer target (off-Way by design)`); return }
+  if (key.startsWith('IOAC')) { ok(`day ${i + 1}: ${key} = transfer target (off-Way by design)`); return }
   if (km < a - 8) bad(`day ${i + 1}: ${key} at km ${km.toFixed(0)} is BEHIND the day's window ${a}→${b}`)
   else if (km > b + 8) bad(`day ${i + 1}: ${key} at km ${km.toFixed(0)} is AHEAD of the day's window ${a}→${b}`)
   else {

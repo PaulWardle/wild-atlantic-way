@@ -1517,7 +1517,9 @@ export const tripData: Trip = {
       "booking": "BOOKED ✓",
       "source": "booked & confirmed by the brothers · 26 Jul 2026",
       "bookingStatus": "booked",
-      "bookingNote": ""
+      "bookingNote": "",
+      "lat": 55.2571,
+      "lon": -7.4258
     },
     {
       "night": "Tue 11",
@@ -1536,7 +1538,9 @@ export const tripData: Trip = {
       "source": "booked & confirmed by the brothers · 26 Jul 2026",
       "booking": "BOOKED ✓",
       "bookingStatus": "booked",
-      "bookingNote": ""
+      "bookingNote": "",
+      "lat": 55.174,
+      "lon": -7.863
     },
     {
       "night": "Wed 12",
@@ -1554,7 +1558,9 @@ export const tripData: Trip = {
       "price": "~€40 total / ~€20pp",
       "source": "previous trip research (app v1 notes) · UNVERIFIED — phone to confirm",
       "bookingStatus": "pending",
-      "bookingNote": "CJ calling"
+      "bookingNote": "CJ calling",
+      "lat": 54.2699,
+      "lon": -8.596
     },
     {
       "night": "Thu 13",
@@ -1573,7 +1579,9 @@ export const tripData: Trip = {
       "source": "booked & confirmed by the brothers · 26 Jul 2026",
       "booking": "BOOKED ✓",
       "bookingStatus": "booked",
-      "bookingNote": ""
+      "bookingNote": "",
+      "lat": 53.9737,
+      "lon": -10.0855
     },
     {
       "night": "Fri 14",
@@ -1592,7 +1600,9 @@ export const tripData: Trip = {
       "booking": "advance booking only — no walk-ins",
       "source": "previous trip research (app v1 notes) · UNVERIFIED — phone to confirm",
       "bookingStatus": "pending",
-      "bookingNote": "CJ calling"
+      "bookingNote": "CJ calling",
+      "lat": 53.539,
+      "lon": -10.113
     },
     {
       "night": "Sat 15",
@@ -1610,7 +1620,9 @@ export const tripData: Trip = {
       "booking": "BOOKED ✓",
       "source": "booked & confirmed 26 Jul 2026 · ailleriverhosteldoolin.ie/camping",
       "bookingStatus": "booked",
-      "bookingNote": ""
+      "bookingNote": "",
+      "lat": 53.013,
+      "lon": -9.377
     },
     {
       "night": "Sun 16",
@@ -1628,7 +1640,9 @@ export const tripData: Trip = {
       "source": "booked & confirmed by the brothers · 26 Jul 2026",
       "bookingStatus": "booked",
       "bookingNote": "",
-      "booking": "BOOKED ✓"
+      "booking": "BOOKED ✓",
+      "lat": 52.174,
+      "lon": -10.348
     },
     {
       "night": "Mon 17",
@@ -1646,7 +1660,9 @@ export const tripData: Trip = {
       "booking": "BOOKED ✓",
       "source": "booked & confirmed by the brothers · 26 Jul 2026 — the endgame is secured",
       "bookingStatus": "booked",
-      "bookingNote": ""
+      "bookingNote": "",
+      "lat": 51.689,
+      "lon": -9.728
     },
     {
       "night": "Tue 18",
@@ -1664,7 +1680,9 @@ export const tripData: Trip = {
       "source": "booked & confirmed by the brothers · 26 Jul 2026",
       "bookingStatus": "booked",
       "bookingNote": "",
-      "booking": "BOOKED ✓"
+      "booking": "BOOKED ✓",
+      "lat": 52.196,
+      "lon": -6.386
     }
   ],
   "campNotes": {

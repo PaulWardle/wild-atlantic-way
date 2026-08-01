@@ -1,7 +1,35 @@
 import { c, font } from '../theme'
-import { useWeather, type WeatherSpot } from '../hooks/useWeather'
-import { wxInfo, type DayForecast, type CurrentForecast } from '../lib/weather'
+import { useWeather, currentDayIndex, type WeatherSpot } from '../hooks/useWeather'
+import { wxInfo, compass, windVsRide, type DayForecast, type CurrentForecast } from '../lib/weather'
+import { dayHeading } from '../lib/nav'
+import { tripData } from '../data/tripData'
 import { WeatherIcon } from './WeatherIcon'
+
+/** Gust + direction line for riders: which way the wind blows and whether it's
+ * on the nose, on the tail, or — the one that matters on a bike — across you. */
+function WindLine({ day, heading }: { day: DayForecast; heading: number | null }) {
+  if (day.gust == null || day.windDir == null) return null
+  const rel = heading != null ? windVsRide(day.windDir, heading) : null
+  // 30+ mph gusts are hard work on a bike; 45+ on exposed headland is a rethink.
+  const rough = day.gust >= 45 ? c.rust : day.gust >= 30 ? c.amber : null
+  const tint = rough ?? (rel === 'crosswind' ? c.amberGold : c.inkFaint)
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 5, fontFamily: font.mono, fontSize: 8.5, color: tint }}>
+      <svg width={11} height={11} viewBox="0 0 24 24" fill="none" stroke={tint} strokeWidth={2.4} strokeLinecap="round" strokeLinejoin="round" style={{ transform: `rotate(${(day.windDir + 180) % 360}deg)`, flex: '0 0 auto' }} aria-hidden="true">
+        <path d="M12 20 V5" />
+        <path d="M6.5 10.5 L12 4.5 L17.5 10.5" />
+      </svg>
+      <span>
+        {compass(day.windDir)} · gusts {day.gust} mph
+        {rel && (
+          <span style={{ fontWeight: rel === 'crosswind' && day.gust >= 30 ? 700 : 400 }}>
+            {' '}· {rough && rel === 'crosswind' ? '⚠ ' : ''}{rel}
+          </span>
+        )}
+      </span>
+    </div>
+  )
+}
 
 function Meta({ children }: { children: React.ReactNode }) {
   return (
@@ -14,11 +42,13 @@ function Card({
   spot,
   day,
   current,
+  heading,
 }: {
   kicker: string
   spot: WeatherSpot
   day: DayForecast | undefined
   current?: CurrentForecast
+  heading: number | null
 }) {
   const f = spot.forecast
   if (!f || !day) {
@@ -73,6 +103,7 @@ function Card({
           {day.wind} mph
         </Meta>
       </div>
+      <WindLine day={day} heading={heading} />
 
       {f.stale && (
         <div style={{ fontFamily: font.mono, fontSize: 7.5, letterSpacing: '.08em', color: c.inkFaintest, textTransform: 'uppercase', marginTop: 7 }}>Last known · offline</div>
@@ -109,6 +140,11 @@ export function WeatherStrip() {
     return null
   }
 
+  // Wind-vs-ride needs the day's direction of travel along the official line.
+  const di = Math.min(currentDayIndex(), tripData.days.length - 1)
+  const headToday = dayHeading(di)
+  const headTomorrow = dayHeading(di + 1)
+
   return (
     <div style={{ margin: '14px 14px 0' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 7 }}>
@@ -116,8 +152,8 @@ export function WeatherStrip() {
         <div style={{ flex: 1, height: 1, background: c.lineSoft }} />
       </div>
       <div style={{ display: 'flex', gap: 9 }}>
-        {today && <Card kicker="Today · here" spot={today} day={today.forecast?.days[0]} current={today.forecast?.current} />}
-        {tomorrow && <Card kicker="Tomorrow" spot={tomorrow} day={tomorrow.forecast?.days[1]} />}
+        {today && <Card kicker="Today · here" spot={today} day={today.forecast?.days[0]} current={today.forecast?.current} heading={headToday} />}
+        {tomorrow && <Card kicker="Tomorrow" spot={tomorrow} day={tomorrow.forecast?.days[1]} heading={headTomorrow} />}
       </div>
     </div>
   )

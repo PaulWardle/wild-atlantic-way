@@ -17,6 +17,10 @@ export interface DayForecast {
   tMin: number
   precip: number // max precipitation probability, %
   wind: number // max wind, mph
+  /** Max gust, mph — what actually shoves a bike around. Absent on stale pre-update caches. */
+  gust?: number
+  /** Dominant wind direction, degrees the wind blows FROM. */
+  windDir?: number
 }
 
 export interface CurrentForecast {
@@ -24,6 +28,8 @@ export interface CurrentForecast {
   code: number
   wind: number
   isDay: boolean
+  gust?: number
+  windDir?: number
 }
 
 export interface Forecast {
@@ -71,8 +77,8 @@ export async function fetchForecast(lat: number, lon: number): Promise<Forecast 
   const url =
     'https://api.open-meteo.com/v1/forecast' +
     `?latitude=${lat.toFixed(3)}&longitude=${lon.toFixed(3)}` +
-    '&current=temperature_2m,weather_code,wind_speed_10m,is_day' +
-    '&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,wind_speed_10m_max' +
+    '&current=temperature_2m,weather_code,wind_speed_10m,wind_gusts_10m,wind_direction_10m,is_day' +
+    '&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,wind_speed_10m_max,wind_gusts_10m_max,wind_direction_10m_dominant' +
     '&timezone=Europe%2FDublin&forecast_days=2&temperature_unit=celsius&wind_speed_unit=mph'
 
   try {
@@ -88,6 +94,8 @@ export async function fetchForecast(lat: number, lon: number): Promise<Forecast 
       tMin: Math.round(d.temperature_2m_min?.[i] ?? 0),
       precip: Math.round(d.precipitation_probability_max?.[i] ?? 0),
       wind: Math.round(d.wind_speed_10m_max?.[i] ?? 0),
+      gust: d.wind_gusts_10m_max?.[i] != null ? Math.round(d.wind_gusts_10m_max[i]) : undefined,
+      windDir: d.wind_direction_10m_dominant?.[i] != null ? Math.round(d.wind_direction_10m_dominant[i]) : undefined,
     }))
     const forecast: Forecast = {
       current: {
@@ -95,6 +103,8 @@ export async function fetchForecast(lat: number, lon: number): Promise<Forecast 
         code: c.weather_code ?? days[0]?.code ?? 0,
         wind: Math.round(c.wind_speed_10m ?? 0),
         isDay: (c.is_day ?? 1) === 1,
+        gust: c.wind_gusts_10m != null ? Math.round(c.wind_gusts_10m) : undefined,
+        windDir: c.wind_direction_10m != null ? Math.round(c.wind_direction_10m) : undefined,
       },
       days,
       fetchedAt: Date.now(),
@@ -107,6 +117,21 @@ export async function fetchForecast(lat: number, lon: number): Promise<Forecast 
     if (cached) return { ...cached, stale: true }
     return null
   }
+}
+
+/** Compass point for a degrees-from-north direction. */
+export function compass(deg: number): string {
+  return ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'][Math.round(deg / 45) % 8]
+}
+
+/** Wind vs the day's direction of travel. `windFrom` is where the wind blows
+ * FROM; `heading` is the way the bikes point. A crosswind is the one that
+ * shoves you across the lane — worse on a bike than the same speed on the nose. */
+export function windVsRide(windFrom: number, heading: number): 'headwind' | 'tailwind' | 'crosswind' {
+  const rel = Math.abs((((windFrom - heading) % 360) + 540) % 360 - 180) // 0 = on the nose, 180 = behind
+  if (rel <= 50) return 'headwind'
+  if (rel >= 130) return 'tailwind'
+  return 'crosswind'
 }
 
 /** WMO weather code → a short label + one of our icon keys. */

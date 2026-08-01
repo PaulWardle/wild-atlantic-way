@@ -19,7 +19,7 @@ export interface WeatherState {
 }
 
 /** Which trip day we're on: 0 before/at departure, clamped to the last day. */
-function currentDayIndex(): number {
+export function currentDayIndex(): number {
   const route = tripData.route
   try {
     const depart = new Date(tripData.meta.depart + 'T00:00:00').getTime()

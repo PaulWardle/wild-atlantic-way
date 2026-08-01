@@ -133,6 +133,10 @@ export interface Campsite {
   primaryNote: string
   backup: string
   sellout: boolean
+  /** Site coordinates — drive the route validator's forward-progress gate and
+   * the Google Maps navigation legs. */
+  lat?: number
+  lon?: number
   /** Road miles off the official line to reach the site (evening). */
   deviationMi?: number
   /** Road miles ridden backwards next morning to rejoin forward progress. */
