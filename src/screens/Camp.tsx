@@ -1,6 +1,6 @@
 import { c, font } from '../theme'
 import { tripData } from '../data/tripData'
-import { ConfirmBadge, Kicker, ScreenTitle } from '../components/ui'
+import { Kicker, ScreenTitle } from '../components/ui'
 
 /* Every night is booked and confirmed — the cards say exactly that and nothing
  * else: name, location, CONFIRMED. tripData.campsites is the single source of
@@ -41,9 +41,8 @@ export function Camp() {
                 </svg>
                 <div style={{ fontFamily: font.mono, fontSize: 9, fontWeight: 700, color: panel, marginTop: 5, textAlign: 'center', lineHeight: 1.2 }}>{camp.night}</div>
               </div>
-              <div style={{ flex: 1, minWidth: 0, padding: '11px 13px' }}>
-                <ConfirmBadge tint={tint} panel={panel} label={booked ? 'Confirmed' : 'Pending'} />
-                <div style={{ fontFamily: font.display, fontWeight: 600, fontSize: 15, textTransform: 'uppercase', color: c.ink, lineHeight: 1.12, marginTop: 4 }}>{camp.primary}</div>
+              <div style={{ flex: 1, minWidth: 0, padding: '12px 13px' }}>
+                <div style={{ fontFamily: font.display, fontWeight: 600, fontSize: 15, textTransform: 'uppercase', color: c.ink, lineHeight: 1.12 }}>{camp.primary}</div>
                 <div style={{ fontFamily: font.serif, fontSize: 12.5, color: c.inkMuted, marginTop: 3 }}>{camp.base}</div>
               </div>
             </div>

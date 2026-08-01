@@ -256,18 +256,3 @@ export function Card({ children, style }: { children: ReactNode; style?: CSSProp
   )
 }
 
-/** Campsite status badge (✓ CONFIRMED) — shared by the Campsites screen and
- *  the day cards so they always match. The tick is an SVG, not a text glyph:
- *  glyphs sit on a font baseline and drift off-centre inside the circle. */
-export function ConfirmBadge({ tint, panel, label }: { tint: string; panel: string; label: string }) {
-  return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontFamily: "'Space Mono',monospace", fontSize: 8, fontWeight: 700, letterSpacing: '.12em', color: tint, textTransform: 'uppercase' }}>
-      <span style={{ display: 'inline-flex', width: 13, height: 13, borderRadius: '50%', background: tint, alignItems: 'center', justifyContent: 'center', flex: '0 0 auto' }}>
-        <svg width={8} height={8} viewBox="0 0 24 24" fill="none" stroke={panel} strokeWidth={4.5} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-          <path d="M4 12.5 L10 18.5 L20 6.5" />
-        </svg>
-      </span>
-      {label}
-    </span>
-  )
-}

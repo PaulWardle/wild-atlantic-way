@@ -4,7 +4,7 @@ import { tripData } from '../data/tripData'
 import { buildTags, isMarkable } from '../lib/tags'
 import { summarizeDay, fmtH } from '../lib/daymath'
 import { dayLegs, dayKml, tripKml, downloadKml } from '../lib/nav'
-import { ConfirmBadge, TagChips } from '../components/ui'
+import { TagChips } from '../components/ui'
 import type { Stop } from '../types'
 
 /** Google Maps hand-off: ride legs pinned to the official line + KML for My Maps. */
@@ -264,9 +264,8 @@ export function DayDetail() {
                   </svg>
                   <span style={{ fontFamily: font.mono, fontSize: 9, fontWeight: 700, letterSpacing: '.14em', textTransform: 'uppercase' }}>Tonight — {night.area}</span>
                 </div>
-                <div style={{ padding: '11px 13px' }}>
-                  <ConfirmBadge tint={nTint} panel={nPanel} label={booked ? 'Confirmed' : 'Pending'} />
-                  <div style={{ fontFamily: font.display, fontWeight: 600, fontSize: 16, textTransform: 'uppercase', color: c.ink, letterSpacing: '.01em', lineHeight: 1.1, marginTop: 4 }}>{cs?.primary || night.primary}</div>
+                <div style={{ padding: '12px 13px' }}>
+                  <div style={{ fontFamily: font.display, fontWeight: 600, fontSize: 16, textTransform: 'uppercase', color: c.ink, letterSpacing: '.01em', lineHeight: 1.1 }}>{cs?.primary || night.primary}</div>
                   {cs?.base && <div style={{ fontFamily: font.serif, fontSize: 12.5, color: c.inkMuted, marginTop: 3 }}>{cs.base}</div>}
                 </div>
               </div>
