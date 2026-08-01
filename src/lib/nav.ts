@@ -15,7 +15,6 @@
  */
 import { wawSpine, type SpinePoint } from '../data/wawSpine'
 import { tripData } from '../data/tripData'
-import { journey } from '../data/journey'
 
 const T = tripData
 
@@ -55,18 +54,22 @@ function pointAtKm(km: number): SpinePoint {
   return best
 }
 
-/** Chainage (km from Muff) of an arbitrary point, via the clean spine. */
-function chainKm(lat: number, lon: number): number {
-  let best = 0
+/** Nearest clean-spine point within one day's stretch of line. Near towns two
+ * branches of the route pass close together (e.g. Clifden), so a global
+ * nearest-point search can hop to another day's road — always scope to the
+ * window being ridden. */
+function nearestOnStretch(lat: number, lon: number, a: number, b: number): SpinePoint {
+  let best: SpinePoint | null = null
   let bd = Infinity
   for (const p of cleanSpine) {
+    if (p[2] < a - 8 || p[2] > b + 8) continue
     const d = hav(lat, lon, p[0], p[1])
     if (d < bd) {
       bd = d
-      best = p[2]
+      best = p
     }
   }
-  return best
+  return best ?? cleanSpine[0]
 }
 
 /** General direction of travel for a day (initial bearing, window start → end).
@@ -143,8 +146,13 @@ export interface Checkpoint {
   km: number
 }
 
-/** The day's checkpoints in ride order. */
-export function dayCheckpoints(di: number): Checkpoint[] {
+/** The day's checkpoints, in itinerary order: morning start, every rideable
+ * stop on the day card, tonight's camp. Destinations keep their REAL
+ * coordinates (Google snaps to the road itself — spine-snapping goes wrong
+ * where the route runs both sides of a bay). Chainage is only used for pin
+ * sampling and is clamped monotonic, so out-and-back spurs and across-water
+ * mismatches can't drag pins backwards. Extras marked Cut drop out. */
+export function dayCheckpoints(di: number, marks?: StopMarks): Checkpoint[] {
   const dy = T.days[di]
   const w = dy?.wawKm
   if (!w) return []
@@ -153,8 +161,6 @@ export function dayCheckpoints(di: number): Checkpoint[] {
 
   if (di === 0) {
     cps.push({ name: 'Larne — off the ferry', lat: 54.85, lon: -5.81, km: a - 1 })
-    const s = pointAtKm(a)
-    cps.push({ name: 'Muff — the start marker', lat: s[0], lon: s[1], km: a })
   } else if (campCoord(di - 1)) {
     const p = campCoord(di - 1) as [number, number]
     cps.push({ name: `Morning — ${T.campsites[di - 1].primary}`, lat: p[0], lon: p[1], km: a })
@@ -163,20 +169,21 @@ export function dayCheckpoints(di: number): Checkpoint[] {
     cps.push({ name: 'Day start', lat: s[0], lon: s[1], km: a })
   }
 
-  journey.forEach((j) => {
-    if (j.phase !== 'waw') return
-    const km = chainKm(j.lat, j.lon)
-    if (km <= a + 2 || km >= b - 2) return
-    if (cps.some((c) => Math.abs(c.km - km) < 3)) return
-    cps.push({ name: j.label, lat: j.lat, lon: j.lon, km })
+  const camp = campCoord(di)
+  dy.stops.forEach((st, si) => {
+    if (st.kind === 'transfer' || !st.kind || st.lat == null || st.lon == null) return
+    if (st.kind === 'extra' && marks?.['d' + di + 's' + si] === 'cut') return
+    // Skip a stop that sits on top of the previous checkpoint or the camp —
+    // the neighbour covers it. (0.9 km: Farren's Bar and Malin Head are
+    // 1.1 km apart and both belong in the list.)
+    if (cps.length && hav(cps[cps.length - 1].lat, cps[cps.length - 1].lon, st.lat, st.lon) < 0.9) return
+    if (camp && hav(camp[0], camp[1], st.lat, st.lon) < 0.9) return
+    cps.push({ name: st.n, lat: st.lat, lon: st.lon, km: nearestOnStretch(st.lat, st.lon, a, b)[2] })
   })
 
-  const camp = campCoord(di)
   const isTransferCamp = di > 0 && !!dy.transferMi
-  if (isTransferCamp) {
-    const e = pointAtKm(b)
-    cps.push({ name: 'Kinsale — the finish', lat: e[0], lon: e[1], km: b })
-    if (camp) cps.push({ name: `Camp — ${T.campsites[di].primary}`, lat: camp[0], lon: camp[1], km: b + 1 })
+  if (isTransferCamp && camp) {
+    cps.push({ name: `Camp — ${T.campsites[di].primary}`, lat: camp[0], lon: camp[1], km: b + 1 })
   } else if (camp) {
     cps.push({ name: `Camp — ${T.campsites[di].primary}`, lat: camp[0], lon: camp[1], km: b })
   } else {
@@ -184,7 +191,9 @@ export function dayCheckpoints(di: number): Checkpoint[] {
     cps.push({ name: 'End of day', lat: e[0], lon: e[1], km: b })
   }
 
-  return cps.sort((x, y) => x.km - y.km)
+  // Itinerary order is the truth — chainage must not run backwards along it.
+  for (let i = 1; i < cps.length; i++) cps[i].km = Math.max(cps[i].km, cps[i - 1].km)
+  return cps
 }
 
 /** One Google Maps link for the chosen stretch: current location → `to`,
@@ -213,7 +222,7 @@ export function navStretch(
   dy.stops.forEach((st, si) => {
     if (st.kind !== 'extra' || st.lat == null || st.lon == null) return
     if (marks?.['d' + di + 's' + si] !== 'keep') return
-    const km = chainKm(st.lat, st.lon)
+    const km = nearestOnStretch(st.lat, st.lon, w[0], w[1])[2]
     if (km < lo - 3 || km > hi + 3) return
     kept.push({ km, lat: st.lat, lon: st.lon })
     via.push(st.n)

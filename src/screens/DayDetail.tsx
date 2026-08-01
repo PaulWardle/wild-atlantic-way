@@ -13,12 +13,15 @@ import type { Stop } from '../types'
  * it advances the panel to the next stretch, so the day unfolds tap by tap.
  * Progress is remembered per day, per phone. */
 function NavPanel({ di, marks }: { di: number; marks: Record<string, 'keep' | 'maybe' | 'cut'> }) {
-  const cps = useMemo(() => dayCheckpoints(di), [di])
+  const cps = useMemo(() => dayCheckpoints(di, marks), [di, marks])
   const progKey = 'waw:navprog:' + di
+  // Progress is remembered by checkpoint NAME, so cutting a stop from the
+  // list can't shift what "where I'm at" points to.
   const [fi, setFi] = useState(() => {
     try {
-      const v = parseInt(localStorage.getItem(progKey) || '0', 10)
-      return Math.max(0, Math.min(isNaN(v) ? 0 : v, cps.length - 2))
+      const saved = localStorage.getItem(progKey)
+      const i = saved ? cps.findIndex((cp) => cp.name === saved) : -1
+      return Math.max(0, Math.min(i, cps.length - 2))
     } catch {
       return 0
     }
@@ -26,8 +29,11 @@ function NavPanel({ di, marks }: { di: number; marks: Record<string, 'keep' | 'm
   const [ti, setTi] = useState(() => Math.min(fi + 1, cps.length - 1))
   const [dd, setDd] = useState<null | 'from' | 'to'>(null)
   if (cps.length < 2) return null
-  const from = cps[fi]
-  const to = cps[ti]
+  // Clamp — cutting an extra can shrink the list under live indexes.
+  const fiC = Math.max(0, Math.min(fi, cps.length - 2))
+  const tiC = Math.max(fiC + 1, Math.min(ti, cps.length - 1))
+  const from = cps[fiC]
+  const to = cps[tiC]
   const { url, mi, via } = navStretch(di, from, to, marks)
   const pickFrom = (i: number) => {
     setFi(i)
@@ -42,12 +48,12 @@ function NavPanel({ di, marks }: { di: number; marks: Record<string, 'keep' | 'm
   // Tapping the link marks this stretch ridden and lines up the next one.
   const advance = () => {
     try {
-      localStorage.setItem(progKey, String(ti))
+      localStorage.setItem(progKey, cps[tiC].name)
     } catch {
       /* private mode — progress just won't persist */
     }
-    setFi(Math.min(ti, cps.length - 2))
-    setTi(Math.min(ti + 1, cps.length - 1))
+    setFi(Math.min(tiC, cps.length - 2))
+    setTi(Math.min(tiC + 1, cps.length - 1))
   }
   const rowLabel: React.CSSProperties = { fontFamily: font.mono, fontSize: 8, fontWeight: 700, letterSpacing: '.12em', color: c.inkFaint, textTransform: 'uppercase', marginBottom: 4 }
   return (
@@ -58,17 +64,17 @@ function NavPanel({ di, marks }: { di: number; marks: Record<string, 'keep' | 'm
       <div style={{ background: c.paper, padding: '11px 12px 12px' }}>
         <div style={rowLabel}>I’m at</div>
         <Dropdown
-          label={(fi > 0 ? '✓ ' : '') + from.name}
+          label={(fiC > 0 ? '✓ ' : '') + from.name}
           open={dd === 'from'}
           onToggle={() => setDd(dd === 'from' ? null : 'from')}
-          options={cps.slice(0, cps.length - 1).map((cp, i) => ({ label: (i < fi ? '✓ ' : '') + cp.name, pick: () => pickFrom(i) }))}
+          options={cps.slice(0, cps.length - 1).map((cp, i) => ({ label: (i < fiC ? '✓ ' : '') + cp.name, pick: () => pickFrom(i) }))}
         />
         <div style={{ ...rowLabel, marginTop: 10 }}>Ride to</div>
         <Dropdown
           label={to.name}
           open={dd === 'to'}
           onToggle={() => setDd(dd === 'to' ? null : 'to')}
-          options={cps.slice(1).map((cp, i) => ({ label: (i + 1 <= fi ? '✓ ' : '') + cp.name, pick: () => pickTo(i + 1) }))}
+          options={cps.slice(1).map((cp, i) => ({ label: (i + 1 <= fiC ? '✓ ' : '') + cp.name, pick: () => pickTo(i + 1) }))}
         />
         <a
           href={url}
