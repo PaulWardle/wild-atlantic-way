@@ -52,7 +52,7 @@ function NavPanel({ di, marks }: { di: number; marks: Record<string, 'keep' | 'm
           </button>
         </div>
         <div style={{ fontFamily: font.serif, fontStyle: 'italic', fontSize: 11.5, color: c.inkFainter, lineHeight: 1.45, marginTop: 8 }}>
-          Legs start from your current location and pin the official line as waypoints. Keep an optional extra and it's routed in; Maybe/Cut leave it out — links rebuild every time you tap. KML files import into Google My Maps (Create map → Import) and show as a layer in the Maps app.
+          Each leg starts from your current location, with the official line pinned every ~5–7 miles — ride them in order, one after the other. Keep an optional extra and it's routed in; Maybe/Cut leave it out — links rebuild every time you tap. Import the KML into Google My Maps once (Create map → Import) and the exact line lives on your map as the cross-check.
         </div>
       </div>
     </div>

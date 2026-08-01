@@ -176,9 +176,9 @@ export function dayLegs(di: number, marks?: StopMarks): NavLeg[] {
 
   const ride = (label: string, from: number, to: number, dest: [number, number]) => {
     const ex = kept.filter((e) => e.km >= from - 3 && e.km <= to + 3)
-    // Waypoint budget is 9: kept extras always ride, the official-line samples
-    // fill whatever room is left.
-    const wps: Wp[] = [...sampleWaypoints(from, to, Math.max(3, 8 - ex.length) - 1), ...ex]
+    // Waypoint budget is 9 per link: kept extras always ride, the
+    // official-line samples fill every remaining slot.
+    const wps: Wp[] = [...sampleWaypoints(from, to, Math.max(4, 9 - ex.length) - 1), ...ex]
     legs.push({
       label,
       sub: `${kmToMi(to - from)} mi of official line${ex.length ? ' · via ' + ex.map((e) => e.name).join(' + ') : ''}`,
@@ -199,15 +199,18 @@ export function dayLegs(di: number, marks?: StopMarks): NavLeg[] {
   const isTransferCamp = di > 0 && !!dy.transferMi
   const dest: [number, number] = !isTransferCamp && camp ? camp : [endPt[0], endPt[1]]
 
-  // Two legs when the window is long — keeps waypoints dense enough that
-  // Google can't shortcut inland between them.
-  if (b - a > 200) {
-    const mid = pointAtKm((a + b) / 2)
-    const midName = nearestLabel(mid[0], mid[1])
-    ride(`Ride 1 · to ${midName}`, a, (a + b) / 2, [mid[0], mid[1]])
-    ride(`Ride 2 · ${midName} onward`, (a + b) / 2, b, dest)
-  } else {
-    ride('The ride · official line', a, b, dest)
+  // Split the day into legs of ~100 km so the 9-pin-per-link cap stays dense
+  // (~7–11 km between pins) — too tight for Google to shortcut off the Way.
+  // Every day gets at least two (a morning and an afternoon).
+  const nLegs = Math.max(2, Math.ceil((b - a) / 100))
+  for (let i = 0; i < nLegs; i++) {
+    const from = a + ((b - a) * i) / nLegs
+    const to = a + ((b - a) * (i + 1)) / nLegs
+    const last = i === nLegs - 1
+    const legEnd = pointAtKm(to)
+    const legDest: [number, number] = last ? dest : [legEnd[0], legEnd[1]]
+    const endName = last ? (!isTransferCamp && camp ? 'camp' : 'Kinsale — the finish') : nearestLabel(legEnd[0], legEnd[1])
+    ride(`Leg ${i + 1} of ${nLegs} · to ${endName}`, from, to, legDest)
   }
 
   // Final-day transfer off the Way to the ferry-night camp.
