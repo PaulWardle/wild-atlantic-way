@@ -1023,7 +1023,8 @@ export const tripData: Trip = {
           ],
           "d": "The loop at golden hour, buses gone, sun over the water: Ventry, the beehive huts, Slea Head itself — then DUNMORE HEAD, mainland Ireland's westernmost point and the Blasket Islands view. Signature Point eleven, in the best light of the day.",
           "lat": 52.097,
-          "lon": -10.45
+          "lon": -10.45,
+          "warn": "Ride it CLOCKWISE (Ventry → Slea Head → Dunquin) — the coaches’ one-way convention; going the other way means meeting them head-on on the cliff sections. The NEXT STOP button already routes it the right way round."
         },
         {
           "n": "Dunquin → Ballyferriter → Gallarus",
@@ -1105,7 +1106,8 @@ export const tripData: Trip = {
           ],
           "kind": "waw",
           "lat": 51.947,
-          "lon": -10.22
+          "lon": -10.22,
+          "warn": "Coaches do the Ring anticlockwise — the same direction we ride it, so you never meet one head-on at a pinch point. Overtake the odd one and forget them."
         },
         {
           "n": "Portmagee & Kerry Cliffs",

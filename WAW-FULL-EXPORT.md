@@ -334,7 +334,7 @@ Stop detail:
 - **Camp → Castlegregory**: Onto the Dingle peninsula’s north shore under the Slieve Mish, out around the Castlegregory/Maharees spit — official line, locked.
 - **CONOR PASS**: Ireland’s highest paved pass, ridden INBOUND — the official direction — from Cloghane over the top and the great descent into Dingle with the harbour laid out below.
 - **Dingle town**: Into Dingle ~17:00 off the Conor Pass descent — quick fuel and food before the evening loop. (The proper pint comes after Gallarus.)
-- **SLEA HEAD DRIVE — evening**: The loop at golden hour, buses gone, sun over the water: Ventry, the beehive huts, Slea Head itself — then DUNMORE HEAD, mainland Ireland's westernmost point and the Blasket Islands view. Signature Point eleven, in the best light of the day.
+- **SLEA HEAD DRIVE — evening**: The loop at golden hour, buses gone, sun over the water: Ventry, the beehive huts, Slea Head itself — then DUNMORE HEAD, mainland Ireland's westernmost point and the Blasket Islands view. Signature Point eleven, in the best light of the day. ⚠ Ride it CLOCKWISE (Ventry → Slea Head → Dunquin) — the coaches’ one-way convention; going the other way means meeting them head-on on the cliff sections. The NEXT STOP button already routes it the right way round.
 - **Dunquin → Ballyferriter → Gallarus**: Round the loop's west side — Kruger's (Ireland's westernmost pub) at Dunquin — to the tent beside the 1,200-year-old Gallarus Oratory. The official line continues FORWARD from here through Dingle tomorrow: zero repeated road.
 
 **NIGHT: Campáil Teach an Aragail** (West Dingle) — Beside the Gallarus Oratory, at the END of today's window — the Way exits forward through Dingle tomorrow. Zero repeated road.
@@ -369,7 +369,7 @@ Stop detail:
 - **Gallarus → Dingle, forward**: The line itself runs from Gallarus back through Dingle harbour — forward official kilometres, not a retrace. Coffee in Dingle at 07:30 before the town wakes.
 - **South Pole Inn, Annascaul**: Tom Crean's own pub, directly on the exit road east — the Antarctic legend's statue outside. Shut at this hour (the pint was last night in Dingle), but the photo is free and costs zero miles.
 - **Inch Strand**: Three miles of dune-backed sand — dead on the exit road east. Zero detour, one photo.
-- **Killorglin → the N70 coast**: Onto the Ring of Kerry proper, ridden ONCE, anticlockwise with the flow: Glenbeigh, Rossbeigh strand, Kells, Cahersiveen.
+- **Killorglin → the N70 coast**: Onto the Ring of Kerry proper, ridden ONCE, anticlockwise with the flow: Glenbeigh, Rossbeigh strand, Kells, Cahersiveen. ⚠ Coaches do the Ring anticlockwise — the same direction we ride it, so you never meet one head-on at a pinch point. Overtake the odd one and forget them.
 - **Portmagee & Kerry Cliffs**: Over the bridge onto VALENTIA ISLAND — Bray Head and Geokaun are on the official line — back through Portmagee to the Kerry Cliffs: Skellig Michael and Little Skellig off the cliffs. (Landing boats sell out months ahead; the cliffs are the 9-day version.) Signature Point twelve.
 - **Coomanaspig Pass**: Up and over from Portmagee to St Finian’s Bay — one of the highest public roads in Ireland, savage gradients, monastery views.
 - **Waterville → Coomakista**: Charlie Chaplin’s seafront, then the Coomakista pass viewpoint over Ballinskelligs Bay and the Skelligs again.
