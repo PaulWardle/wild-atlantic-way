@@ -2,7 +2,6 @@ import { c, font, phaseInfo } from '../theme'
 import { useStore } from '../store/StoreProvider'
 import { tripData } from '../data/tripData'
 import { buildTags, isMarkable } from '../lib/tags'
-import { stripPrice } from '../lib/camps'
 import { summarizeDay, fmtH } from '../lib/daymath'
 import { dayLegs, dayKml, tripKml, downloadKml } from '../lib/nav'
 import { TagChips } from '../components/ui'
@@ -244,10 +243,12 @@ export function DayDetail() {
       </div>
 
       {night && (() => {
-        // Colour is the booking status: green = booked, amber = unconfirmed.
-        const unconfirmed = T.campsites[di] && T.campsites[di].bookingStatus !== 'booked'
-        const nTint = unconfirmed ? c.amber : c.green
-        const nPanel = unconfirmed ? c.amberPanel : c.greenPanel
+        // The campsite card: name, location, CONFIRMED — nothing else. Status
+        // (and colour) come from tripData.campsites, the single source of truth.
+        const cs = T.campsites[di]
+        const booked = !cs || cs.bookingStatus === 'booked'
+        const nTint = booked ? c.green : c.amber
+        const nPanel = booked ? c.greenPanel : c.amberPanel
         return (
         <div style={{ margin: '4px 18px 0' }}>
           <div style={{ display: 'flex', gap: 0 }}>
@@ -264,29 +265,12 @@ export function DayDetail() {
                   <span style={{ fontFamily: font.mono, fontSize: 9, fontWeight: 700, letterSpacing: '.14em', textTransform: 'uppercase' }}>Tonight — {night.area}</span>
                 </div>
                 <div style={{ padding: '11px 13px' }}>
-                  <div style={{ fontFamily: font.display, fontWeight: 600, fontSize: 16, textTransform: 'uppercase', color: c.ink, letterSpacing: '.01em', lineHeight: 1.1 }}>{night.primary}</div>
-                  {/* colour is the status: amber note only while unconfirmed (from tripData.campsites) */}
-                  {isBrother && T.campsites[di] && T.campsites[di].bookingStatus !== 'booked' && (
-                    <div style={{ fontFamily: font.mono, fontSize: 8.5, color: c.amber, marginTop: 4, letterSpacing: '.04em' }}>
-                      {T.campsites[di].bookingNote || 'not yet confirmed'}
-                    </div>
-                  )}
-                  {night.sellout && isBrother && (
-                    <div style={{ display: 'inline-block', marginTop: 5, fontFamily: font.mono, fontSize: 8, fontWeight: 700, letterSpacing: '.1em', textTransform: 'uppercase', color: c.rust, border: `1px solid ${c.rust}`, borderRadius: 3, padding: '1px 5px' }}>
-                      Book this week — sells out
-                    </div>
-                  )}
-                  {stripPrice(night.note) && <div style={{ fontFamily: font.serif, fontSize: 13, color: '#5a5140', lineHeight: 1.5, marginTop: 6 }}>{stripPrice(night.note)}</div>}
-                  {(night.deviationMi != null || night.retraceMi != null) && (
-                    <div style={{ fontFamily: font.mono, fontSize: 9, color: c.inkFaint, marginTop: 7, borderTop: '1px dashed #b9c0a0', paddingTop: 6, lineHeight: 1.6 }}>
-                      WAW deviation +{night.deviationMi ?? 0} mi
-                      {night.retraceMi ? (
-                        <> · repeated road next morning ~{night.retraceMi} mi{night.retraceWhy ? <span style={{ color: c.inkFaintest }}> — {night.retraceWhy}</span> : null}</>
-                      ) : (
-                        <> · ✓ forward progression, no retrace</>
-                      )}
-                    </div>
-                  )}
+                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontFamily: font.mono, fontSize: 8, fontWeight: 700, letterSpacing: '.12em', color: nTint, textTransform: 'uppercase' }}>
+                    <span style={{ display: 'inline-flex', width: 13, height: 13, borderRadius: '50%', background: nTint, color: nPanel, alignItems: 'center', justifyContent: 'center', fontSize: 9, fontFamily: font.display, fontWeight: 700 }}>✓</span>
+                    {booked ? 'Confirmed' : 'Pending'}
+                  </div>
+                  <div style={{ fontFamily: font.display, fontWeight: 600, fontSize: 16, textTransform: 'uppercase', color: c.ink, letterSpacing: '.01em', lineHeight: 1.1, marginTop: 4 }}>{cs?.primary || night.primary}</div>
+                  {cs?.base && <div style={{ fontFamily: font.serif, fontSize: 12.5, color: c.inkMuted, marginTop: 3 }}>{cs.base}</div>}
                 </div>
               </div>
             </div>

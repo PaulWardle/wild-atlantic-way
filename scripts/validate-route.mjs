@@ -40,6 +40,20 @@ const chainage = (lat, lon) => {
   return { km: best, off: bd }
 }
 
+// Nearest point of ONE DAY'S stretch of line. Near towns two branches of the
+// route can pass close together (e.g. Clifden), so the globally nearest spine
+// point may belong to another day — the camp gate must measure against the
+// day's own window.
+const chainageWithin = (lat, lon, a, b) => {
+  let best = a, bd = 1e9
+  for (const [plat, plon, pkm] of spine) {
+    if (pkm < a - 8 || pkm > b + 8) continue
+    const d = hav([lat, lon], [plat, plon])
+    if (d < bd) { bd = d; best = pkm }
+  }
+  return { km: best, off: bd }
+}
+
 // Campsite coordinates live in tripData.campsites (lat/lon) — one source of
 // truth shared with the in-app Google Maps navigation.
 
@@ -75,10 +89,11 @@ data.days.forEach((d, i) => {
   const cs = data.campsites[i]
   if (!cs || cs.lat == null || cs.lon == null) { bad(`day ${i + 1}: campsite "${d.night.primary}" has no lat/lon in tripData.campsites`); return }
   const key = cs.primary
-  const { km, off } = chainage(cs.lat, cs.lon)
   const [a, b] = d.wawKm
   if (key.startsWith('IOAC')) { ok(`day ${i + 1}: ${key} = transfer target (off-Way by design)`); return }
-  if (km < a - 8) bad(`day ${i + 1}: ${key} at km ${km.toFixed(0)} is BEHIND the day's window ${a}→${b}`)
+  const { km, off } = chainageWithin(cs.lat, cs.lon, a, b)
+  if (off > 10) bad(`day ${i + 1}: ${key} is ${off.toFixed(0)}km off the day's stretch of line (${a}→${b}) — wrong day or wrong coords`)
+  else if (km < a - 8) bad(`day ${i + 1}: ${key} at km ${km.toFixed(0)} is BEHIND the day's window ${a}→${b}`)
   else if (km > b + 8) bad(`day ${i + 1}: ${key} at km ${km.toFixed(0)} is AHEAD of the day's window ${a}→${b}`)
   else {
     const inside = km < b - 8

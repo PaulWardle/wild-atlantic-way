@@ -15,58 +15,61 @@ Generated 26 Jul 2026 directly from the app's live data (single source of truth)
 
 ## PART 2 — THE DECISION LOG (what was decided, why, and what was rejected)
 
-**D1. Ride south, Muff → Kinsale**
+**D1. ALL NINE NIGHTS CONFIRMED (1 Aug)**
+Booking phase closed: every night is booked and confirmed. All operational chatter (pending flags, CJ-calling notes, verification chips, prices, backups, sell-out warnings) removed from data and UI — campsite cards now show name, location, CONFIRMED only. Aille River listed under its full name (Aille River Tourist Hostel & Campsite); IOAC shortened to its proper name.
+
+**D2. Ride south, Muff → Kinsale**
 The official start/end markers are at Muff and Kinsale. Southbound puts the fixed Larne landing at the correct end and finishes 130mi from the booked boat. No alternative considered viable.
 
-**D2. Day 1 LOCKED: Larne → Muff → Stroove/the Warren → Farren's → Malin Head → Binion**
+**D3. Day 1 LOCKED: Larne → Muff → Stroove/the Warren → Farren's → Malin Head → Binion**
 Riders' explicit instruction + Binion is the one booked night. Malin Head in the EVENING (~19:30) means Farren's Bar is open — the rejected alternative (Malin as a Day-2 dawn spur, proposed by one planning pass) was refuted in verification: the pub is shut at 09:30 AND it hides ~24mi of re-ridden road. Antrim Coast and Torr Head REMOVED from the app entirely (riders' call, 26 Jul): the trip starts at Muff; Larne→Muff is a plain 75mi transfer.
 
-**D3. Night 2 — Corcreggan Mill, Dunfanaghy (km 279)**
+**D4. Night 2 — Corcreggan Mill, Dunfanaghy (km 279)**
 Exactly at the end of the Fanad/Rosguill window, on the forward line; Horn Head (km 312) opens the next morning IN the direction of travel. The old plan's sin — visiting Bloody Foreland (km 346) then sleeping back at Dunfanaghy — is structurally impossible now.
 
-**D4. Night 3 — Strandhill (km 660)**
+**D5. Night 3 — Strandhill (km 660)**
 The old plan's worst flaw: it rode to Downpatrick Head (km 741) then BACK east to sleep at Strandhill (km 660), then re-rode the same coast next day — ~100 wasted miles across two days. Fix: Day 3 ENDS at Strandhill; all of north Mayo (Downpatrick, Céide, Erris) belongs to Day 4. Site kept — it was the day boundary that was wrong, not the campsite.
 
-**D5. Night 4 — Keel Sandybanks, Achill (km 1046)**
+**D6. Night 4 — Keel Sandybanks, Achill (km 1046)**
 End of the Mayo window. Keem Bay (km 1053) is deliberately NOT visited the same evening: it opens Day 5 as a dawn spur in golden light, in the direction of travel.
 
-**D6. Night 5 — Clifden Eco Beach, Claddaghduff (km 1196)**
-The tent is ON the official line, one km BEFORE Sky Road/Derrigimlagh which open Day 6 — the old plan visited them first and slept backwards. Also the designated recovery night (Day 5 is the short day by design — see Decision 12).
+**D7. Night 5 — Clifden Camping & Caravan Park (Westport Rd, Clifden)**
+FINAL (1 Aug): the booking landed at the former backup — Clifden Camping & Caravan Park, 2km NE of Clifden town — not Eco Beach at Claddaghduff. Still at the Day-5/6 boundary (~2km off the day-5 stretch), still ahead of Sky Road/Derrigimlagh which open Day 6, still the designated recovery night. Route, windows and mileage unchanged.
 
-**D7. Night 6 — Nagle's, Doolin (km 1486)**
+**D8. Night 6 — Nagle's, Doolin (km 1486)**
 Cliffs of Moher sit effectively adjacent on the line (the two are ~1.5km apart in chainage) — sleeping at Doolin buys the Cliffs at 08:00 before the coaches, zero dead leg, plus the trad session. Most contested booking of the trip (peak Saturday). UPDATE 26 Jul: Nagle's is FULL. FINAL: Aille River Camping, Doolin — BOOKED & CONFIRMED (ailleriverhosteldoolin.ie/camping). Riverside in the village, same forward position, zero route impact.
 
-**D8. Night 7 — Campáil Teach an Aragail, Gallarus (km 1867) — ZERO retrace (corrected 26 Jul)**
+**D9. Night 7 — Campáil Teach an Aragail, Gallarus (km 1867) — ZERO retrace (corrected 26 Jul)**
 Chainage proof: the official line runs Dingle (1810) → Slea Head → Blasket (1856) → Gallarus (1867) → BACK through Dingle (1890) → Inch — the loop's return leg is forward official line. So the Slea Head Drive is ridden on DAY 7 EVENING (golden hour, buses gone) ending at the tent, and Day 8 exits forward Gallarus → Dingle → Inch with no repeated road at all. The earlier declared 5mi retrace was an artefact of describing a dawn loop the windows never required.
 
-**D9. Night 8 — Hungry Hill Lodge, Adrigole (km 2197) — THE ONE CAMPSITE CHANGE (was Kenmare)**
+**D10. Night 8 — Hungry Hill Lodge, Adrigole (km 2197) — THE ONE CAMPSITE CHANGE (was Kenmare)**
 Proven necessity: from Kenmare (km 2131), the final day = 373km of remaining official line PLUS the 210km transfer — impossible. Sleeping at Adrigole banks the whole of north Beara + Dursey Sound + McCarthy's Bar on Monday evening and puts the tent at the foot of the Healy Pass (optional sunrise spur, +9mi). Fallbacks if unbookable: Berehaven (Castletownbere), Dowling's (Glengarriff), Eagle Point (Ballylickey). STATUS UPDATE 26 Jul: BOOKED & CONFIRMED — the endgame is secured.
 
-**D10. Night 9 — IOAC, Tagoat (BOOKED; replaces St Margaret's Beach)**
+**D11. Night 9 — IOAC, Tagoat (BOOKED; replaces St Margaret's Beach)**
 Transfer target, minutes from Rosslare Harbour for the 08:15 boat — booked & confirmed 26 Jul. Not a WAW decision; no route impact.
 
-**D11. 100% restoration — Sheep's Head, Lough Hyne–Baltimore–Toe Head–Galley Head, full Mullet loop ALL IN**
+**D12. 100% restoration — Sheep's Head, Lough Hyne–Baltimore–Toe Head–Galley Head, full Mullet loop ALL IN**
 Earlier drafts cut ~76mi of official line to protect the final day. Riders' priority order (100% completion > daily workload) reverses that: all restored and locked. Consequence accepted with eyes open: Day 9 = ~320mi planned (~130 of it main-road transfer), 06:00 start, ~12h door-to-door by the app's own arithmetic before any Maybes.
 
-**D12. Day 5 stays short (94 official mi) ON PURPOSE**
+**D13. Day 5 stays short (94 official mi) ON PURPOSE**
 It is the mid-trip recovery that makes the finale survivable, plus Westport lunch and the Omey tide window. Rebalancing it "to even things out" was modelled and rejected: boundary shifts at Clifden, Lahinch, Dingle and Glengarriff were each tested against the chainage — none reduces the finale without deleting official miles or set-pieces; the southern anchors (Doolin/Gallarus/Adrigole/Rosslare) are forced.
 
-**D13. Skellig Michael landing & Dursey cable-car crossing EXCLUDED; viewpoints retained**
+**D14. Skellig Michael landing & Dursey cable-car crossing EXCLUDED; viewpoints retained**
 Physics, not preference: landings sell out months ahead and eat ~5h; the cable-car round trip eats ~2h. Kerry Cliffs + Bray Head (both ON the official line) cover the Skelligs; Dursey Sound station is on-line. Both crossings remain listed as extras with honest time costs if the day somehow allows.
 
-**D14. Caha Pass N71 tunnels NOT ridden**
+**D15. Caha Pass N71 tunnels NOT ridden**
 They are not official WAW line (checked against the KML — the Way crosses Beara around the coast, which is now ridden in full). Riding the tunnels too = riding Beara twice. The Healy Pass sunrise spur is the Beara mountain-road experience instead.
 
-**D15. Buncrana–Rathmullan ferry NOT recommended**
+**D16. Buncrana–Rathmullan ferry NOT recommended**
 It would skip ~25mi of official line around Lough Swilly (there is no bridge; Letterkenny loop is the Way). Flagged in-app as ⚠ breaks 100% completion. The Killimer–Tarbert Shannon ferry, by contrast, IS the official crossing and is retained (hourly, on the half-hour, no booking possible).
 
-**D16. Route corrections adopted 26 Jul (cross-check round 2)**
+**D17. Route corrections adopted 26 Jul (cross-check round 2)**
 Four fixes from external review, each verified against the chainage before adoption: (1) Day 1 — Warren Point (Greencastle) gets its own waypoint in true road order (Moville → Greencastle/Warren → Stroove), and Farren's Bar precedes Malin Head (it sits on the approach road); (2) Glenveagh/Errigal moved to Day 3 as an OUT-AND-BACK from Gweedore (+20mi/+50min est) — the previous Dunfanaghy→Gweedore through-routing both overshot the Day-2 campsite AND would have bypassed official line; (3) the Day 6/7 boundary moved to km 1483 so Day 6 no longer claims the Cliffs (1485) while sleeping at Doolin — Day 7 now opens with them; (4) the Gallarus/Slea fix above.
 
-**D17. Marking policy (riders' rule, 26 Jul)**
+**D18. Marking policy (riders' rule, 26 Jul)**
 LOCKED and non-reviewable: official road, Signature Points, transfers. EVERYTHING else — every on-route stop and off-route extra — carries Keep/Maybe/Cut for review. Cutting an on-route stop never removes its road (that is the Way); it means ride past without stopping. Defaults: on-route stops = Keep (they are the plan), off-route extras = Maybe (their road cost is opted into).
 
-**D18. Only EXTRAS are cuttable**
+**D19. Only EXTRAS are cuttable**
 The app enforces it: official road cannot be Cut or Maybe'd; on-route stops can be ridden past but their road stays; the release-valve concept now applies to stop DURATIONS and optional extras only. The build fails if a data edit ever breaks window contiguity or campsite forwardness.
 
 ---
@@ -105,7 +108,7 @@ Stop detail:
 - **MALIN HEAD**: Ireland's most northerly point. Banba's Crown Napoleonic tower, the “EIRE 80” WW2 sign, a Star Wars: The Last Jedi filming site — Signature Point number one, bagged on day one.
 - **Doagh → Pollan Bay → camp**: Down the west shoulder through Doagh Isle and Ballyliffin to Binion — tent up in the last of the light, everything east of you already done.
 
-**NIGHT: Binion Bay Camping, Clonmany** (Inishowen) — Beachside at Binnion strand, just round from Tullagh Bay. Cash (€) from here on.
+**NIGHT: Binion Bay Camping** (Inishowen) — Beachside at Binnion strand, just round from Tullagh Bay. Cash (€) from here on.
 - Route impact: deviation +0.5 mi · ✓ forward progression
 - Backup: Tullagh Bay Camping (the next bay over)
 
@@ -140,7 +143,7 @@ Stop detail:
 - **Atlantic Drive, Rosguill**: A short, stunning loop — Downings, Tranarossan, the lot. Unmissable and only 20 minutes.
 - **Dunfanaghy**: Good food town under Horn Head — the headland itself is 100 metres from tonight’s campsite gate, saved for first thing tomorrow.
 
-**NIGHT: Corcreggan Mill, Dunfanaghy** (NW Donegal) — Quirky and biker-friendly, in an old mill.
+**NIGHT: Corcreggan Mill** (NW Donegal) — Quirky and biker-friendly, in an old mill.
 - Route impact: deviation +1.4 mi · ✓ forward progression
 - Backup: Wild Atlantic Camp, Creeslough (pods = storm insurance)
 
@@ -184,7 +187,7 @@ Stop detail:
 - **MULLAGHMORE HEAD**: The harbour, Classiebawn castle against Benbulben, and the big-wave reef offshore. Signature Point four.
 - **Drumcliffe → Strandhill**: Yeats’ grave under bare Benbulben’s head at Drumcliffe, Rosses Point, then into Strandhill for the night — surf town, seaweed baths if the legs are done. (Carrowmore megalithic cemetery — among the oldest in Ireland — is 5 min inland from camp: an evening leg-stretch, not a riding stop.)
 
-**NIGHT: Strandhill Caravan & Camping** (Sligo) — On the beach, pubs walkable.
+**NIGHT: Strandhill Caravan & Camping Park** (Sligo) — On the beach, pubs walkable.
 - Route impact: deviation +0.1 mi · ✓ forward progression
 - Backup: Greenlands, Rosses Point
 
@@ -223,7 +226,7 @@ Stop detail:
 - **Achill Atlantic Drive**: The cliff road round the south of the island — Cloughmore, the Minaun cliffs across the bay.
 - **Keel**: The strand, the pubs, the tent. Keem Bay is 5 miles on — saved for 08:00 tomorrow when the car park is empty and the light is on the cliffs.
 
-**NIGHT: Keel Sandybanks Caravan & Camping** (Achill Island) — On Keel beach.
+**NIGHT: Keel Sandybanks** (Achill Island) — On Keel beach.
 - Route impact: deviation +0.1 mi · ✓ forward progression
 - Backup: Seal Caves, Dugort
 
@@ -232,8 +235,8 @@ Stop detail:
 ### DAY 05 · FRI 14 AUG — Keem → Westport → Doolough → Killary
 *The recovery day — and somehow still the prettiest*
 
-**Official window:** km 1045 → 1197 (94.4 mi locked) · **Camp ±:** 0.8 mi
-**Planned:** 95 mi (max with all extras 95) · **Est:** riding 3h 10m + stops 2h 45m = 5h 55m (max 5h 55m) · **WAW after today: 47.8%**
+**Official window:** km 1045 → 1197 (94.4 mi locked) · **Camp ±:** 1 mi
+**Planned:** 95 mi (max with all extras 95) · **Est:** riding 3h 11m + stops 2h 45m = 5h 56m (max 5h 56m) · **WAW after today: 47.8%**
 
 | # | Stop | Type | Time/impact |
 |---|---|---|---|
@@ -258,9 +261,9 @@ Stop detail:
 - **Letterfrack & Connemara NP**: Under Diamond Hill through Letterfrack, then the Renvyle/Tully Cross shore.
 - **Cleggan → Omey Island**: To Claddaghduff, where tonight’s tent faces Omey strand — walk (or ride, carefully) across the sand to the island if the tide’s out.
 
-**NIGHT: Clifden Eco Beach, Claddaghduff** (Connemara) — Tent on the machair facing Omey — one of the great pitches of Ireland.
-- Route impact: deviation +0.8 mi · ✓ forward progression
-- Backup: Clifden Camping & Caravan Park
+**NIGHT: Clifden Camping & Caravan Park** (Connemara) — Sheltered park on the Westport Road, 2 km from Clifden town.
+- Route impact: deviation +1 mi · ✓ forward progression
+- Backup: 
 
 **Official Discovery Points in this window (14, of which ★2 Signature):** ★Keem Bay (km 1053) · Keel Strand (km 1054) · Croagh Patrick View (km 1065) · Old Head (km 1088) · Roonagh Pier (km 1099) · Clare Island (km 1099) · Carrownisky Strand (km 1105) · Silver Strand (km 1117) · Doolough Valley (km 1127) · Aasleagh Falls (km 1141) · ★Killary Harbour (km 1150) · Island’s View (km 1188) · Cleggan Harbour (km 1188) · Omey Island (km 1196)
 
@@ -293,7 +296,7 @@ Stop detail:
 - **Black Head R477**: The limestone shore road under Gleninagh — grey pavement into grey sea, Aran across the sound. One of the Way’s best riding stretches.
 - **Fanore → Doolin**: Down the coast to the trad capital of Ireland. Session in McDermott’s or Gus O’Connor’s tonight — the Cliffs are 10 minutes south, saved for 08:00.
 
-**NIGHT: Aille River Camping, Doolin** (Doolin) — Riverside in the village on the Aille — the Cliffs are still 10 minutes south at 08:00, and the trad session still happens.
+**NIGHT: Aille River Tourist Hostel & Campsite** (Doolin) — Riverside in the village on the Aille — the Cliffs are still 10 minutes south at 08:00, and the trad session still happens.
 - Route impact: deviation +0.2 mi · ✓ forward progression
 - Backup: Nagle's — ❌ full
 
@@ -334,7 +337,7 @@ Stop detail:
 - **SLEA HEAD DRIVE — evening**: The loop at golden hour, buses gone, sun over the water: Ventry, the beehive huts, Slea Head itself — then DUNMORE HEAD, mainland Ireland's westernmost point and the Blasket Islands view. Signature Point eleven, in the best light of the day.
 - **Dunquin → Ballyferriter → Gallarus**: Round the loop's west side — Kruger's (Ireland's westernmost pub) at Dunquin — to the tent beside the 1,200-year-old Gallarus Oratory. The official line continues FORWARD from here through Dingle tomorrow: zero repeated road.
 
-**NIGHT: Campáil Teach an Aragail, Gallarus** (West Dingle) — Beside the Gallarus Oratory, at the END of today's window — the Way exits forward through Dingle tomorrow. Zero repeated road.
+**NIGHT: Campáil Teach an Aragail** (West Dingle) — Beside the Gallarus Oratory, at the END of today's window — the Way exits forward through Dingle tomorrow. Zero repeated road.
 - Route impact: deviation +0.4 mi · ✓ forward progression
 - Backup: Dingle town campsite
 
@@ -375,7 +378,7 @@ Stop detail:
 - **DURSEY SOUND**: The cable-car station at the end of Beara — Ireland’s only cable car, six people and the odd sheep. (Crossing eats 2 hours — the sound and the island from the viewpoint is the bag.) Signature Point thirteen.
 - **Castletownbere & McCarthy's Bar**: The pint at McCarthy’s — of the book cover — in Ireland’s biggest whitefish port. Twenty easy minutes to the tent after.
 
-**NIGHT: Hungry Hill Lodge & Camping, Adrigole** (Beara — Adrigole) — At the literal foot of the Healy Pass. Phone ahead — confirm tents and a ~20:30 arrival.
+**NIGHT: Hungry Hill Lodge & Camping** (Beara — Adrigole) — At the literal foot of the Healy Pass. Phone ahead — confirm tents and a ~20:30 arrival.
 - Route impact: deviation +0.2 mi · ✓ forward progression
 - Backup: Berehaven Camping, Castletownbere — anywhere on the Adrigole–Glengarriff road works
 
@@ -418,7 +421,7 @@ Stop detail:
 - **KINSALE**: THE OFFICIAL END OF THE WILD ATLANTIC WAY — every metre of the line from Muff behind you. WAW completion: 100.0%. Finish-line photo at the marker, Charles Fort if the clock allows, fuel for the run.
 - **N25 run to Rosslare**: Kinsale → Cork → N25 east — ~130mi of main road, ~2h45. Tent by ~20:00. The price of the morning boat — but the Way is 100.0% won. ⚠ Long transfer after the biggest day — fuel at Cork, heads down.
 
-**NIGHT: IOAC, Tagoat** (Tagoat (for the boat)) — Minutes from Rosslare Harbour. Sets up the 08:15 sailing.
+**NIGHT: IOAC** (Tagoat (for the boat)) — Minutes from Rosslare Harbour. Sets up the 08:15 sailing.
 - Route impact: deviation +0 mi · ✓ forward progression
 - Backup: St Margaret's Beach (superseded)
 
@@ -464,15 +467,15 @@ Stop detail:
 
 | Night | Site | km | Status | Price (unverified unless noted) | Route impact |
 |---|---|---|---|---|---|
-| Mon 10 | Binion Bay Camping, Clonmany | — | **BOOKED ✓** (tents+bikes confirmed) | unknown — ask | +0.5 mi / forward ✓ |
-| Tue 11 | Corcreggan Mill, Dunfanaghy | — | **BOOKED ✓** (tents+bikes confirmed) | ~€24 total / ~€12pp | +1.4 mi / forward ✓ |
-| Wed 12 | Strandhill Caravan & Camping | — | phone to book | ~€40 total / ~€20pp | +0.1 mi / forward ✓ |
-| Thu 13 | Keel Sandybanks | — | **BOOKED ✓** (tents+bikes confirmed) | ~€36 total / ~€18pp | +0.1 mi / forward ✓ |
-| Fri 14 | Clifden Eco Beach Camping | — | advance booking only — no walk-ins | ~€40 total / ~€20pp | +0.8 mi / forward ✓ |
-| Sat 15 | Aille River Camping, Doolin | — | **BOOKED ✓** (tents+bikes confirmed) | unknown — ask | +0.2 mi / forward ✓ |
-| Sun 16 | Campáil Teach an Aragail, Gallarus | — | **BOOKED ✓** (tents+bikes confirmed) | ~€30 total / ~€15pp | +0.4 mi / forward ✓ |
-| Mon 17 | Hungry Hill Lodge & Camping | — | **BOOKED ✓** (tents+bikes confirmed) | unknown — ask | +0.2 mi / forward ✓ |
-| Tue 18 | IOAC, Tagoat | — | **BOOKED ✓** (tents+bikes confirmed) | unknown — ask | +0 mi / forward ✓ |
+| Mon 10 | Binion Bay Camping | — | phone to book | unknown — ask | +0.5 mi / forward ✓ |
+| Tue 11 | Corcreggan Mill | — | phone to book | unknown — ask | +1.4 mi / forward ✓ |
+| Wed 12 | Strandhill Caravan & Camping Park | — | phone to book | unknown — ask | +0.1 mi / forward ✓ |
+| Thu 13 | Keel Sandybanks | — | phone to book | unknown — ask | +0.1 mi / forward ✓ |
+| Fri 14 | Clifden Camping & Caravan Park | — | phone to book | unknown — ask | +1 mi / forward ✓ |
+| Sat 15 | Aille River Tourist Hostel & Campsite | — | phone to book | unknown — ask | +0.2 mi / forward ✓ |
+| Sun 16 | Campáil Teach an Aragail | — | phone to book | unknown — ask | +0.4 mi / forward ✓ |
+| Mon 17 | Hungry Hill Lodge & Camping | — | phone to book | unknown — ask | +0.2 mi / forward ✓ |
+| Tue 18 | IOAC | — | phone to book | unknown — ask | +0 mi / forward ✓ |
 
 Sources: night 1 = booked by riders; prices = previous trip research, UNVERIFIED — confirm on the phone. **Call order: 1) Hungry Hill Adrigole (nothing verified, endgame depends on it), 2) Nagle's Doolin (peak Saturday), 3) Clifden Eco (advance-only), 4) Strandhill & Keel (sell out).**
 
