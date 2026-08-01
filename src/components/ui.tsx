@@ -256,23 +256,18 @@ export function Card({ children, style }: { children: ReactNode; style?: CSSProp
   )
 }
 
-/** Campsite booking status chip — renders from tripData.campsites, the single
- *  source of truth for accommodation status across every screen. */
-export function BookingChip({ status, note }: { status?: string; note?: string }) {
-  const spec =
-    status === 'booked'
-      ? { t: '✅ BOOKED', ink: '#55643a', bg: '#eef0e0', bd: '#55643a' }
-      : status === 'pending'
-        ? { t: '🟠 PENDING', ink: '#b0812c', bg: '#f3ecd7', bd: '#b0812c' }
-        : status === 'unavailable'
-          ? { t: '❌ NO AVAILABILITY', ink: '#a8412a', bg: '#f4e4d9', bd: '#a8412a' }
-          : { t: '⚪ NOT SORTED', ink: '#8a7c5f', bg: '#e2d3ac', bd: '#8a7c5f' }
+/** Campsite status badge (✓ CONFIRMED) — shared by the Campsites screen and
+ *  the day cards so they always match. The tick is an SVG, not a text glyph:
+ *  glyphs sit on a font baseline and drift off-centre inside the circle. */
+export function ConfirmBadge({ tint, panel, label }: { tint: string; panel: string; label: string }) {
   return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, flexWrap: 'wrap' }}>
-      <span style={{ fontFamily: "'Space Mono',monospace", fontSize: 8, fontWeight: 700, letterSpacing: '.07em', textTransform: 'uppercase', color: spec.ink, background: spec.bg, border: `1px solid ${spec.bd}`, borderRadius: 3, padding: '1.5px 6px', whiteSpace: 'nowrap' }}>
-        {spec.t}
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontFamily: "'Space Mono',monospace", fontSize: 8, fontWeight: 700, letterSpacing: '.12em', color: tint, textTransform: 'uppercase' }}>
+      <span style={{ display: 'inline-flex', width: 13, height: 13, borderRadius: '50%', background: tint, alignItems: 'center', justifyContent: 'center', flex: '0 0 auto' }}>
+        <svg width={8} height={8} viewBox="0 0 24 24" fill="none" stroke={panel} strokeWidth={4.5} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <path d="M4 12.5 L10 18.5 L20 6.5" />
+        </svg>
       </span>
-      {note && <span style={{ fontFamily: "'Space Mono',monospace", fontSize: 8.5, color: '#7a6d54', letterSpacing: '.03em' }}>{note}</span>}
+      {label}
     </span>
   )
 }
