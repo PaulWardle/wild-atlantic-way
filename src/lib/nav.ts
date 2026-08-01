@@ -96,29 +96,43 @@ export function dayHeading(di: number): number | null {
 
 const ll = (lat: number, lon: number) => `${lat.toFixed(4)},${lon.toFixed(4)}`
 
-function gmapsUrl(o: [number, number], d: [number, number], wps: Array<[number, number]>): string {
-  // A waypoint sitting on top of the origin/destination adds nothing but noise.
+/** A waypoint with its position along the line, so extras merge in ride order. */
+interface Wp {
+  km: number
+  lat: number
+  lon: number
+}
+
+/** No origin on purpose: Google Maps then starts every leg from the phone's
+ * CURRENT LOCATION — which is where you are when you actually tap it. */
+function gmapsUrl(d: [number, number], wps: Wp[]): string {
+  // Ride order along the line; a waypoint on top of the destination is noise.
   const wp = wps
-    .filter((p) => hav(p[0], p[1], o[0], o[1]) > 2.5 && hav(p[0], p[1], d[0], d[1]) > 2.5)
-    .map((p) => ll(p[0], p[1]))
+    .sort((a, b) => a.km - b.km)
+    .filter((p) => hav(p.lat, p.lon, d[0], d[1]) > 2.5)
+    .slice(0, 9)
+    .map((p) => ll(p.lat, p.lon))
     .join('|')
   return (
     'https://www.google.com/maps/dir/?api=1&travelmode=driving' +
-    `&origin=${ll(o[0], o[1])}&destination=${ll(d[0], d[1])}` +
+    `&destination=${ll(d[0], d[1])}` +
     (wp ? `&waypoints=${encodeURIComponent(wp)}` : '')
   )
 }
 
-/** Up to `n` interior waypoints spread evenly along a window. */
-function sampleWaypoints(fromKm: number, toKm: number, n: number): Array<[number, number]> {
-  const out: Array<[number, number]> = []
+/** Up to `n` waypoints spread evenly along a window. */
+function sampleWaypoints(fromKm: number, toKm: number, n: number): Wp[] {
+  const out: Wp[] = []
   const seen = new Set<string>()
-  for (let k = 1; k <= n; k++) {
-    const p = pointAtKm(fromKm + ((toKm - fromKm) * k) / (n + 1))
+  for (let k = 0; k <= n; k++) {
+    // k=0 pins the leg's start too — with no explicit origin, this is what
+    // pulls Google onto the line from wherever you're standing.
+    const km = fromKm + ((toKm - fromKm) * k) / (n + 1)
+    const p = pointAtKm(km)
     const key = ll(p[0], p[1])
     if (!seen.has(key)) {
       seen.add(key)
-      out.push([p[0], p[1]])
+      out.push({ km, lat: p[0], lon: p[1] })
     }
   }
   return out
@@ -135,35 +149,53 @@ export interface NavLeg {
   url: string
 }
 
-const LARNE: [number, number] = [54.85, -5.81]
+export type StopMarks = Record<string, 'keep' | 'maybe' | 'cut'>
+
 const kmToMi = (km: number) => Math.round(km * 0.6214)
 
-/** The day's ride as Google Maps direction links. */
-export function dayLegs(di: number): NavLeg[] {
+/** The day's ride as Google Maps direction links. Every leg starts from the
+ * phone's current location (no fixed origin). Optional extras marked Keep are
+ * routed in as waypoints at the right point of the day — remark and re-tap and
+ * the link is rebuilt; Maybe/Cut extras stay off the route. */
+export function dayLegs(di: number, marks?: StopMarks): NavLeg[] {
   const dy = T.days[di]
-  if (!dy) return []
+  if (!dy?.wawKm) return []
   const legs: NavLeg[] = []
-  const w = dy.wawKm
+  const [a, b] = dy.wawKm
   const camp = campCoord(di)
-
-  if (!w) return []
-  const [a, b] = w
   const startPt = pointAtKm(a)
   const endPt = pointAtKm(b)
+
+  // Kept extras, pinned by where their detour leaves the line.
+  const kept: Array<Wp & { name: string }> = []
+  dy.stops.forEach((st, si) => {
+    if (st.kind !== 'extra' || st.lat == null || st.lon == null) return
+    if (marks?.['d' + di + 's' + si] !== 'keep') return
+    kept.push({ km: chainKm(st.lat, st.lon), lat: st.lat, lon: st.lon, name: st.n })
+  })
+
+  const ride = (label: string, from: number, to: number, dest: [number, number]) => {
+    const ex = kept.filter((e) => e.km >= from - 3 && e.km <= to + 3)
+    // Waypoint budget is 9: kept extras always ride, the official-line samples
+    // fill whatever room is left.
+    const wps: Wp[] = [...sampleWaypoints(from, to, Math.max(3, 8 - ex.length) - 1), ...ex]
+    legs.push({
+      label,
+      sub: `${kmToMi(to - from)} mi of official line${ex.length ? ' · via ' + ex.map((e) => e.name).join(' + ') : ''}`,
+      url: gmapsUrl(dest, wps),
+    })
+  }
 
   // Day 1 opens with the ferry transfer down to the Muff start marker.
   if (di === 0 && dy.transferMi) {
     legs.push({
       label: 'Transfer · Larne → Muff',
       sub: `~${dy.transferMi} mi to the km-0 marker`,
-      url: gmapsUrl(LARNE, [startPt[0], startPt[1]], []),
+      url: gmapsUrl([startPt[0], startPt[1]], []),
     })
   }
 
-  // Where the WAW riding starts/ends today. The final day ends at the Kinsale
-  // terminus and transfers to the Rosslare camp afterwards.
-  const prevCamp = di > 0 ? campCoord(di - 1) : null
-  const origin: [number, number] = prevCamp ?? [startPt[0], startPt[1]]
+  // The final day ends at the Kinsale terminus, then transfers to the ferry camp.
   const isTransferCamp = di > 0 && !!dy.transferMi
   const dest: [number, number] = !isTransferCamp && camp ? camp : [endPt[0], endPt[1]]
 
@@ -172,22 +204,10 @@ export function dayLegs(di: number): NavLeg[] {
   if (b - a > 200) {
     const mid = pointAtKm((a + b) / 2)
     const midName = nearestLabel(mid[0], mid[1])
-    legs.push({
-      label: `Ride 1 · to ${midName}`,
-      sub: `${kmToMi((b - a) / 2)} mi of official line`,
-      url: gmapsUrl(origin, [mid[0], mid[1]], sampleWaypoints(a, (a + b) / 2, 8)),
-    })
-    legs.push({
-      label: `Ride 2 · ${midName} onward`,
-      sub: `${kmToMi((b - a) / 2)} mi of official line`,
-      url: gmapsUrl([mid[0], mid[1]], dest, sampleWaypoints((a + b) / 2, b, 8)),
-    })
+    ride(`Ride 1 · to ${midName}`, a, (a + b) / 2, [mid[0], mid[1]])
+    ride(`Ride 2 · ${midName} onward`, (a + b) / 2, b, dest)
   } else {
-    legs.push({
-      label: 'The ride · official line',
-      sub: `${kmToMi(b - a)} mi, pinned to the Way`,
-      url: gmapsUrl(origin, dest, sampleWaypoints(a, b, 8)),
-    })
+    ride('The ride · official line', a, b, dest)
   }
 
   // Final-day transfer off the Way to the ferry-night camp.
@@ -195,7 +215,7 @@ export function dayLegs(di: number): NavLeg[] {
     legs.push({
       label: `Transfer · Kinsale → ${T.campsites[di].primary}`,
       sub: `~${dy.transferMi} mi to the ferry night`,
-      url: gmapsUrl([endPt[0], endPt[1]], camp, []),
+      url: gmapsUrl(camp, []),
     })
   }
 
@@ -240,7 +260,7 @@ function chainKm(lat: number, lon: number): number {
 }
 
 /** One day's official line + its stops and campsite, as a KML document. */
-export function dayKml(di: number): string | null {
+export function dayKml(di: number, marks?: StopMarks): string | null {
   const dy = T.days[di]
   const w = dy?.wawKm
   if (!w) return null
@@ -250,6 +270,11 @@ export function dayKml(di: number): string | null {
     if (j.phase !== 'waw') return
     const km = chainKm(j.lat, j.lon)
     if (km >= a - 3 && km <= b + 3) body += placemark(j.label, j.lat, j.lon)
+  })
+  dy.stops.forEach((st, si) => {
+    if (st.kind !== 'extra' || st.lat == null || st.lon == null) return
+    if (marks?.['d' + di + 's' + si] !== 'keep') return
+    body += placemark(`★ KEPT — ${st.n}`, st.lat, st.lon)
   })
   const camp = campCoord(di)
   if (camp) body += placemark(`CAMP — ${T.campsites[di].primary}`, camp[0], camp[1])

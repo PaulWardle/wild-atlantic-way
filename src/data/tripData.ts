@@ -179,7 +179,9 @@ export const tripData: Trip = {
           "rejoin": "same (out-and-back)",
           "baseMi": 0,
           "viaMi": 4,
-          "impactSrc": "manual road estimate · verify in Google Maps before the trip · checked 26 Jul 2026"
+          "impactSrc": "manual road estimate · verify in Google Maps before the trip · checked 26 Jul 2026",
+          "lat": 55.1946,
+          "lon": -7.5546
         },
         {
           "n": "Round the Swilly",
@@ -308,7 +310,9 @@ export const tripData: Trip = {
           "rejoin": "same (out-and-back)",
           "baseMi": 0,
           "viaMi": 20,
-          "impactSrc": "manual road estimate · verify in Google Maps before the trip · checked 26 Jul 2026"
+          "impactSrc": "manual road estimate · verify in Google Maps before the trip · checked 26 Jul 2026",
+          "lat": 55.0331,
+          "lon": -7.9557
         },
         {
           "n": "The Rosses",
@@ -738,7 +742,9 @@ export const tripData: Trip = {
           "rejoin": "same (out-and-back)",
           "baseMi": 0,
           "viaMi": 10,
-          "impactSrc": "manual road estimate · verify in Google Maps before the trip · checked 26 Jul 2026"
+          "impactSrc": "manual road estimate · verify in Google Maps before the trip · checked 26 Jul 2026",
+          "lat": 53.0489,
+          "lon": -9.14
         },
         {
           "n": "Black Head R477",
@@ -1076,7 +1082,9 @@ export const tripData: Trip = {
           "rejoin": "same (out-and-back to the saddle)",
           "baseMi": 0,
           "viaMi": 9,
-          "impactSrc": "manual road estimate · verify in Google Maps before the trip · checked 26 Jul 2026"
+          "impactSrc": "manual road estimate · verify in Google Maps before the trip · checked 26 Jul 2026",
+          "lat": 51.7268,
+          "lon": -9.7466
         },
         {
           "n": "Glengarriff → Bantry",

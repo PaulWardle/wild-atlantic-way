@@ -45,6 +45,10 @@ export interface Stop {
   viaMi?: number
   /** How the road impact was measured + when (e.g. "manual road estimate · verify in Google Maps · 2026-07-26"). Absent = not yet calculated. */
   impactSrc?: string
+  /** Extras only: the detour target — routed into the day's Google Maps leg
+   * as a waypoint while the extra is marked Keep. */
+  lat?: number
+  lon?: number
 }
 
 export interface Night {

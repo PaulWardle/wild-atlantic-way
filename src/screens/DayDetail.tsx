@@ -9,8 +9,8 @@ import { TagChips } from '../components/ui'
 import type { Stop } from '../types'
 
 /** Google Maps hand-off: ride legs pinned to the official line + KML for My Maps. */
-function NavPanel({ di }: { di: number }) {
-  const legs = dayLegs(di)
+function NavPanel({ di, marks }: { di: number; marks: Record<string, 'keep' | 'maybe' | 'cut'> }) {
+  const legs = dayLegs(di, marks)
   if (!legs.length) return null
   const dy = tripData.days[di]
   return (
@@ -37,7 +37,7 @@ function NavPanel({ di }: { di: number }) {
         <div style={{ display: 'flex', gap: 6, marginTop: 2 }}>
           <button
             onClick={() => {
-              const k = dayKml(di)
+              const k = dayKml(di, marks)
               if (k) downloadKml(`waw-day-${dy.n}.kml`, k)
             }}
             style={{ flex: 1, border: `1.5px solid ${c.ink}`, borderRadius: 7, background: c.paper, padding: '7px 6px', fontFamily: font.mono, fontSize: 9, fontWeight: 700, letterSpacing: '.06em', textTransform: 'uppercase', color: c.ink }}
@@ -52,7 +52,7 @@ function NavPanel({ di }: { di: number }) {
           </button>
         </div>
         <div style={{ fontFamily: font.serif, fontStyle: 'italic', fontSize: 11.5, color: c.inkFainter, lineHeight: 1.45, marginTop: 8 }}>
-          Legs open in Google Maps with the official line pinned as waypoints. KML files import into Google My Maps (Create map → Import) and show as a layer in the Maps app — the exact line, every stop, every camp.
+          Legs start from your current location and pin the official line as waypoints. Keep an optional extra and it's routed in; Maybe/Cut leave it out — links rebuild every time you tap. KML files import into Google My Maps (Create map → Import) and show as a layer in the Maps app.
         </div>
       </div>
     </div>
@@ -191,7 +191,7 @@ export function DayDetail() {
         </div>
       )}
 
-      {isBrother && <NavPanel di={di} />}
+      {isBrother && <NavPanel di={di} marks={marks} />}
 
       <div style={{ padding: '18px 18px 4px' }}>
         <div style={{ fontFamily: font.mono, fontSize: 8.5, letterSpacing: '.16em', color: c.inkFaintest, textTransform: 'uppercase', marginBottom: 12 }}>
