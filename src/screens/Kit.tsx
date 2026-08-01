@@ -28,17 +28,21 @@ function addedItems(kit: Record<string, string>, sec: string): Array<{ id: strin
     .sort((a, b) => (a.id < b.id ? -1 : 1))
 }
 
-/** New-item input: phone autocorrect on, then our kit-word tidy on commit. */
-function AddRow({ placeholder, onAdd }: { placeholder: string; onAdd: (label: string) => void }) {
+/** New-item input: phone autocorrect on, then our kit-word tidy on commit.
+ * `boxed` renders it as a dashed card matching the To-do card style. */
+function AddRow({ placeholder, onAdd, boxed = false }: { placeholder: string; onAdd: (label: string) => void; boxed?: boolean }) {
   const [txt, setTxt] = useState('')
   const commit = () => {
     const v = normalizeItem(txt)
     if (v) onAdd(v)
     setTxt('')
   }
+  const outer: React.CSSProperties = boxed
+    ? { display: 'flex', gap: 11, alignItems: 'center', border: `1.5px dashed ${c.inkFainter}`, borderRadius: 8, background: 'transparent', padding: '11px 12px', marginBottom: 7 }
+    : { display: 'flex', gap: 10, alignItems: 'center', padding: '6px 2px' }
   return (
-    <div style={{ display: 'flex', gap: 10, alignItems: 'center', padding: '6px 2px' }}>
-      <div style={{ flex: '0 0 19px', height: 19, borderRadius: 4, border: `1.5px dashed ${c.inkFainter}` }} />
+    <div style={outer}>
+      <div style={{ flex: `0 0 ${boxed ? 21 : 19}px`, height: boxed ? 21 : 19, borderRadius: boxed ? 5 : 4, border: `1.5px dashed ${c.inkFainter}` }} />
       <input
         value={txt}
         onChange={(e) => setTxt(e.target.value)}
@@ -49,7 +53,7 @@ function AddRow({ placeholder, onAdd }: { placeholder: string; onAdd: (label: st
         autoCapitalize="sentences"
         autoCorrect="on"
         spellCheck
-        style={{ flex: 1, border: 'none', borderBottom: `1px dashed ${c.lineSoft}`, background: 'transparent', fontFamily: font.serif, fontSize: 13.5, color: c.inkSoft, padding: '3px 2px', outline: 'none' }}
+        style={{ flex: 1, border: 'none', borderBottom: boxed ? 'none' : `1px dashed ${c.lineSoft}`, background: 'transparent', fontFamily: font.serif, fontSize: 13.5, color: c.inkSoft, padding: '3px 2px', outline: 'none' }}
       />
       {txt.trim() !== '' && (
         <button onClick={commit} style={{ fontFamily: font.mono, fontSize: 9, fontWeight: 700, letterSpacing: '.08em', textTransform: 'uppercase', color: c.paper, background: c.green, border: `1.5px solid ${c.green}`, borderRadius: 4, padding: '3px 9px' }}>
@@ -60,10 +64,13 @@ function AddRow({ placeholder, onAdd }: { placeholder: string; onAdd: (label: st
   )
 }
 
+/** SVG cross — a text × sits on a font baseline and drifts off-centre. */
 function RemoveBtn({ onRemove }: { onRemove: () => void }) {
   return (
-    <button onClick={onRemove} style={{ flex: '0 0 auto', fontFamily: font.display, fontWeight: 700, fontSize: 13, color: c.rust, background: c.amberPanelDeep, border: `1.5px solid ${c.rust}`, borderRadius: 4, width: 24, height: 22, lineHeight: 1 }}>
-      ×
+    <button onClick={onRemove} style={{ flex: '0 0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center', width: 24, height: 24, background: c.amberPanelDeep, border: `1.5px solid ${c.rust}`, borderRadius: 4, padding: 0 }}>
+      <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke={c.rust} strokeWidth={3.4} strokeLinecap="round" aria-hidden="true">
+        <path d="M5 5 L19 19 M19 5 L5 19" />
+      </svg>
     </button>
   )
 }
@@ -144,20 +151,23 @@ function SectionBar({ label, right }: { label: string; right?: string }) {
   )
 }
 
-function BookRow({ b, ticked, onToggle }: { b: (typeof T.bookings)[number]; ticked: boolean; onToggle: () => void }) {
+/** One To-do card — label and tick, nothing else. Stock and custom items look
+ * identical; in edit mode a centred × removes either. */
+function TodoCard({ label, ticked, onToggle, onRemove }: { label: string; ticked: boolean; onToggle: () => void; onRemove?: () => void }) {
   return (
-    <button onClick={onToggle} style={{ width: '100%', display: 'flex', alignItems: 'flex-start', gap: 11, border: `1.5px solid ${c.ink}`, borderRadius: 8, background: c.paper, padding: '11px 12px', marginBottom: 7, textAlign: 'left' }}>
-      <div style={{ flex: '0 0 21px', height: 21, borderRadius: 5, border: `1.5px solid ${ticked ? c.green : c.ink}`, background: ticked ? c.green : c.paper, display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: 1 }}>
-        {ticked && <span style={{ color: '#eef0e0', fontFamily: font.display, fontWeight: 700, fontSize: 13, lineHeight: 1 }}>✓</span>}
-      </div>
-      <div style={{ flex: 1, minWidth: 0 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 7, flexWrap: 'wrap' }}>
-          <span style={{ fontFamily: font.display, fontWeight: 600, fontSize: 14.5, textTransform: 'uppercase', color: c.ink, lineHeight: 1.1 }}>{b.label}</span>
-          {b.urgent && <span style={{ fontFamily: font.mono, fontSize: 7.5, fontWeight: 700, letterSpacing: '.1em', textTransform: 'uppercase', color: '#f6ecd6', background: c.rust, borderRadius: 3, padding: '1px 5px' }}>Now</span>}
+    <div style={{ display: 'flex', alignItems: 'center', gap: 11, border: `1.5px solid ${c.ink}`, borderRadius: 8, background: c.paper, padding: '11px 12px', marginBottom: 7 }}>
+      <button onClick={onToggle} style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 11, textAlign: 'left', background: 'none', border: 'none', padding: 0 }}>
+        <div style={{ flex: '0 0 21px', height: 21, borderRadius: 5, border: `1.5px solid ${ticked ? c.green : c.ink}`, background: ticked ? c.green : c.paper, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          {ticked && (
+            <svg width={11} height={11} viewBox="0 0 24 24" fill="none" stroke="#eef0e0" strokeWidth={4} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M4 12.5 L10 18.5 L20 6.5" />
+            </svg>
+          )}
         </div>
-        <div style={{ fontFamily: font.serif, fontSize: 12.5, color: c.inkMuted, lineHeight: 1.45, marginTop: 3 }}>{b.note}</div>
-      </div>
-    </button>
+        <span style={{ flex: 1, fontFamily: font.display, fontWeight: 600, fontSize: 14.5, textTransform: 'uppercase', color: c.ink, lineHeight: 1.2 }}>{label}</span>
+      </button>
+      {onRemove && <RemoveBtn onRemove={onRemove} />}
+    </div>
   )
 }
 
@@ -178,12 +188,15 @@ function tabStyle(active: boolean): React.CSSProperties {
 }
 
 export function Kit() {
-  const { store, kitTab, setKitTab, setKit, toggleBook } = useStore()
+  const { store, kitTab, setKitTab, setKit } = useStore()
   const [editing, setEditing] = useState(false)
   const kit = store.kit || {}
   const book = store.book || {}
   const tab = kitTab === 'todo' ? 'todo' : 'packing'
-  const bookDone = T.bookings.filter((b) => !!book[b.id]).length
+  // Stock to-dos minus any removed; ticks live in the synced kit table with the
+  // old device-local flags as a read-only fallback so nobody loses progress.
+  const visibleBookings = T.bookings.filter((b) => !kit[`rm:B:${b.id}`])
+  const bookTicked = (id: string) => (kit[`pk:B:${id}`] != null ? kit[`pk:B:${id}`] === '1' : !!book[id])
 
   const removed = (sec: Sec, gi: number, ii: number) => !!kit[`rm:${sec}:${gi}_${ii}`]
 
@@ -301,7 +314,7 @@ export function Kit() {
             <div style={{ fontFamily: font.display, fontWeight: 700, fontSize: 24, textTransform: 'uppercase', color: c.ink }}>To do</div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <span style={{ fontFamily: font.mono, fontSize: 11, color: c.green }}>
-                {bookDone + todoAdds.filter((a) => !!kit[`pk:T:${a.id}`]).length}/{T.bookings.length + todoAdds.length}
+                {visibleBookings.filter((b) => bookTicked(b.id)).length + todoAdds.filter((a) => !!kit[`pk:T:${a.id}`]).length}/{visibleBookings.length + todoAdds.length}
               </span>
               <button
                 onClick={() => setEditing(!editing)}
@@ -312,28 +325,36 @@ export function Kit() {
             </div>
           </div>
           <div style={{ fontFamily: font.serif, fontStyle: 'italic', fontSize: 12.5, color: c.inkMuted, marginBottom: 12 }}>
-            The admin to square away — add anything that comes up on the road; it syncs to both phones.
+            {editing
+              ? 'Tap × to remove any item — reword one by removing it and adding your own version.'
+              : 'The admin to square away — add anything that comes up on the road; it syncs to both phones.'}
           </div>
-          {T.bookings.map((b) => (
-            <BookRow key={b.id} b={b} ticked={!!book[b.id]} onToggle={() => toggleBook(b.id)} />
+          {visibleBookings.map((b) => (
+            <TodoCard
+              key={b.id}
+              label={b.label}
+              ticked={bookTicked(b.id)}
+              onToggle={() => setKit(`pk:B:${b.id}`, bookTicked(b.id) ? '0' : '1')}
+              onRemove={editing ? () => setKit(`rm:B:${b.id}`, '1') : undefined}
+            />
           ))}
           {todoAdds.map((a) => {
             const k = `pk:T:${a.id}`
             return (
-              <ItemRow
+              <TodoCard
                 key={a.id}
-                ticked={!!kit[k]}
                 label={a.label}
+                ticked={!!kit[k]}
                 onToggle={() => setKit(k, kit[k] ? null : '1')}
-                extra={editing ? <RemoveBtn onRemove={() => {
+                onRemove={editing ? () => {
                   setKit(`add:T:${a.id}`, null)
                   setKit(k, null)
-                }} /> : undefined}
+                } : undefined}
               />
             )
           })}
-          <AddRow placeholder="Add a to-do…" onAdd={(label) => {
-            const have = new Set(todoAdds.map((a) => a.label.toLowerCase()))
+          <AddRow boxed placeholder="Add a to-do…" onAdd={(label) => {
+            const have = new Set([...todoAdds.map((a) => a.label.toLowerCase()), ...visibleBookings.map((b) => b.label.toLowerCase())])
             if (!have.has(label.toLowerCase())) setKit(`add:T:a${Date.now()}`, label)
           }} />
         </>
