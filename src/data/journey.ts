@@ -1,5 +1,5 @@
 /* The journey as an ordered sequence of stops, in the order the brothers actually
- * ride them (Larne ferry → up to Malin → down the whole Atlantic coast → Kinsale).
+ * ride them (Larne ferry → Muff km 0 → round Inishowen → down the whole Atlantic coast → Kinsale).
  *
  * This single ordered list drives:
  *  - the "we are here" dropdown (so it reads in trip order, not alphabetically/by latitude)
@@ -7,7 +7,7 @@
  *  - the green "completed so far" progress along the route
  *
  * `phase: 'lead'` = the pre-WAW lead-in (Isle-of-Man ferry landing across the border);
- * `phase: 'waw'`  = the official Wild Atlantic Way from Malin Head onwards.
+ * `phase: 'waw'`  = the official Wild Atlantic Way from the Muff marker onwards.
  */
 export interface JourneyStop {
   label: string

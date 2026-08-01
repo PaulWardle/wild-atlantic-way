@@ -126,7 +126,7 @@ export function Gate() {
               The shape of the journey
             </span>
             <span style={{ fontFamily: font.mono, fontSize: 9, color: c.inkFainter, letterSpacing: '.06em' }}>
-              Malin Head → Kinsale
+              Muff → Kinsale
             </span>
           </div>
           <div style={{ padding: '6px 6px 0' }}>

@@ -104,7 +104,7 @@ export function DayDetail() {
         <div style={{ margin: '14px 18px 0', border: `1.5px solid ${c.rust}`, background: c.rust, color: '#f6ecd6', borderRadius: 8, padding: '10px 13px', display: 'flex', alignItems: 'center', gap: 9 }}>
           <span style={{ fontFamily: font.display, fontWeight: 700, fontSize: 18 }}>★</span>
           <div style={{ fontFamily: font.serif, fontSize: 13.5, lineHeight: 1.45 }}>
-            The official Wild Atlantic Way begins here at Malin Head. Everything before was the warm-up.
+            The official Wild Atlantic Way begins at the Muff marker — km 0 of 2,507. Everything before was the warm-up.
           </div>
         </div>
       )}

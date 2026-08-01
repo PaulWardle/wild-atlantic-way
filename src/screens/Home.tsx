@@ -361,7 +361,7 @@ export function Home() {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 12px', borderBottom: `1.5px solid ${c.ink}`, background: c.paperMuted }}>
           <span style={{ fontFamily: font.mono, fontSize: 9, letterSpacing: '.16em', color: c.ink, textTransform: 'uppercase' }}>The shape of the journey</span>
           <button onClick={() => nav({ screen: 'map' })} style={{ fontFamily: font.mono, fontSize: 9, color: c.inkFainter, letterSpacing: '.06em' }}>
-            Malin Head → Kinsale
+            Muff → Kinsale
           </button>
         </div>
         <div style={{ padding: '6px 6px 0' }} onClick={() => nav({ screen: 'map' })}>

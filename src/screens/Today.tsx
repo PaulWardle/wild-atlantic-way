@@ -126,7 +126,7 @@ export function Today() {
         </div>
         <div style={{ fontFamily: font.mono, fontSize: 10, letterSpacing: '.24em', color: c.rust, textTransform: 'uppercase' }}>The ride is done</div>
         <div style={{ fontFamily: font.display, fontWeight: 700, fontSize: 31, textTransform: 'uppercase', color: c.ink, lineHeight: 0.96, margin: '9px 0 5px' }}>
-          Malin Head
+          Muff
           <br />
           to Kinsale
         </div>

@@ -37,7 +37,7 @@ export function MapOverlay() {
             The shape of the journey
           </div>
           <div style={{ fontFamily: font.display, fontWeight: 700, fontSize: 18, letterSpacing: '.02em', textTransform: 'uppercase' }}>
-            Malin Head → Kinsale
+            Muff → Kinsale
           </div>
         </div>
         <button

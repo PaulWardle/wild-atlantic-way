@@ -15,7 +15,7 @@ export const tripData: Trip = {
     "title": "Wild Atlantic Way",
     "kicker": "Bald(ing) Brothers",
     "subtitle": "Two up · two bikes · under canvas",
-    "route": "Malin Head → Kinsale",
+    "route": "Muff → Kinsale",
     "dates": "Mon 10 – Wed 19 Aug 2026",
     "depart": "2026-08-10",
     "countdownTo": "the Wild Atlantic Way",
@@ -1999,11 +1999,11 @@ export const tripData: Trip = {
     },
     {
       "id": "d2",
-      "decision": "Antrim lead-in",
+      "decision": "Day 1 lead-in",
       "options": [
-        "A2 + Torr Head + Muff only"
+        "Locked"
       ],
-      "lean": "Trimmed to the good bits — A2 coast road, Torr Head and Muff on the Monday afternoon. The coach-clogged Causeway/Derry tourist stops are cut; the WAW proper starts at Malin."
+      "lean": "DONE — Larne → Derry → Muff transfer off the boat, then the official line from km 0: round Inishowen, Farren’s Bar, Malin Head in the evening light, tent at Binion Bay. Antrim detours cut from the plan."
     },
     {
       "id": "d3",
@@ -2041,15 +2041,15 @@ export const tripData: Trip = {
         "Full-fat + dash",
         "Trim Beara"
       ],
-      "lean": "Full-fat: Healy Pass, Beara, Mizen, Kinsale finish, then the Copper Coast to Rosslare. ~250mi — a dawn start, the price of keeping the whole south-west."
+      "lean": "Full-fat: every remaining official mile — Sheep’s Head, Mizen, the Baltimore coast, Old Head, Kinsale finish, then the N25 run to Rosslare. ~320mi door to boat, 06:00 start; Healy Pass dawn spur optional (+9mi)."
     },
     {
       "id": "d7",
       "decision": "Camping",
       "options": [
-        "All nights pre-booked"
+        "All nine booked"
       ],
-      "lean": "Book the sell-out sites this week; backups listed per night. All €10–20pp."
+      "lean": "DONE — all nine nights booked and confirmed, Binion Bay to Tagoat."
     }
   ],
   "geo": {

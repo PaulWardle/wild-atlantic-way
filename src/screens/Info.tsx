@@ -111,7 +111,7 @@ export function Info() {
             </div>
           </GuideRow>
           <GuideRow title="The map">
-            The shape of the whole journey — Malin Head down to Kinsale — with every headland and town, and the live pin marking where they are.
+            The shape of the whole journey — Muff at the top of Lough Foyle all the way down to Kinsale — with every headland and town, and the live pin marking where they are.
           </GuideRow>
           <GuideRow title="Weather">
             Right on the home screen: today’s forecast for where the lads are, and tomorrow’s for where they’re headed next — so you know if they’re getting a soaking.

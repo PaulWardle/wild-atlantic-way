@@ -35,7 +35,7 @@ export function Days() {
   return (
     <div style={{ animation: 'waw-fade .35s ease both', padding: '18px 16px 26px' }}>
       <div style={{ fontFamily: font.mono, fontSize: 9, letterSpacing: '.18em', color: c.rust, textTransform: 'uppercase' }}>
-        Malin Head to Kinsale · the official route
+        Muff to Kinsale · the official route
       </div>
       <div style={{ fontFamily: font.display, fontWeight: 700, fontSize: 30, textTransform: 'uppercase', color: c.ink, lineHeight: 1, margin: '3px 0 12px' }}>
         The Ride
