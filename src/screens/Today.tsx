@@ -3,6 +3,7 @@ import { useStore } from '../store/StoreProvider'
 import { tripData } from '../data/tripData'
 import { isMarkable } from '../lib/tags'
 import { countdownParts } from '../lib/countdown'
+import { NavPanel } from '../components/NavPanel'
 
 const meta = tripData.meta
 
@@ -188,6 +189,9 @@ export function Today() {
           <div style={{ fontFamily: font.serif, fontSize: 13.5, color: c.inkBody2, lineHeight: 1.5 }}>{tdy.warnBanner}</div>
         </div>
       )}
+
+      {/* On the road, this is the whole point of the screen: one tap → Google Maps. */}
+      {isBrother && <NavPanel key={todayIdx} di={todayIdx} marks={marks} pad={16} />}
 
       <div style={{ padding: '16px 16px 4px' }}>
         {highlights.length > 0 && (

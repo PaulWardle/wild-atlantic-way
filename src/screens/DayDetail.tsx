@@ -1,100 +1,11 @@
-import { useMemo, useState } from 'react'
 import { c, font, phaseInfo } from '../theme'
 import { useStore } from '../store/StoreProvider'
 import { tripData } from '../data/tripData'
 import { buildTags, isMarkable } from '../lib/tags'
 import { summarizeDay, fmtH } from '../lib/daymath'
-import { dayCheckpoints, navStretch } from '../lib/nav'
-import { Dropdown, TagChips } from '../components/ui'
+import { NavPanel } from '../components/NavPanel'
+import { TagChips } from '../components/ui'
 import type { Stop } from '../types'
-
-/** Google Maps hand-off, bit by bit: pick where you are and where you're
- * riding to, get ONE link with the official line pinned in between. Tapping
- * it advances the panel to the next stretch, so the day unfolds tap by tap.
- * Progress is remembered per day, per phone. */
-function NavPanel({ di, marks }: { di: number; marks: Record<string, 'keep' | 'maybe' | 'cut'> }) {
-  const cps = useMemo(() => dayCheckpoints(di, marks), [di, marks])
-  const progKey = 'waw:navprog:' + di
-  // Progress is remembered by checkpoint NAME, so cutting a stop from the
-  // list can't shift what "where I'm at" points to.
-  const [fi, setFi] = useState(() => {
-    try {
-      const saved = localStorage.getItem(progKey)
-      const i = saved ? cps.findIndex((cp) => cp.name === saved) : -1
-      return Math.max(0, Math.min(i, cps.length - 2))
-    } catch {
-      return 0
-    }
-  })
-  const [ti, setTi] = useState(() => Math.min(fi + 1, cps.length - 1))
-  const [dd, setDd] = useState<null | 'from' | 'to'>(null)
-  if (cps.length < 2) return null
-  // Clamp — cutting an extra can shrink the list under live indexes.
-  const fiC = Math.max(0, Math.min(fi, cps.length - 2))
-  const tiC = Math.max(fiC + 1, Math.min(ti, cps.length - 1))
-  const from = cps[fiC]
-  const to = cps[tiC]
-  const { url, mi, via } = navStretch(di, from, to, marks)
-  const pickFrom = (i: number) => {
-    setFi(i)
-    if (ti <= i) setTi(Math.min(i + 1, cps.length - 1))
-    setDd(null)
-  }
-  const pickTo = (i: number) => {
-    setTi(i)
-    if (fi >= i) setFi(Math.max(i - 1, 0))
-    setDd(null)
-  }
-  // Tapping the link marks this stretch ridden and lines up the next one.
-  const advance = () => {
-    try {
-      localStorage.setItem(progKey, cps[tiC].name)
-    } catch {
-      /* private mode — progress just won't persist */
-    }
-    setFi(Math.min(tiC, cps.length - 2))
-    setTi(Math.min(tiC + 1, cps.length - 1))
-  }
-  const rowLabel: React.CSSProperties = { fontFamily: font.mono, fontSize: 8, fontWeight: 700, letterSpacing: '.12em', color: c.inkFaint, textTransform: 'uppercase', marginBottom: 4 }
-  return (
-    <div style={{ margin: '14px 18px 0', border: `1.5px solid ${c.ink}`, borderRadius: 9, overflow: 'hidden' }}>
-      <div style={{ background: c.teal, color: c.cream, padding: '6px 12px', fontFamily: font.mono, fontSize: 8.5, fontWeight: 700, letterSpacing: '.14em', textTransform: 'uppercase' }}>
-        Navigate · Google Maps
-      </div>
-      <div style={{ background: c.paper, padding: '11px 12px 12px' }}>
-        <div style={rowLabel}>I’m at</div>
-        <Dropdown
-          label={(fiC > 0 ? '✓ ' : '') + from.name}
-          open={dd === 'from'}
-          onToggle={() => setDd(dd === 'from' ? null : 'from')}
-          options={cps.slice(0, cps.length - 1).map((cp, i) => ({ label: (i < fiC ? '✓ ' : '') + cp.name, pick: () => pickFrom(i) }))}
-        />
-        <div style={{ ...rowLabel, marginTop: 10 }}>Ride to</div>
-        <Dropdown
-          label={to.name}
-          open={dd === 'to'}
-          onToggle={() => setDd(dd === 'to' ? null : 'to')}
-          options={cps.slice(1).map((cp, i) => ({ label: (i + 1 <= fiC ? '✓ ' : '') + cp.name, pick: () => pickTo(i + 1) }))}
-        />
-        <a
-          href={url}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={advance}
-          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginTop: 12, border: `1.5px solid ${c.teal}`, borderRadius: 8, background: c.teal, color: c.cream, padding: '11px 12px', textDecoration: 'none', fontFamily: font.display, fontWeight: 700, fontSize: 13.5, textTransform: 'uppercase', letterSpacing: '.04em' }}
-        >
-          Open in Google Maps ›
-        </a>
-        <div style={{ fontFamily: font.mono, fontSize: 8.5, color: c.inkFaint, textAlign: 'center', marginTop: 6 }}>
-          ~{mi} mi · official line pinned{via.length ? ` · via ${via.join(' + ')}` : ''}
-        </div>
-        <div style={{ fontFamily: font.serif, fontStyle: 'italic', fontSize: 11.5, color: c.inkFainter, lineHeight: 1.45, marginTop: 8 }}>
-          Google starts from wherever you are right now. Tap when you set off — the panel lines up the next stretch for when you land, and ✓ marks what’s ridden. Keep an optional extra and it’s pinned into the route; Maybe/Cut leave it out.
-        </div>
-      </div>
-    </div>
-  )
-}
 
 /** Route-item badge: locked official road / on-route stop / optional extra / transfer. */
 function KindBadge({ st }: { st: Stop }) {
@@ -205,6 +116,8 @@ export function DayDetail() {
         </div>
       )}
 
+      {isBrother && <NavPanel key={di} di={di} marks={marks} />}
+
       {/* Live day maths — official locked, extras recalc as you Keep/Maybe/Cut */}
       {sum.hasWaw && (
         <div style={{ margin: '14px 18px 0', border: `1.5px solid ${c.ink}`, borderRadius: 9, overflow: 'hidden' }}>
@@ -227,8 +140,6 @@ export function DayDetail() {
           </div>
         </div>
       )}
-
-      {isBrother && <NavPanel key={di} di={di} marks={marks} />}
 
       <div style={{ padding: '18px 18px 4px' }}>
         <div style={{ fontFamily: font.mono, fontSize: 8.5, letterSpacing: '.16em', color: c.inkFaintest, textTransform: 'uppercase', marginBottom: 12 }}>
