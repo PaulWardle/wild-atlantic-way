@@ -102,7 +102,11 @@ function ItemRow({ ticked, label, onToggle, extra }: { ticked: boolean; label: s
     <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 2px' }}>
       <button onClick={onToggle} style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 10, textAlign: 'left', background: 'none', border: 'none', padding: 0 }}>
         <div style={{ flex: '0 0 19px', height: 19, borderRadius: 4, border: `1.5px solid ${ticked ? c.green : c.ink}`, background: ticked ? c.green : c.paper, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          {ticked && <span style={{ color: '#eef0e0', fontFamily: font.display, fontWeight: 700, fontSize: 12, lineHeight: 1 }}>✓</span>}
+          {ticked && (
+            <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="#eef0e0" strokeWidth={4} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M4 12.5 L10 18.5 L20 6.5" />
+            </svg>
+          )}
         </div>
         <div style={{ flex: 1, fontFamily: font.serif, fontSize: 13.5, color: c.inkSoft, lineHeight: 1.35 }}>{label}</div>
       </button>
@@ -142,14 +146,6 @@ function GroupHead({ label, done, total }: { label: string; done: number; total:
   )
 }
 
-function SectionBar({ label, right }: { label: string; right?: string }) {
-  return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: c.ink, color: c.paper, borderRadius: 7, padding: '7px 12px', margin: '18px 0 10px' }}>
-      <span style={{ fontFamily: font.display, fontWeight: 700, fontSize: 14, textTransform: 'uppercase', letterSpacing: '.04em' }}>{label}</span>
-      {right && <span style={{ fontFamily: font.mono, fontSize: 10, color: c.gold }}>{right}</span>}
-    </div>
-  )
-}
 
 /** One To-do card — label and tick, nothing else. Stock and custom items look
  * identical; in edit mode a centred × removes either. */
@@ -190,6 +186,23 @@ function tabStyle(active: boolean): React.CSSProperties {
 export function Kit() {
   const { store, kitTab, setKitTab, setKit } = useStore()
   const [editing, setEditing] = useState(false)
+  // Which packing list is on screen — remembered per phone.
+  const [packView, setPackViewState] = useState<Sec>(() => {
+    try {
+      const v = localStorage.getItem('waw:packview')
+      return v === 'C' || v === 'S' ? v : 'P'
+    } catch {
+      return 'P'
+    }
+  })
+  const setPackView = (v: Sec) => {
+    setPackViewState(v)
+    try {
+      localStorage.setItem('waw:packview', v)
+    } catch {
+      /* noop */
+    }
+  }
   const kit = store.kit || {}
   const book = store.book || {}
   const tab = kitTab === 'todo' ? 'todo' : 'packing'
@@ -220,6 +233,17 @@ export function Kit() {
     if (sec === 'S') setKit(`al:${id}`, null)
   }
 
+  /** Reset the list on screen: untick everything and restore removed stock
+   * items. Added items and shared allocations are kept — they're decisions,
+   * not progress. */
+  const resetView = () => {
+    const name = packView === 'S' ? 'the SHARED list' : `${WHO_NAME[packView as Who]}’s list`
+    if (!window.confirm(`Reset ${name}?\n\nUnticks everything and restores any removed items. Your added items (and who-carries-what) are kept.`)) return
+    Object.keys(kit).forEach((k) => {
+      if (k.startsWith(`pk:${packView}:`) || k.startsWith(`rm:${packView}:`)) setKit(k, null)
+    })
+  }
+
   /** Shuffle a stock item to another list: off here, added there (deduped). */
   const moveStock = (sec: Sec, gi: number, ii: number, label: string, dest: Sec) => {
     addItem(dest, label)
@@ -248,11 +272,9 @@ export function Kit() {
   }
 
   const personalSection = (who: Who) => {
-    const n = sectionCount(who)
     const adds = addedItems(kit, who)
     return (
       <div key={who}>
-        <SectionBar label={`${WHO_NAME[who]} packs`} right={`${n.done}/${n.total}`} />
         {T.packing.map((grp, gi) => {
           const rows = grp.items.map((label, ii) => ({ label, ii })).filter((r) => !removed(who, gi, r.ii))
           if (!rows.length) return null
@@ -297,7 +319,6 @@ export function Kit() {
     )
   }
 
-  const sharedTotals = sectionCount('S')
   const sharedAdds = addedItems(kit, 'S')
   const todoAdds = addedItems(kit, 'T')
 
@@ -362,26 +383,53 @@ export function Kit() {
 
       {tab === 'packing' && (
         <>
-          <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 3 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
             <div style={{ fontFamily: font.display, fontWeight: 700, fontSize: 24, textTransform: 'uppercase', color: c.ink }}>Packing</div>
-            <button
-              onClick={() => setEditing(!editing)}
-              style={{ fontFamily: font.mono, fontSize: 9, fontWeight: 700, letterSpacing: '.08em', textTransform: 'uppercase', color: editing ? c.paper : c.rust, background: editing ? c.rust : 'transparent', border: `1.5px solid ${c.rust}`, borderRadius: 5, padding: '3px 9px' }}
-            >
-              {editing ? 'Done' : 'Edit list'}
-            </button>
+            <div style={{ display: 'flex', gap: 6 }}>
+              <button
+                onClick={resetView}
+                style={{ fontFamily: font.mono, fontSize: 9, fontWeight: 700, letterSpacing: '.08em', textTransform: 'uppercase', color: c.inkFaint, background: 'transparent', border: `1.5px solid ${c.inkFainter}`, borderRadius: 5, padding: '3px 9px' }}
+              >
+                Reset
+              </button>
+              <button
+                onClick={() => setEditing(!editing)}
+                style={{ fontFamily: font.mono, fontSize: 9, fontWeight: 700, letterSpacing: '.08em', textTransform: 'uppercase', color: editing ? c.paper : c.rust, background: editing ? c.rust : 'transparent', border: `1.5px solid ${c.rust}`, borderRadius: 5, padding: '3px 9px' }}
+              >
+                {editing ? 'Done' : 'Edit list'}
+              </button>
+            </div>
           </div>
-          <div style={{ fontFamily: font.serif, fontStyle: 'italic', fontSize: 12.5, color: c.inkMuted, marginBottom: 4 }}>
+
+          {/* One list at a time: whose kit are we looking at? */}
+          <div style={{ display: 'flex', gap: 3, border: `1.5px solid ${c.ink}`, borderRadius: 9, padding: 3, background: c.paperMuted, marginBottom: 10 }}>
+            {(['P', 'C', 'S'] as Sec[]).map((v) => {
+              const n = sectionCount(v)
+              const on = packView === v
+              return (
+                <button key={v} onClick={() => setPackView(v)} style={{ ...tabStyle(on), display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+                  <span>{v === 'S' ? 'Shared' : WHO_NAME[v]}</span>
+                  <span style={{ fontFamily: font.mono, fontSize: 8, fontWeight: 400, color: on ? (n.done === n.total ? '#b5d0a0' : c.gold) : c.inkFainter }}>
+                    {n.done}/{n.total}
+                  </span>
+                </button>
+              )
+            })}
+          </div>
+
+          <div style={{ fontFamily: font.serif, fontStyle: 'italic', fontSize: 12.5, color: c.inkMuted, marginBottom: 10 }}>
             {editing
-              ? 'Tap × to take an item off a list. Type at the bottom of a section to add one — spelling and capitals get tidied automatically.'
-              : 'Paul and CJ each tick their own list. Shared kit is carried once — tap PAUL or CJ to allocate it. Adds, removals and ticks sync live between both phones.'}
+              ? 'Tap × to remove an item, →P / →CJ / →SH to move it to another list. Type at the bottom to add — spelling and capitals get tidied.'
+              : packView === 'S'
+                ? 'Carried once between the pair — tap PAUL or CJ on an item to allocate who brings it.'
+                : `${WHO_NAME[packView as Who]}’s own list — ticks sync live to the other phone.`}
           </div>
 
-          {personalSection('P')}
-          {personalSection('C')}
+          {packView !== 'S' && personalSection(packView as Who)}
 
-          <SectionBar label="Shared — one of us brings it" right={`${sharedTotals.done}/${sharedTotals.total}`} />
-          {T.sharedKit.map((grp, gi) => {
+          {packView === 'S' && (
+            <>
+              {T.sharedKit.map((grp, gi) => {
             const rows = grp.items.map((label, ii) => ({ label, ii })).filter((r) => !removed('S', gi, r.ii))
             if (!rows.length) return null
             const done = rows.filter((r) => !!kit[`pk:S:${gi}_${r.ii}`]).length
@@ -424,10 +472,12 @@ export function Kit() {
               })}
             </div>
           )}
-          <AddRow placeholder="Add shared kit…" onAdd={(label) => addItem('S', label)} />
-          <div style={{ fontFamily: font.serif, fontStyle: 'italic', fontSize: 11.5, color: c.inkFainter, lineHeight: 1.5, marginTop: 8 }}>
-            Unallocated shared items belong to nobody yet — divvy them up before the panniers close.
-          </div>
+              <AddRow placeholder="Add shared kit…" onAdd={(label) => addItem('S', label)} />
+              <div style={{ fontFamily: font.serif, fontStyle: 'italic', fontSize: 11.5, color: c.inkFainter, lineHeight: 1.5, marginTop: 8 }}>
+                Unallocated shared items belong to nobody yet — divvy them up before the panniers close.
+              </div>
+            </>
+          )}
         </>
       )}
     </div>
