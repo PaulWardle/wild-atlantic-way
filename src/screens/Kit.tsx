@@ -19,8 +19,8 @@ type Who = 'P' | 'C'
 type Sec = Who | 'S'
 const WHO_NAME: Record<Who, string> = { P: 'Paul', C: 'CJ' }
 
-/** Custom items added to one section, oldest first. */
-function addedItems(kit: Record<string, string>, sec: Sec): Array<{ id: string; label: string }> {
+/** Custom items added to one section ('P'/'C'/'S' packing, 'T' to-dos), oldest first. */
+function addedItems(kit: Record<string, string>, sec: string): Array<{ id: string; label: string }> {
   const pre = `add:${sec}:`
   return Object.entries(kit)
     .filter(([k]) => k.startsWith(pre))
@@ -65,6 +65,28 @@ function RemoveBtn({ onRemove }: { onRemove: () => void }) {
     <button onClick={onRemove} style={{ flex: '0 0 auto', fontFamily: font.display, fontWeight: 700, fontSize: 13, color: c.rust, background: c.amberPanelDeep, border: `1.5px solid ${c.rust}`, borderRadius: 4, width: 24, height: 22, lineHeight: 1 }}>
       ×
     </button>
+  )
+}
+
+const SEC_SHORT: Record<Sec, string> = { P: 'P', C: 'CJ', S: 'SH' }
+
+/** Edit-mode controls: shuffle an item to another list, or bin it. */
+function EditControls({ current, onMove, onRemove }: { current: Sec; onMove: (dest: Sec) => void; onRemove: () => void }) {
+  return (
+    <div style={{ display: 'flex', gap: 4, flex: '0 0 auto', alignItems: 'center' }}>
+      {(['P', 'C', 'S'] as Sec[])
+        .filter((s) => s !== current)
+        .map((s) => (
+          <button
+            key={s}
+            onClick={() => onMove(s)}
+            style={{ fontFamily: font.mono, fontSize: 8, fontWeight: 700, letterSpacing: '.04em', color: c.teal, background: c.tealPanel, border: `1.5px solid ${c.teal}`, borderRadius: 4, padding: '3px 6px' }}
+          >
+            →{SEC_SHORT[s]}
+          </button>
+        ))}
+      <RemoveBtn onRemove={onRemove} />
+    </div>
   )
 }
 
@@ -185,6 +207,16 @@ export function Kit() {
     if (sec === 'S') setKit(`al:${id}`, null)
   }
 
+  /** Shuffle a stock item to another list: off here, added there (deduped). */
+  const moveStock = (sec: Sec, gi: number, ii: number, label: string, dest: Sec) => {
+    addItem(dest, label)
+    setKit(`rm:${sec}:${gi}_${ii}`, '1')
+  }
+  const moveAdded = (sec: Sec, id: string, label: string, dest: Sec) => {
+    addItem(dest, label)
+    removeAdded(sec, id)
+  }
+
   const sectionCount = (sec: Sec) => {
     let done = 0
     let total = 0
@@ -223,7 +255,7 @@ export function Kit() {
                     ticked={!!kit[k]}
                     label={r.label}
                     onToggle={() => setKit(k, kit[k] ? null : '1')}
-                    extra={editing ? <RemoveBtn onRemove={() => setKit(`rm:${who}:${gi}_${r.ii}`, '1')} /> : undefined}
+                    extra={editing ? <EditControls current={who} onMove={(d) => moveStock(who, gi, r.ii, r.label, d)} onRemove={() => setKit(`rm:${who}:${gi}_${r.ii}`, '1')} /> : undefined}
                   />
                 )
               })}
@@ -241,7 +273,7 @@ export function Kit() {
                   ticked={!!kit[k]}
                   label={a.label}
                   onToggle={() => setKit(k, kit[k] ? null : '1')}
-                  extra={editing ? <RemoveBtn onRemove={() => removeAdded(who, a.id)} /> : undefined}
+                  extra={editing ? <EditControls current={who} onMove={(d) => moveAdded(who, a.id, a.label, d)} onRemove={() => removeAdded(who, a.id)} /> : undefined}
                 />
               )
             })}
@@ -254,6 +286,7 @@ export function Kit() {
 
   const sharedTotals = sectionCount('S')
   const sharedAdds = addedItems(kit, 'S')
+  const todoAdds = addedItems(kit, 'T')
 
   return (
     <div style={{ animation: 'waw-fade .35s ease both', padding: '16px 16px 28px' }}>
@@ -264,16 +297,45 @@ export function Kit() {
 
       {tab === 'todo' && (
         <>
-          <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 3 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 3 }}>
             <div style={{ fontFamily: font.display, fontWeight: 700, fontSize: 24, textTransform: 'uppercase', color: c.ink }}>To do</div>
-            <div style={{ fontFamily: font.mono, fontSize: 11, color: c.green }}>{bookDone}/{T.bookings.length}</div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <span style={{ fontFamily: font.mono, fontSize: 11, color: c.green }}>
+                {bookDone + todoAdds.filter((a) => !!kit[`pk:T:${a.id}`]).length}/{T.bookings.length + todoAdds.length}
+              </span>
+              <button
+                onClick={() => setEditing(!editing)}
+                style={{ fontFamily: font.mono, fontSize: 9, fontWeight: 700, letterSpacing: '.08em', textTransform: 'uppercase', color: editing ? c.paper : c.rust, background: editing ? c.rust : 'transparent', border: `1.5px solid ${c.rust}`, borderRadius: 5, padding: '3px 9px' }}
+              >
+                {editing ? 'Done' : 'Edit'}
+              </button>
+            </div>
           </div>
           <div style={{ fontFamily: font.serif, fontStyle: 'italic', fontSize: 12.5, color: c.inkMuted, marginBottom: 12 }}>
-            The admin to have squared away before departure.
+            The admin to square away — add anything that comes up on the road; it syncs to both phones.
           </div>
           {T.bookings.map((b) => (
             <BookRow key={b.id} b={b} ticked={!!book[b.id]} onToggle={() => toggleBook(b.id)} />
           ))}
+          {todoAdds.map((a) => {
+            const k = `pk:T:${a.id}`
+            return (
+              <ItemRow
+                key={a.id}
+                ticked={!!kit[k]}
+                label={a.label}
+                onToggle={() => setKit(k, kit[k] ? null : '1')}
+                extra={editing ? <RemoveBtn onRemove={() => {
+                  setKit(`add:T:${a.id}`, null)
+                  setKit(k, null)
+                }} /> : undefined}
+              />
+            )
+          })}
+          <AddRow placeholder="Add a to-do…" onAdd={(label) => {
+            const have = new Set(todoAdds.map((a) => a.label.toLowerCase()))
+            if (!have.has(label.toLowerCase())) setKit(`add:T:a${Date.now()}`, label)
+          }} />
         </>
       )}
 
@@ -315,7 +377,7 @@ export function Kit() {
                       ticked={!!kit[tick]}
                       label={r.label}
                       onToggle={() => setKit(tick, kit[tick] ? null : '1')}
-                      extra={editing ? <RemoveBtn onRemove={() => setKit(`rm:S:${gi}_${r.ii}`, '1')} /> : <AllocChips who={who} onPick={(w) => setKit(al, who === w ? null : w)} />}
+                      extra={editing ? <EditControls current="S" onMove={(d) => moveStock('S', gi, r.ii, r.label, d)} onRemove={() => setKit(`rm:S:${gi}_${r.ii}`, '1')} /> : <AllocChips who={who} onPick={(w) => setKit(al, who === w ? null : w)} />}
                     />
                   )
                 })}
@@ -335,7 +397,7 @@ export function Kit() {
                     ticked={!!kit[tick]}
                     label={a.label}
                     onToggle={() => setKit(tick, kit[tick] ? null : '1')}
-                    extra={editing ? <RemoveBtn onRemove={() => removeAdded('S', a.id)} /> : <AllocChips who={who} onPick={(w) => setKit(al, who === w ? null : w)} />}
+                    extra={editing ? <EditControls current="S" onMove={(d) => moveAdded('S', a.id, a.label, d)} onRemove={() => removeAdded('S', a.id)} /> : <AllocChips who={who} onPick={(w) => setKit(al, who === w ? null : w)} />}
                   />
                 )
               })}

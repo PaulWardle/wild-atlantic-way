@@ -62,6 +62,25 @@ const FIX: Record<string, string> = {
   ktm: 'KTM',
   triumph: 'Triumph',
   allen: 'Allen',
+  // places that come up in trip errands
+  ireland: 'Ireland',
+  belfast: 'Belfast',
+  dublin: 'Dublin',
+  derry: 'Derry',
+  galway: 'Galway',
+  cork: 'Cork',
+  donegal: 'Donegal',
+  sligo: 'Sligo',
+  westport: 'Westport',
+  clifden: 'Clifden',
+  doolin: 'Doolin',
+  dingle: 'Dingle',
+  kinsale: 'Kinsale',
+  kerry: 'Kerry',
+  achill: 'Achill',
+  bantry: 'Bantry',
+  larne: 'Larne',
+  rosslare: 'Rosslare',
 }
 
 /** Words whose casing is dictated by the FIX table (don't sentence-case over them). */
