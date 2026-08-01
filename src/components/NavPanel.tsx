@@ -1,51 +1,157 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { c, font } from '../theme'
-import { dayCheckpoints, navStretch, type StopMarks } from '../lib/nav'
+import { dayCheckpoints, dayPosition, navStretch, type Checkpoint, type StopMarks } from '../lib/nav'
 
-/* On the road you want ONE tap: the app knows the day, knows what's been
- * ridden, so the panel leads with a single big button — the NEXT stop. Tap it,
- * Google Maps opens from wherever you're standing with the official line
- * pinned, and the panel lines up the stop after. "skip" passes a stop without
- * navigating; "change" opens one list for the exceptional jump-around. */
+/* One big button: the NEXT stop — computed from where you ACTUALLY are.
+ *
+ * The panel takes a one-shot GPS fix when it opens (and again when you come
+ * back from Google Maps), places you along the day's official line, and the
+ * next stop is simply the first one still ahead of you. No background
+ * tracking, no battery cost — a single position read per look.
+ *
+ * When GPS is denied, times out, or you're nowhere near the route (home, the
+ * ferry), it falls back to tap-to-advance and says so. "skip" excludes a stop
+ * you're not visiting; "change" jumps anywhere, and a live fix showing you've
+ * passed that choice clears it again. */
 
 export function NavPanel({ di, marks, pad = 18 }: { di: number; marks: StopMarks; pad?: number }) {
   const cps = useMemo(() => dayCheckpoints(di, marks), [di, marks])
-  const key = 'waw:navnext:' + di
-  const [nextName, setNextName] = useState<string | null>(() => {
+  const cpsRef = useRef<Checkpoint[]>(cps)
+  cpsRef.current = cps
+
+  // ---- live position ----
+  const [riderKm, setRiderKm] = useState<number | null>(null)
+  const [gps, setGps] = useState<'wait' | 'live' | 'off' | 'none'>('wait')
+  const lastFixRef = useRef(0)
+  const locate = (fresh = false) => {
+    if (!('geolocation' in navigator)) {
+      setGps('none')
+      return
+    }
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        lastFixRef.current = Date.now()
+        const km = dayPosition(di, pos.coords.latitude, pos.coords.longitude, cpsRef.current)
+        if (km == null) {
+          setGps('off')
+          setRiderKm(null)
+        } else {
+          setGps('live')
+          setRiderKm(km)
+        }
+      },
+      () => setGps((g) => (g === 'live' ? 'live' : 'none')),
+      // A manual re-locate must not serve a cached fix — that's the tap that
+      // says "I've moved, look again".
+      { timeout: 8000, maximumAge: fresh ? 0 : 30000 },
+    )
+  }
+  useEffect(() => {
+    locate()
+    // Re-fix when the app comes back to the foreground (i.e. returning from
+    // Google Maps at the last stop) — throttled so it stays a trickle.
+    const onVis = () => {
+      if (document.visibilityState === 'visible' && Date.now() - lastFixRef.current > 20000) locate()
+    }
+    document.addEventListener('visibilitychange', onVis)
+    return () => document.removeEventListener('visibilitychange', onVis)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [di])
+
+  // ---- skips (persisted) + fallback tap progress + manual override ----
+  const skipKey = 'waw:navskip:' + di
+  const tapKey = 'waw:navnext:' + di
+  const [skipped, setSkipped] = useState<string[]>(() => {
     try {
-      return localStorage.getItem(key)
+      return JSON.parse(localStorage.getItem(skipKey) || '[]') as string[]
+    } catch {
+      return []
+    }
+  })
+  const [tapName, setTapName] = useState<string | null>(() => {
+    try {
+      return localStorage.getItem(tapKey)
     } catch {
       return null
     }
   })
+  const [over, setOver] = useState<string | null>(null)
   const [pick, setPick] = useState(false)
   if (cps.length < 2) return null
 
-  const found = nextName && nextName !== 'DONE' ? cps.findIndex((cp) => cp.name === nextName) : -1
-  const ni = nextName === 'DONE' ? cps.length : found >= 1 ? found : 1
-  const done = ni >= cps.length
-  const save = (v: string) => {
+  const saveSkips = (s: string[]) => {
+    setSkipped(s)
     try {
-      localStorage.setItem(key, v)
+      localStorage.setItem(skipKey, JSON.stringify(s))
     } catch {
-      /* private mode — progress just won't persist */
+      /* noop */
     }
   }
-  const setNext = (i: number) => {
-    setNextName(cps[i].name)
-    save(cps[i].name)
+  const saveTap = (v: string) => {
+    setTapName(v)
+    try {
+      localStorage.setItem(tapKey, v)
+    } catch {
+      /* noop */
+    }
+  }
+
+  // ---- which stop is next ----
+  const live = gps === 'live' && riderKm != null
+  let ni: number
+  if (over) {
+    const oi = cps.findIndex((cp) => cp.name === over)
+    // A live fix past the manual choice clears it (you got there).
+    ni = oi >= 1 && (!live || cps[oi].km > (riderKm as number) + 0.3) ? oi : -1
+  } else {
+    ni = -1
+  }
+  if (ni < 0) {
+    if (live) {
+      ni = cps.findIndex((cp, i) => i >= 1 && cp.km > (riderKm as number) + 0.3 && !skipped.includes(cp.name))
+      if (ni < 0) ni = cps.length
+    } else {
+      const ti = tapName === 'DONE' ? cps.length : tapName ? cps.findIndex((cp) => cp.name === tapName) : -1
+      ni = ti === cps.length ? cps.length : ti >= 1 ? ti : 1
+      while (ni < cps.length && skipped.includes(cps[ni].name)) ni++
+    }
+  }
+  const done = ni >= cps.length
+
+  const advance = () => {
+    setOver(null)
+    const n = Math.min(ni + 1, cps.length)
+    saveTap(n >= cps.length ? 'DONE' : cps[n].name)
+  }
+  const skipStop = () => {
+    if (!done) saveSkips([...skipped, cps[ni].name])
+    if (!live) advance()
+  }
+  const jumpTo = (i: number) => {
+    setOver(cps[i].name)
+    saveTap(cps[i].name)
+    if (skipped.includes(cps[i].name)) saveSkips(skipped.filter((n) => n !== cps[i].name))
     setPick(false)
   }
-  const advance = () => {
-    const n = ni + 1
-    const v = n >= cps.length ? 'DONE' : cps[n].name
-    setNextName(v)
-    save(v)
+  const restart = () => {
+    setOver(null)
+    saveSkips([])
+    saveTap(cps[1].name)
   }
+
+  const gpsLine =
+    gps === 'live'
+      ? '📍 live — next stop is what’s actually ahead of you'
+      : gps === 'off'
+        ? '📍 you’re not on the Way right now — advancing by taps'
+        : gps === 'none'
+          ? 'no GPS — advancing by taps'
+          : '📍 locating…'
 
   const shell: React.CSSProperties = { margin: `14px ${pad}px 0`, border: `1.5px solid ${c.ink}`, borderRadius: 9, overflow: 'hidden' }
   const head: React.CSSProperties = { background: c.teal, color: c.cream, padding: '6px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }
   const headL: React.CSSProperties = { fontFamily: font.mono, fontSize: 8.5, fontWeight: 700, letterSpacing: '.14em', textTransform: 'uppercase' }
+  const linkBtn: React.CSSProperties = { fontFamily: font.mono, fontSize: 9, fontWeight: 700, letterSpacing: '.08em', textTransform: 'uppercase', background: 'none', border: 'none', textDecoration: 'underline' }
 
   if (done) {
     return (
@@ -54,8 +160,10 @@ export function NavPanel({ di, marks, pad = 18 }: { di: number; marks: StopMarks
           <span style={headL}>Navigate · Google Maps</span>
         </div>
         <div style={{ background: c.greenPanel, padding: '14px 13px', textAlign: 'center' }}>
-          <div style={{ fontFamily: font.display, fontWeight: 700, fontSize: 15, textTransform: 'uppercase', color: c.green }}>Day ridden — every stop ✓</div>
-          <button onClick={() => setNext(1)} style={{ marginTop: 8, fontFamily: font.mono, fontSize: 9, fontWeight: 700, letterSpacing: '.08em', textTransform: 'uppercase', color: c.inkFaint, background: 'none', border: 'none', textDecoration: 'underline' }}>
+          <div style={{ fontFamily: font.display, fontWeight: 700, fontSize: 15, textTransform: 'uppercase', color: c.green }}>
+            {live ? 'You’re past the last stop — day ridden ✓' : 'Day ridden — every stop ✓'}
+          </div>
+          <button onClick={restart} style={{ ...linkBtn, color: c.inkFaint, marginTop: 8 }}>
             restart the day
           </button>
         </div>
@@ -63,18 +171,16 @@ export function NavPanel({ di, marks, pad = 18 }: { di: number; marks: StopMarks
     )
   }
 
-  const from = cps[ni - 1]
   const to = cps[ni]
-  const { url, mi, via } = navStretch(di, from, to, marks)
-  const after = ni + 1 < cps.length ? cps[ni + 1].name : null
+  const from = cps[ni - 1]
+  const { url, mi, via } = navStretch(di, from, to, marks, live ? riderKm : null)
+  const after = ni + 1 < cps.length ? cps.slice(ni + 1).find((cp) => !skipped.includes(cp.name))?.name : null
 
   return (
     <div style={shell}>
       <div style={head}>
         <span style={headL}>Navigate · Google Maps</span>
-        <span style={{ fontFamily: font.mono, fontSize: 8.5, letterSpacing: '.06em', color: '#bcd0d6' }}>
-          {ni - 1 > 0 ? `${ni - 1} ridden ✓ · ` : ''}stop {ni} of {cps.length - 1}
-        </span>
+        <span style={{ fontFamily: font.mono, fontSize: 8.5, letterSpacing: '.06em', color: '#bcd0d6' }}>stop {ni} of {cps.length - 1}</span>
       </div>
       <div style={{ background: c.paper, padding: '11px 12px 10px' }}>
         <a
@@ -94,11 +200,19 @@ export function NavPanel({ di, marks, pad = 18 }: { di: number; marks: StopMarks
           ~{mi} mi · official line pinned{via.length ? ` · via ${via.join(' + ')}` : ''}
           {after ? ` · then ${after}` : ' · last stop of the day'}
         </div>
+        <div style={{ fontFamily: font.mono, fontSize: 8, color: gps === 'live' ? c.green : c.inkFainter, marginTop: 4, textAlign: 'center' }}>
+          {gpsLine}
+          {gps !== 'wait' && (
+            <button onClick={() => locate(true)} style={{ ...linkBtn, fontSize: 8, color: c.inkFaint, marginLeft: 7 }}>
+              re-locate
+            </button>
+          )}
+        </div>
         <div style={{ display: 'flex', justifyContent: 'center', gap: 22, marginTop: 7 }}>
-          <button onClick={advance} style={{ fontFamily: font.mono, fontSize: 9, fontWeight: 700, letterSpacing: '.08em', textTransform: 'uppercase', color: c.inkFaint, background: 'none', border: 'none', textDecoration: 'underline' }}>
+          <button onClick={skipStop} style={{ ...linkBtn, color: c.inkFaint }}>
             skip stop
           </button>
-          <button onClick={() => setPick(!pick)} style={{ fontFamily: font.mono, fontSize: 9, fontWeight: 700, letterSpacing: '.08em', textTransform: 'uppercase', color: c.teal, background: 'none', border: 'none', textDecoration: 'underline' }}>
+          <button onClick={() => setPick(!pick)} style={{ ...linkBtn, color: c.teal }}>
             {pick ? 'close' : 'change stop'}
           </button>
         </div>
@@ -108,14 +222,17 @@ export function NavPanel({ di, marks, pad = 18 }: { di: number; marks: StopMarks
               const idx = i + 1
               const ridden = idx < ni
               const current = idx === ni
+              const skip = skipped.includes(cp.name)
               return (
                 <button
                   key={idx}
-                  onClick={() => setNext(idx)}
+                  onClick={() => jumpTo(idx)}
                   style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 8, textAlign: 'left', padding: '8px 11px', background: current ? c.tealPanel : c.paper, borderTop: i ? `1px solid ${c.lineSoft}` : 'none' }}
                 >
                   <span style={{ flex: '0 0 14px', fontFamily: font.mono, fontSize: 10, color: ridden ? c.green : c.inkFaintest }}>{ridden ? '✓' : current ? '▸' : ''}</span>
-                  <span style={{ fontFamily: font.display, fontWeight: 600, fontSize: 12.5, textTransform: 'uppercase', color: ridden ? c.inkFainter : current ? c.teal : c.ink, lineHeight: 1.2 }}>{cp.name}</span>
+                  <span style={{ fontFamily: font.display, fontWeight: 600, fontSize: 12.5, textTransform: 'uppercase', color: skip ? c.inkFaintest : ridden ? c.inkFainter : current ? c.teal : c.ink, lineHeight: 1.2, textDecoration: skip ? 'line-through' : 'none' }}>
+                    {cp.name}
+                  </span>
                 </button>
               )
             })}

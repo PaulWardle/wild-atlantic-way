@@ -196,24 +196,45 @@ export function dayCheckpoints(di: number, marks?: StopMarks): Checkpoint[] {
   return cps
 }
 
+/** Where the rider actually is along the day's route, from a GPS fix.
+ * Projects onto the day's stretch of official line (within 10 km), and snaps
+ * to any checkpoint within 3 km — that's what places you correctly at an
+ * off-line extra like Glenveagh without dragging "next" backwards. Returns
+ * null when the fix is nowhere near the day (home, the ferry, a big detour). */
+export function dayPosition(di: number, lat: number, lon: number, cps: Checkpoint[]): number | null {
+  const w = T.days[di]?.wawKm
+  if (!w) return null
+  let best = -Infinity
+  const p = nearestOnStretch(lat, lon, w[0], w[1])
+  if (hav(lat, lon, p[0], p[1]) <= 10) best = p[2]
+  for (const cp of cps) {
+    if (hav(lat, lon, cp.lat, cp.lon) <= 3) best = Math.max(best, cp.km)
+  }
+  return best === -Infinity ? null : best
+}
+
 /** One Google Maps link for the chosen stretch: current location → `to`,
- * official line pinned in between, kept extras as priority pins. */
+ * official line pinned in between, kept extras as priority pins. When the
+ * rider's live chainage is known, pins start from THERE, not from the
+ * previous checkpoint. */
 export function navStretch(
   di: number,
   from: Checkpoint,
   to: Checkpoint,
   marks?: StopMarks,
+  riderKm?: number | null,
 ): { url: string; mi: number; via: string[] } {
   const dy = T.days[di]
   const dest: [number, number] = [to.lat, to.lon]
-  const line = Math.max(0, to.km - from.km)
-  const mi = Math.round(Math.max(line, hav(from.lat, from.lon, to.lat, to.lon) * 1.25) * 0.6214)
+  const startKm = riderKm != null ? riderKm : from.km
+  const line = Math.max(0, to.km - startKm)
+  const mi = Math.round(Math.max(line, riderKm != null ? 0 : hav(from.lat, from.lon, to.lat, to.lon) * 1.25) * 0.6214)
   const w = dy?.wawKm
   if (!w) return { url: gmapsUrl(dest, []), mi, via: [] }
 
   // Clamp the pinned stretch to the official window — transfer hops (Larne →
   // Muff, Kinsale → Rosslare camp) fall outside it and go pin-free.
-  const lo = Math.min(Math.max(w[0], from.km), w[1])
+  const lo = Math.min(Math.max(w[0], startKm), w[1])
   const hi = Math.min(Math.max(w[0], to.km), w[1])
   if (hi - lo < 2) return { url: gmapsUrl(dest, []), mi, via: [] }
 
