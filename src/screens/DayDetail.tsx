@@ -1,57 +1,89 @@
+import { useMemo, useState } from 'react'
 import { c, font, phaseInfo } from '../theme'
 import { useStore } from '../store/StoreProvider'
 import { tripData } from '../data/tripData'
 import { buildTags, isMarkable } from '../lib/tags'
 import { summarizeDay, fmtH } from '../lib/daymath'
-import { dayLegs, dayKml, tripKml, downloadKml } from '../lib/nav'
-import { TagChips } from '../components/ui'
+import { dayCheckpoints, navStretch } from '../lib/nav'
+import { Dropdown, TagChips } from '../components/ui'
 import type { Stop } from '../types'
 
-/** Google Maps hand-off: ride legs pinned to the official line + KML for My Maps. */
+/** Google Maps hand-off, bit by bit: pick where you are and where you're
+ * riding to, get ONE link with the official line pinned in between. Tapping
+ * it advances the panel to the next stretch, so the day unfolds tap by tap.
+ * Progress is remembered per day, per phone. */
 function NavPanel({ di, marks }: { di: number; marks: Record<string, 'keep' | 'maybe' | 'cut'> }) {
-  const legs = dayLegs(di, marks)
-  if (!legs.length) return null
-  const dy = tripData.days[di]
+  const cps = useMemo(() => dayCheckpoints(di), [di])
+  const progKey = 'waw:navprog:' + di
+  const [fi, setFi] = useState(() => {
+    try {
+      const v = parseInt(localStorage.getItem(progKey) || '0', 10)
+      return Math.max(0, Math.min(isNaN(v) ? 0 : v, cps.length - 2))
+    } catch {
+      return 0
+    }
+  })
+  const [ti, setTi] = useState(() => Math.min(fi + 1, cps.length - 1))
+  const [dd, setDd] = useState<null | 'from' | 'to'>(null)
+  if (cps.length < 2) return null
+  const from = cps[fi]
+  const to = cps[ti]
+  const { url, mi, via } = navStretch(di, from, to, marks)
+  const pickFrom = (i: number) => {
+    setFi(i)
+    if (ti <= i) setTi(Math.min(i + 1, cps.length - 1))
+    setDd(null)
+  }
+  const pickTo = (i: number) => {
+    setTi(i)
+    if (fi >= i) setFi(Math.max(i - 1, 0))
+    setDd(null)
+  }
+  // Tapping the link marks this stretch ridden and lines up the next one.
+  const advance = () => {
+    try {
+      localStorage.setItem(progKey, String(ti))
+    } catch {
+      /* private mode — progress just won't persist */
+    }
+    setFi(Math.min(ti, cps.length - 2))
+    setTi(Math.min(ti + 1, cps.length - 1))
+  }
+  const rowLabel: React.CSSProperties = { fontFamily: font.mono, fontSize: 8, fontWeight: 700, letterSpacing: '.12em', color: c.inkFaint, textTransform: 'uppercase', marginBottom: 4 }
   return (
     <div style={{ margin: '14px 18px 0', border: `1.5px solid ${c.ink}`, borderRadius: 9, overflow: 'hidden' }}>
       <div style={{ background: c.teal, color: c.cream, padding: '6px 12px', fontFamily: font.mono, fontSize: 8.5, fontWeight: 700, letterSpacing: '.14em', textTransform: 'uppercase' }}>
         Navigate · Google Maps
       </div>
-      <div style={{ background: c.paper, padding: '9px 11px 11px' }}>
-        {legs.map((leg, i) => (
-          <a
-            key={i}
-            href={leg.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ display: 'flex', alignItems: 'center', gap: 10, border: `1.5px solid ${c.teal}`, borderRadius: 7, background: c.tealPanel, padding: '9px 12px', marginBottom: 6, textDecoration: 'none' }}
-          >
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontFamily: font.display, fontWeight: 600, fontSize: 13, textTransform: 'uppercase', color: c.teal, letterSpacing: '.02em', lineHeight: 1.15 }}>{leg.label}</div>
-              <div style={{ fontFamily: font.mono, fontSize: 8.5, color: c.inkFaint, marginTop: 2 }}>{leg.sub}</div>
-            </div>
-            <span style={{ fontFamily: font.display, fontWeight: 700, fontSize: 16, color: c.teal }}>›</span>
-          </a>
-        ))}
-        <div style={{ display: 'flex', gap: 6, marginTop: 2 }}>
-          <button
-            onClick={() => {
-              const k = dayKml(di, marks)
-              if (k) downloadKml(`waw-day-${dy.n}.kml`, k)
-            }}
-            style={{ flex: 1, border: `1.5px solid ${c.ink}`, borderRadius: 7, background: c.paper, padding: '7px 6px', fontFamily: font.mono, fontSize: 9, fontWeight: 700, letterSpacing: '.06em', textTransform: 'uppercase', color: c.ink }}
-          >
-            Day {dy.n} line (KML)
-          </button>
-          <button
-            onClick={() => downloadKml('wild-atlantic-way-full.kml', tripKml())}
-            style={{ flex: 1, border: `1.5px solid ${c.ink}`, borderRadius: 7, background: c.paper, padding: '7px 6px', fontFamily: font.mono, fontSize: 9, fontWeight: 700, letterSpacing: '.06em', textTransform: 'uppercase', color: c.ink }}
-          >
-            Full route (KML)
-          </button>
+      <div style={{ background: c.paper, padding: '11px 12px 12px' }}>
+        <div style={rowLabel}>I’m at</div>
+        <Dropdown
+          label={(fi > 0 ? '✓ ' : '') + from.name}
+          open={dd === 'from'}
+          onToggle={() => setDd(dd === 'from' ? null : 'from')}
+          options={cps.slice(0, cps.length - 1).map((cp, i) => ({ label: (i < fi ? '✓ ' : '') + cp.name, pick: () => pickFrom(i) }))}
+        />
+        <div style={{ ...rowLabel, marginTop: 10 }}>Ride to</div>
+        <Dropdown
+          label={to.name}
+          open={dd === 'to'}
+          onToggle={() => setDd(dd === 'to' ? null : 'to')}
+          options={cps.slice(1).map((cp, i) => ({ label: (i + 1 <= fi ? '✓ ' : '') + cp.name, pick: () => pickTo(i + 1) }))}
+        />
+        <a
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={advance}
+          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, marginTop: 12, border: `1.5px solid ${c.teal}`, borderRadius: 8, background: c.teal, color: c.cream, padding: '11px 12px', textDecoration: 'none', fontFamily: font.display, fontWeight: 700, fontSize: 13.5, textTransform: 'uppercase', letterSpacing: '.04em' }}
+        >
+          Open in Google Maps ›
+        </a>
+        <div style={{ fontFamily: font.mono, fontSize: 8.5, color: c.inkFaint, textAlign: 'center', marginTop: 6 }}>
+          ~{mi} mi · official line pinned{via.length ? ` · via ${via.join(' + ')}` : ''}
         </div>
         <div style={{ fontFamily: font.serif, fontStyle: 'italic', fontSize: 11.5, color: c.inkFainter, lineHeight: 1.45, marginTop: 8 }}>
-          Each leg starts from your current location, with the official line pinned every ~5–7 miles — ride them in order, one after the other. Keep an optional extra and it's routed in; Maybe/Cut leave it out — links rebuild every time you tap. Import the KML into Google My Maps once (Create map → Import) and the exact line lives on your map as the cross-check.
+          Google starts from wherever you are right now. Tap when you set off — the panel lines up the next stretch for when you land, and ✓ marks what’s ridden. Keep an optional extra and it’s pinned into the route; Maybe/Cut leave it out.
         </div>
       </div>
     </div>
@@ -190,7 +222,7 @@ export function DayDetail() {
         </div>
       )}
 
-      {isBrother && <NavPanel di={di} marks={marks} />}
+      {isBrother && <NavPanel key={di} di={di} marks={marks} />}
 
       <div style={{ padding: '18px 18px 4px' }}>
         <div style={{ fontFamily: font.mono, fontSize: 8.5, letterSpacing: '.16em', color: c.inkFaintest, textTransform: 'uppercase', marginBottom: 12 }}>
