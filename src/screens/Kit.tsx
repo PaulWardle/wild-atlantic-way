@@ -1,20 +1,72 @@
-import type { ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 import { c, font } from '../theme'
 import { useStore } from '../store/StoreProvider'
 import { tripData } from '../data/tripData'
+import { normalizeItem } from '../lib/itemText'
 
 const T = tripData
 
 /* Packing is per-brother: Paul and CJ each tick their own copy of the personal
  * list, and the shared kit (tent, tools, cooking) is allocated to ONE of them
  * so only one bike carries it. All of it lives in the synced `kit` table —
- * tick or allocate on either phone and the other sees it live.
+ * tick, allocate, add or remove on either phone and the other sees it live.
  *
  * Keys: pk:P:{gi}_{ii} / pk:C:{gi}_{ii} = personal ticks · pk:S:{gi}_{ii} =
- * shared-item packed · al:{gi}_{ii} = allocation ('P' | 'C'). */
+ * shared-item packed · al:{id} = allocation ('P' | 'C') · add:{sec}:{id} =
+ * custom item label · rm:{sec}:{gi}_{ii} = a stock item taken off the list. */
 
 type Who = 'P' | 'C'
+type Sec = Who | 'S'
 const WHO_NAME: Record<Who, string> = { P: 'Paul', C: 'CJ' }
+
+/** Custom items added to one section, oldest first. */
+function addedItems(kit: Record<string, string>, sec: Sec): Array<{ id: string; label: string }> {
+  const pre = `add:${sec}:`
+  return Object.entries(kit)
+    .filter(([k]) => k.startsWith(pre))
+    .map(([k, label]) => ({ id: k.slice(pre.length), label }))
+    .sort((a, b) => (a.id < b.id ? -1 : 1))
+}
+
+/** New-item input: phone autocorrect on, then our kit-word tidy on commit. */
+function AddRow({ placeholder, onAdd }: { placeholder: string; onAdd: (label: string) => void }) {
+  const [txt, setTxt] = useState('')
+  const commit = () => {
+    const v = normalizeItem(txt)
+    if (v) onAdd(v)
+    setTxt('')
+  }
+  return (
+    <div style={{ display: 'flex', gap: 10, alignItems: 'center', padding: '6px 2px' }}>
+      <div style={{ flex: '0 0 19px', height: 19, borderRadius: 4, border: `1.5px dashed ${c.inkFainter}` }} />
+      <input
+        value={txt}
+        onChange={(e) => setTxt(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') commit()
+        }}
+        placeholder={placeholder}
+        autoCapitalize="sentences"
+        autoCorrect="on"
+        spellCheck
+        style={{ flex: 1, border: 'none', borderBottom: `1px dashed ${c.lineSoft}`, background: 'transparent', fontFamily: font.serif, fontSize: 13.5, color: c.inkSoft, padding: '3px 2px', outline: 'none' }}
+      />
+      {txt.trim() !== '' && (
+        <button onClick={commit} style={{ fontFamily: font.mono, fontSize: 9, fontWeight: 700, letterSpacing: '.08em', textTransform: 'uppercase', color: c.paper, background: c.green, border: `1.5px solid ${c.green}`, borderRadius: 4, padding: '3px 9px' }}>
+          Add
+        </button>
+      )}
+    </div>
+  )
+}
+
+function RemoveBtn({ onRemove }: { onRemove: () => void }) {
+  return (
+    <button onClick={onRemove} style={{ flex: '0 0 auto', fontFamily: font.display, fontWeight: 700, fontSize: 13, color: c.rust, background: c.amberPanelDeep, border: `1.5px solid ${c.rust}`, borderRadius: 4, width: 24, height: 22, lineHeight: 1 }}>
+      ×
+    </button>
+  )
+}
 
 function ItemRow({ ticked, label, onToggle, extra }: { ticked: boolean; label: string; onToggle: () => void; extra?: ReactNode }) {
   return (
@@ -105,55 +157,103 @@ function tabStyle(active: boolean): React.CSSProperties {
 
 export function Kit() {
   const { store, kitTab, setKitTab, setKit, toggleBook } = useStore()
+  const [editing, setEditing] = useState(false)
   const kit = store.kit || {}
   const book = store.book || {}
   const tab = kitTab === 'todo' ? 'todo' : 'packing'
   const bookDone = T.bookings.filter((b) => !!book[b.id]).length
 
-  const personalCount = (who: Who) => {
-    let done = 0
-    let total = 0
-    T.packing.forEach((g, gi) =>
-      g.items.forEach((_, ii) => {
-        total++
-        if (kit[`pk:${who}:${gi}_${ii}`]) done++
+  const removed = (sec: Sec, gi: number, ii: number) => !!kit[`rm:${sec}:${gi}_${ii}`]
+
+  /** Add a typed item to a section — skipped if it's already on that list. */
+  const addItem = (sec: Sec, label: string) => {
+    const have = new Set<string>()
+    ;(sec === 'S' ? T.sharedKit : T.packing).forEach((g, gi) =>
+      g.items.forEach((it, ii) => {
+        if (!removed(sec, gi, ii)) have.add(it.toLowerCase())
       }),
     )
+    addedItems(kit, sec).forEach((a) => have.add(a.label.toLowerCase()))
+    if (have.has(label.toLowerCase())) return
+    setKit(`add:${sec}:a${Date.now()}`, label)
+  }
+
+  /** Delete a custom item and everything hanging off it. */
+  const removeAdded = (sec: Sec, id: string) => {
+    setKit(`add:${sec}:${id}`, null)
+    setKit(`pk:${sec}:${id}`, null)
+    if (sec === 'S') setKit(`al:${id}`, null)
+  }
+
+  const sectionCount = (sec: Sec) => {
+    let done = 0
+    let total = 0
+    ;(sec === 'S' ? T.sharedKit : T.packing).forEach((g, gi) =>
+      g.items.forEach((_, ii) => {
+        if (removed(sec, gi, ii)) return
+        total++
+        if (kit[`pk:${sec}:${gi}_${ii}`]) done++
+      }),
+    )
+    addedItems(kit, sec).forEach((a) => {
+      total++
+      if (kit[`pk:${sec}:${a.id}`]) done++
+    })
     return { done, total }
   }
 
   const personalSection = (who: Who) => {
-    const n = personalCount(who)
+    const n = sectionCount(who)
+    const adds = addedItems(kit, who)
     return (
       <div key={who}>
         <SectionBar label={`${WHO_NAME[who]} packs`} right={`${n.done}/${n.total}`} />
         {T.packing.map((grp, gi) => {
-          const done = grp.items.filter((_, ii) => !!kit[`pk:${who}:${gi}_${ii}`]).length
+          const rows = grp.items.map((label, ii) => ({ label, ii })).filter((r) => !removed(who, gi, r.ii))
+          if (!rows.length) return null
+          const done = rows.filter((r) => !!kit[`pk:${who}:${gi}_${r.ii}`]).length
           return (
             <div key={gi} style={{ marginBottom: 14 }}>
-              <GroupHead label={grp.group} done={done} total={grp.items.length} />
-              {grp.items.map((label, ii) => {
-                const k = `pk:${who}:${gi}_${ii}`
-                return <ItemRow key={k} ticked={!!kit[k]} label={label} onToggle={() => setKit(k, kit[k] ? null : '1')} />
+              <GroupHead label={grp.group} done={done} total={rows.length} />
+              {rows.map((r) => {
+                const k = `pk:${who}:${gi}_${r.ii}`
+                return (
+                  <ItemRow
+                    key={k}
+                    ticked={!!kit[k]}
+                    label={r.label}
+                    onToggle={() => setKit(k, kit[k] ? null : '1')}
+                    extra={editing ? <RemoveBtn onRemove={() => setKit(`rm:${who}:${gi}_${r.ii}`, '1')} /> : undefined}
+                  />
+                )
               })}
             </div>
           )
         })}
+        {adds.length > 0 && (
+          <div style={{ marginBottom: 4 }}>
+            <GroupHead label="Added" done={adds.filter((a) => !!kit[`pk:${who}:${a.id}`]).length} total={adds.length} />
+            {adds.map((a) => {
+              const k = `pk:${who}:${a.id}`
+              return (
+                <ItemRow
+                  key={a.id}
+                  ticked={!!kit[k]}
+                  label={a.label}
+                  onToggle={() => setKit(k, kit[k] ? null : '1')}
+                  extra={editing ? <RemoveBtn onRemove={() => removeAdded(who, a.id)} /> : undefined}
+                />
+              )
+            })}
+          </div>
+        )}
+        <AddRow placeholder={`Add to ${WHO_NAME[who]}’s list…`} onAdd={(label) => addItem(who, label)} />
       </div>
     )
   }
 
-  const sharedTotals = (() => {
-    let done = 0
-    let total = 0
-    T.sharedKit.forEach((g, gi) =>
-      g.items.forEach((_, ii) => {
-        total++
-        if (kit[`pk:S:${gi}_${ii}`]) done++
-      }),
-    )
-    return { done, total }
-  })()
+  const sharedTotals = sectionCount('S')
+  const sharedAdds = addedItems(kit, 'S')
 
   return (
     <div style={{ animation: 'waw-fade .35s ease both', padding: '16px 16px 28px' }}>
@@ -179,9 +279,19 @@ export function Kit() {
 
       {tab === 'packing' && (
         <>
-          <div style={{ fontFamily: font.display, fontWeight: 700, fontSize: 24, textTransform: 'uppercase', color: c.ink, marginBottom: 3 }}>Packing</div>
+          <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 3 }}>
+            <div style={{ fontFamily: font.display, fontWeight: 700, fontSize: 24, textTransform: 'uppercase', color: c.ink }}>Packing</div>
+            <button
+              onClick={() => setEditing(!editing)}
+              style={{ fontFamily: font.mono, fontSize: 9, fontWeight: 700, letterSpacing: '.08em', textTransform: 'uppercase', color: editing ? c.paper : c.rust, background: editing ? c.rust : 'transparent', border: `1.5px solid ${c.rust}`, borderRadius: 5, padding: '3px 9px' }}
+            >
+              {editing ? 'Done' : 'Edit list'}
+            </button>
+          </div>
           <div style={{ fontFamily: font.serif, fontStyle: 'italic', fontSize: 12.5, color: c.inkMuted, marginBottom: 4 }}>
-            Paul and CJ each tick their own list. Shared kit is carried once — tap PAUL or CJ to allocate it, and the tick is theirs to make. Syncs live between both phones.
+            {editing
+              ? 'Tap × to take an item off a list. Type at the bottom of a section to add one — spelling and capitals get tidied automatically.'
+              : 'Paul and CJ each tick their own list. Shared kit is carried once — tap PAUL or CJ to allocate it. Adds, removals and ticks sync live between both phones.'}
           </div>
 
           {personalSection('P')}
@@ -189,28 +299,50 @@ export function Kit() {
 
           <SectionBar label="Shared — one of us brings it" right={`${sharedTotals.done}/${sharedTotals.total}`} />
           {T.sharedKit.map((grp, gi) => {
-            const done = grp.items.filter((_, ii) => !!kit[`pk:S:${gi}_${ii}`]).length
+            const rows = grp.items.map((label, ii) => ({ label, ii })).filter((r) => !removed('S', gi, r.ii))
+            if (!rows.length) return null
+            const done = rows.filter((r) => !!kit[`pk:S:${gi}_${r.ii}`]).length
             return (
               <div key={gi} style={{ marginBottom: 14 }}>
-                <GroupHead label={grp.group} done={done} total={grp.items.length} />
-                {grp.items.map((label, ii) => {
-                  const tick = `pk:S:${gi}_${ii}`
-                  const al = `al:${gi}_${ii}`
+                <GroupHead label={grp.group} done={done} total={rows.length} />
+                {rows.map((r) => {
+                  const tick = `pk:S:${gi}_${r.ii}`
+                  const al = `al:${gi}_${r.ii}`
                   const who = kit[al] === 'P' || kit[al] === 'C' ? (kit[al] as Who) : null
                   return (
                     <ItemRow
                       key={tick}
                       ticked={!!kit[tick]}
-                      label={label}
+                      label={r.label}
                       onToggle={() => setKit(tick, kit[tick] ? null : '1')}
-                      extra={<AllocChips who={who} onPick={(w) => setKit(al, who === w ? null : w)} />}
+                      extra={editing ? <RemoveBtn onRemove={() => setKit(`rm:S:${gi}_${r.ii}`, '1')} /> : <AllocChips who={who} onPick={(w) => setKit(al, who === w ? null : w)} />}
                     />
                   )
                 })}
               </div>
             )
           })}
-          <div style={{ fontFamily: font.serif, fontStyle: 'italic', fontSize: 11.5, color: c.inkFainter, lineHeight: 1.5, marginTop: 4 }}>
+          {sharedAdds.length > 0 && (
+            <div style={{ marginBottom: 4 }}>
+              <GroupHead label="Added" done={sharedAdds.filter((a) => !!kit[`pk:S:${a.id}`]).length} total={sharedAdds.length} />
+              {sharedAdds.map((a) => {
+                const tick = `pk:S:${a.id}`
+                const al = `al:${a.id}`
+                const who = kit[al] === 'P' || kit[al] === 'C' ? (kit[al] as Who) : null
+                return (
+                  <ItemRow
+                    key={a.id}
+                    ticked={!!kit[tick]}
+                    label={a.label}
+                    onToggle={() => setKit(tick, kit[tick] ? null : '1')}
+                    extra={editing ? <RemoveBtn onRemove={() => removeAdded('S', a.id)} /> : <AllocChips who={who} onPick={(w) => setKit(al, who === w ? null : w)} />}
+                  />
+                )
+              })}
+            </div>
+          )}
+          <AddRow placeholder="Add shared kit…" onAdd={(label) => addItem('S', label)} />
+          <div style={{ fontFamily: font.serif, fontStyle: 'italic', fontSize: 11.5, color: c.inkFainter, lineHeight: 1.5, marginTop: 8 }}>
             Unallocated shared items belong to nobody yet — divvy them up before the panniers close.
           </div>
         </>
