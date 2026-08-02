@@ -318,6 +318,9 @@ export interface OutboxOp {
   row?: Record<string, unknown>
   col?: string
   val?: unknown
+  /** Failed photo-upload cycles — after enough, the stuck photos are stripped
+   * so the text still delivers instead of blocking the whole outbox. */
+  tries?: number
 }
 
 export type TableName = 'posts' | 'locations' | 'notes' | 'marks' | 'sig' | 'kit'

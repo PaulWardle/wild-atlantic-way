@@ -188,6 +188,7 @@ export function Journal() {
             rows={2}
             placeholder="What happened…"
             aria-label="Journal note"
+            maxLength={2000}
             style={{ width: '100%', border: `1.5px solid ${c.ink}`, borderRadius: 7, background: c.inputBg, padding: '10px 12px', fontFamily: font.serif, fontSize: 13.5, color: c.inkSoft, resize: 'none', lineHeight: 1.5 }}
           />
           <div style={{ fontFamily: font.mono, fontSize: 8, letterSpacing: '.14em', color: c.inkFaintest, textTransform: 'uppercase', margin: '11px 0 6px' }}>Tag</div>
@@ -200,6 +201,7 @@ export function Journal() {
                 onKeyDown={(e) => { if (e.key === 'Enter' && jTagOther.trim()) addCustomTag(jTagOther) }}
                 placeholder="Name your tag"
                 aria-label="Custom tag name"
+                maxLength={40}
                 style={{ flex: 1, minWidth: 0, border: `1.5px solid ${c.ink}`, borderRadius: 7, background: c.inputBg, padding: '9px 11px', fontFamily: font.display, fontWeight: 600, fontSize: 13, textTransform: 'uppercase', color: c.ink }}
               />
               <button

@@ -80,9 +80,9 @@ console.log('official line:', TOTAL, 'km · spine points:', spine.length)
 // 0. spine continuity — the gate that would have caught the 2026-08 corruption.
 // A road can NEVER be shorter than the crow-flies line, so for every
 // consecutive pair the crow distance must not exceed the chainage gap, within
-// slack: +4 km absolute (sampling holes) or ×1.65 relative (the official-km
-// anchoring compresses gaps up to ~1.6× across the two known unsampled
-// stretches). Displaced blocks ran 3–10× over — this still fails them loudly.
+// small slack (+4 km for short sampling gaps; ×1.15+2 for long ones, since
+// official-km anchoring can mildly compress the ladder). Displaced blocks and
+// open-water seams run far beyond this and fail loudly.
 console.log('\n-- spine continuity --')
 {
   let seams = 0
@@ -90,9 +90,9 @@ console.log('\n-- spine continuity --')
     const gap = spine[i][2] - spine[i - 1][2]
     const crow = hav([spine[i - 1][0], spine[i - 1][1]], [spine[i][0], spine[i][1]])
     if (gap <= 0) { bad(`spine chainage not increasing at km ${spine[i - 1][2]}`); seams++ }
-    else if (crow > Math.max(gap + 4, gap * 1.65)) { bad(`impossible seam km ${spine[i - 1][2]}→${spine[i][2]}: ${crow.toFixed(1)}km crow over ${gap.toFixed(1)}km of road`); seams++ }
+    else if (gap <= 6 ? crow > gap + 4 : crow > gap * 1.15 + 2) { bad(`impossible seam km ${spine[i - 1][2]}→${spine[i][2]}: ${crow.toFixed(1)}km crow over ${gap.toFixed(1)}km of road`); seams++ }
   }
-  if (!seams) ok(`all ${spine.length - 1} consecutive pairs physically plausible (crow ≤ max(gap+4, gap×1.65))`)
+  if (!seams) ok(`all ${spine.length - 1} consecutive pairs physically plausible (road can never be shorter than crow)`)
 }
 
 // 0b. stop ordering — every located stop must sit on its day's stretch and the

@@ -110,9 +110,12 @@ function normalize(raw: unknown): Store {
   const s = (raw && typeof raw === 'object' ? raw : {}) as Partial<Store>
   return {
     role: s.role ?? null,
-    posts: s.posts ?? [],
-    updates: s.updates ?? [],
-    notes: s.notes ?? [],
+    // Array.isArray, not truthiness: a type-corrupted field (posts: "hi")
+    // crashed every render INCLUDING after the crash card's reload — a
+    // permanent brick that only clearing site data escaped.
+    posts: Array.isArray(s.posts) ? s.posts : [],
+    updates: Array.isArray(s.updates) ? s.updates : [],
+    notes: Array.isArray(s.notes) ? s.notes : [],
     marks: migrateMarks(s.marks ?? {}),
     sig: s.sig ?? {},
     pack: s.pack ?? {},
@@ -120,8 +123,8 @@ function normalize(raw: unknown): Store {
     kit: s.kit ?? {},
     dec: s.dec ?? {},
     ferry: s.ferry ?? null,
-    outbox: s.outbox ?? [],
-    customTags: s.customTags ?? [],
+    outbox: Array.isArray(s.outbox) ? s.outbox : [],
+    customTags: Array.isArray(s.customTags) ? s.customTags : [],
   }
 }
 
@@ -631,7 +634,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         const id = localId(tok)
         const blob = await loadPhoto(id)
         if (!blob) continue // blob gone — drop just this photo, keep the rest
-        const url = await uploadBlob(blob)
+        const url = await uploadBlob(blob, id + '.jpg') // deterministic: retries converge on one object
         // Upload still failing (offline / storage down): keep the whole op queued.
         if (!url) return { error: { message: 'photo upload pending' } }
         resolved.push(url)
@@ -665,8 +668,18 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const queueOp = useCallback((o: Omit<OutboxOp, '_k'>, flag: boolean) => {
     const cur: Store = { ...storeRef.current }
     const logical = o.t + '|' + String(o.row ? o.row.ts ?? o.row.stop ?? o.row.sid ?? o.row.k ?? o.val : o.val)
+    // Editing a row whose INSERT is still queued must not replace the insert
+    // with an update — the server would "successfully" update zero rows and
+    // the content would vanish everywhere. Fold the edit into the insert.
+    const pendingInsert = (cur.outbox || []).find(
+      (x) => x.op === 'insert' && (x._k === logical || x._k.startsWith(logical + '#')),
+    )
+    const eff: Omit<OutboxOp, '_k'> =
+      o.op === 'update' && pendingInsert
+        ? { ...pendingInsert, row: { ...pendingInsert.row, ...o.row } }
+        : o
     const ob = (cur.outbox || []).filter((x) => !(x._k === logical || x._k.startsWith(logical + '#')))
-    ob.push({ _k: logical + '#' + ++opSeqRef.current, ...o })
+    ob.push({ _k: logical + '#' + ++opSeqRef.current, ...eff })
     cur.outbox = ob
     // optimistic "pending" flag on the mirrored row
     if (flag && o.row) {
@@ -751,6 +764,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     try {
       for (const o of ob) {
         let sent = false
+        let photoPending = false
         try {
           const r = await runOp(o)
           if (r && !r.error) sent = true
@@ -760,14 +774,31 @@ export function StoreProvider({ children }: { children: ReactNode }) {
             // the op is done. Without this, a half-sent op re-queues forever.
             const code = (r?.error as { code?: string } | null)?.code
             if (o.op === 'insert' && code === '23505') sent = true
+            photoPending = (r?.error as { message?: string } | null)?.message === 'photo upload pending'
           }
         } catch {
           /* network hiccup — handled below */
         }
-        // STOP at the first failure. Continuing broke ordering between related
-        // ops with different keys (a note's failed insert + its "successful"
-        // zero-row edit permanently reverted the edit on the retry).
-        if (!sent) break
+        if (!sent) {
+          if (photoPending) {
+            // A stuck photo must NOT block every other write forever (its own
+            // row's later ops share the logical key and replace this op, so
+            // skipping it is ordering-safe). After ~40 failed cycles, strip the
+            // un-uploadable photos so the words still deliver.
+            o.tries = (o.tries || 0) + 1
+            if (o.tries > 40 && o.row && typeof o.row.photo === 'string') {
+              const keep = photoList(o.row.photo as string).filter((t2) => !isLocalPhoto(t2))
+              photoList(o.row.photo as string).filter(isLocalPhoto).forEach((t2) => removePhoto(localId(t2)))
+              o.row.photo = photoField(keep)
+              if (o.row.photo === undefined) delete o.row.photo
+            }
+            continue
+          }
+          // STOP at the first non-photo failure. Continuing broke ordering
+          // between related ops with different keys (a note's failed insert +
+          // its "successful" zero-row edit permanently reverted the edit).
+          break
+        }
         doneKeys.push(o._k)
       }
     } finally {
@@ -929,7 +960,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         ...(photo ? { photo } : {}),
         ...(pos ? { lat: pos.lat, lon: pos.lon, place: pos.place } : {}),
       }
-      const row: Update = { si, note: (note || '').trim(), ts: Date.now(), ...extra }
+      const row: Update = { si, note: (note || '').trim().slice(0, 500), ts: Date.now(), ...extra }
       const updates = [row, ...(storeRef.current.updates || [])].slice(0, 8)
       set({ updates })
       insertRow('locations', { si: row.si, note: row.note, ts: row.ts, ...extra })
@@ -1194,7 +1225,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const saveEditNote = useCallback(() => {
     const ts = jEditTs
     if (ts == null) return
-    const text = (jEditText || '').trim()
+    const text = (jEditText || '').trim().slice(0, 2000)
     const notes = (storeRef.current.notes || []).map((n) =>
       n.ts === ts ? { ...n, text: text || n.text } : n,
     )

@@ -161,7 +161,7 @@ export function NavPanel({ di, marks, pad = 18 }: { di: number; marks: StopMarks
   const done = ni >= cps.length
 
   const advance = () => {
-    if (over && cps[ni]?.name === over) {
+    if (live && over && cps[ni]?.name === over) {
       // Riding to a manually-chosen stop: keep the override (it clears when a
       // fix shows arrival) and record it as the tap fallback — losing GPS
       // mid-leg must not shift the target.

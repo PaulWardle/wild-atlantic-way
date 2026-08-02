@@ -44,8 +44,8 @@ export function localId(token: string): string {
 }
 
 /** Stash a processed blob; returns the `local:<id>` token to store on the row. */
-export async function queuePhoto(blob: Blob): Promise<string> {
-  const id = 'p-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8)
+export async function queuePhoto(blob: Blob, presetId?: string): Promise<string> {
+  const id = presetId || 'p-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8)
   try {
     await tx('readwrite', (s) => s.put(blob, id))
   } catch {

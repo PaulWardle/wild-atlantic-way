@@ -475,6 +475,7 @@ export function Home() {
               value={draftNote}
               onChange={(e) => setDraftNote(e.target.value)}
               placeholder="Add a comment (optional)"
+              maxLength={500}
               aria-label="Comment for this location update"
               style={{
                 width: '100%',

@@ -87,16 +87,27 @@ function rawFallback(file: File): Blob | null {
 
 /** Upload an already-processed blob to the public `photos` bucket; returns its
  *  public URL, or null on failure. */
-export async function uploadBlob(blob: Blob): Promise<string | null> {
+export async function uploadBlob(blob: Blob, path?: string): Promise<string | null> {
   try {
     const sb = getSupabase()
-    const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.jpg`
+    // Deterministic path when the caller supplies one: retries then converge on
+    // ONE object, and a slow upload that lands after our timeout becomes the
+    // success on the next attempt (409 below) instead of an orphan.
+    path = path || `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.jpg`
     if (blob.size > 8_000_000) return null // never burn 8MB+ of mobile data on one frame
     // A hung lie-fi upload must fail fast into the offline photo queue rather
     // than pin "Posting…" for minutes. null = the caller queues it locally.
     const up = sb.storage.from('photos').upload(path, blob, { contentType: 'image/jpeg', upsert: false })
     const res = await Promise.race([up, new Promise<null>((r) => setTimeout(() => r(null), 15000))])
-    if (!res || res.error) return null
+    if (!res) return null
+    if (res.error) {
+      // "Already exists" = an earlier (timed-out) attempt landed — that's success.
+      const dup = (res.error as { statusCode?: string | number; message?: string })
+      if (String(dup.statusCode) === '409' || /exist/i.test(dup.message || '')) {
+        return sb.storage.from('photos').getPublicUrl(path).data.publicUrl
+      }
+      return null
+    }
     return sb.storage.from('photos').getPublicUrl(path).data.publicUrl
   } catch {
     return null
@@ -119,12 +130,18 @@ export async function attachPhoto(file: File): Promise<string | undefined> {
     return undefined
   }
   if (!blob) return undefined // undecodable format — dropping beats a broken upload
+  // An oversized blob can never upload (8MB gate) — queueing it would wedge the
+  // outbox behind a forever-failing op. Drop it like an unprocessable one.
+  if (blob.size > 8_000_000) return undefined
+  // One id up front: the direct upload and any queued retry share the same
+  // storage path, so a timed-out-but-landed upload is found (409) not orphaned.
+  const id = 'p-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8)
   if (!isOffline()) {
-    const url = await uploadBlob(blob)
+    const url = await uploadBlob(blob, id + '.jpg')
     if (url) return url
   }
   // No signal, or the upload failed — queue it locally for the outbox.
-  return await queuePhoto(blob)
+  return await queuePhoto(blob, id)
 }
 
 /** Attach several picked photos; returns the packed `photo` field (or undefined). */
