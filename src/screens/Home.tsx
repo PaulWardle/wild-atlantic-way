@@ -794,7 +794,7 @@ export function Home() {
           )}
           <Tile
             title="Campsites"
-            sub="9 of 9 confirmed"
+            sub={`${tripData.campsites.filter((x) => x.bookingStatus === 'booked').length} of ${tripData.campsites.length} confirmed`}
             onClick={() => nav({ screen: 'camp' })}
             icon={
               <svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke="#55643a" strokeWidth={1.6} strokeLinejoin="round">
