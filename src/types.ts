@@ -311,7 +311,7 @@ export type Sig = Record<string, number>
 /** A queued write that hasn't reached the cloud yet (offline outbox). */
 export interface OutboxOp {
   _k: string
-  op: 'insert' | 'upsert' | 'delete'
+  op: 'insert' | 'upsert' | 'delete' | 'update'
   t: TableName
   row?: Record<string, unknown>
   col?: string

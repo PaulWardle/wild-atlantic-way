@@ -67,7 +67,7 @@ function AddRow({ placeholder, onAdd, boxed = false }: { placeholder: string; on
 /** SVG cross — a text × sits on a font baseline and drifts off-centre. */
 function RemoveBtn({ onRemove }: { onRemove: () => void }) {
   return (
-    <button onClick={onRemove} style={{ flex: '0 0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center', width: 24, height: 24, background: c.amberPanelDeep, border: `1.5px solid ${c.rust}`, borderRadius: 4, padding: 0 }}>
+    <button onClick={onRemove} style={{ flex: '0 0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center', width: 32, height: 32, background: c.amberPanelDeep, border: `1.5px solid ${c.rust}`, borderRadius: 4, padding: 0 }}>
       <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke={c.rust} strokeWidth={3.4} strokeLinecap="round" aria-hidden="true">
         <path d="M5 5 L19 19 M19 5 L5 19" />
       </svg>
@@ -123,7 +123,7 @@ function AllocChips({ who, onPick }: { who: Who | null; onPick: (w: Who) => void
       <button
         key={w}
         onClick={() => onPick(w)}
-        style={{ fontFamily: font.mono, fontSize: 8.5, fontWeight: 700, letterSpacing: '.06em', textTransform: 'uppercase', color: on ? c.paper : c.inkFaint, background: on ? c.teal : c.paperMuted, border: `1.5px solid ${on ? c.teal : c.inkFainter}`, borderRadius: 4, padding: '3px 8px' }}
+        style={{ fontFamily: font.mono, fontSize: 8.5, fontWeight: 700, letterSpacing: '.06em', textTransform: 'uppercase', color: on ? c.paper : c.inkFaint, background: on ? c.teal : c.paperMuted, border: `1.5px solid ${on ? c.teal : c.inkFainter}`, borderRadius: 4, padding: '6px 10px' }}
       >
         {WHO_NAME[w]}
       </button>
@@ -356,7 +356,7 @@ export function Kit() {
               label={b.label}
               ticked={bookTicked(b.id)}
               onToggle={() => setKit(`pk:B:${b.id}`, bookTicked(b.id) ? '0' : '1')}
-              onRemove={editing ? () => setKit(`rm:B:${b.id}`, '1') : undefined}
+              onRemove={editing ? () => { if (window.confirm(`Remove \u201c${b.label}\u201d from the list on both phones?`)) setKit(`rm:B:${b.id}`, '1') } : undefined}
             />
           ))}
           {todoAdds.map((a) => {
@@ -378,6 +378,14 @@ export function Kit() {
             const have = new Set([...todoAdds.map((a) => a.label.toLowerCase()), ...visibleBookings.map((b) => b.label.toLowerCase())])
             if (!have.has(label.toLowerCase())) setKit(`add:T:a${Date.now()}`, label)
           }} />
+          {editing && T.bookings.some((b) => kit[`rm:B:${b.id}`]) && (
+            <button
+              onClick={() => T.bookings.forEach((b) => { if (kit[`rm:B:${b.id}`]) setKit(`rm:B:${b.id}`, null) })}
+              style={{ display: 'block', margin: '10px auto 0', fontFamily: font.mono, fontSize: 9, fontWeight: 700, letterSpacing: '.08em', textTransform: 'uppercase', color: c.teal, background: 'none', border: 'none', textDecoration: 'underline' }}
+            >
+              restore removed items
+            </button>
+          )}
         </>
       )}
 

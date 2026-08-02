@@ -91,7 +91,7 @@ export function normalizeItem(raw: string): string {
   if (!words[0]) return ''
   const fixed = words.map((w) => {
     const bare = w.toLowerCase()
-    return FIX[bare] ?? w
+    return Object.prototype.hasOwnProperty.call(FIX, bare) ? FIX[bare] : w
   })
   // Sentence-case the first word unless its casing is meaningful (iPad, USB…).
   if (!CASED.has(fixed[0])) {

@@ -5,7 +5,7 @@ import { isMarkable } from '../lib/tags'
 import { Kicker, ScreenTitle, Lede } from '../components/ui'
 
 export function Attractions() {
-  const { attractFilter, setAttractFilter, store, nav } = useStore()
+  const { attractFilter, setAttractFilter, store, nav, isBrother } = useStore()
   const marks = store.marks || {}
   const af = attractFilter || 'all'
   const T = tripData
@@ -44,8 +44,11 @@ export function Attractions() {
         // Only optional extras can be cut — locked official stops ignore marks
         // (also inoculates against stale position-keyed marks from old versions).
         const cut = isMarkable(d2, st) && marks['d' + ai + 's' + x.si] === 'cut'
+        // Guests never see a stop the brothers have cut — same rule as the
+        // day cards (this screen used to leak them struck-through).
+        if (!isBrother && cut) return null
         return { n: st.n, d: st.d, sig: sg, biker: bk, finish: !!st.finish, cut, op: cut ? 0.5 : 1, deco: cut ? 'line-through' : 'none', dot: cut ? '#c9ba94' : sg ? c.rust : bk ? c.teal : '#c9ba94' }
-      })
+      }).filter((r): r is NonNullable<typeof r> => r !== null)
     if (stops.length) attractDays.push({ dn: d2.n, dow: d2.dow, date: d2.date, title: d2.title, idx: ai, stops })
   })
 

@@ -180,7 +180,7 @@ export function Info() {
           <GuideRow title="Today">
             The live day, set by the date — and it follows your <b>Keep / Maybe / Cut</b> calls: stops you’ve cut drop off the glance and kept ones get flagged as don’t-miss. Shows the call to make, tonight’s camp and a jump into the full day. Before the off it’s a live countdown.
           </GuideRow>
-          <GuideRow title="Campsites">Every night’s confirmed pitch — one place per night, zero wild camping. On the home grid and inside each day. (Budget figures live on Kit &amp; Admin.)</GuideRow>
+          <GuideRow title="Campsites">Every night’s confirmed pitch — one place per night, zero wild camping. On the home grid and inside each day.</GuideRow>
           <GuideRow
             title="Sights &amp; roads"
             chips={
@@ -190,9 +190,9 @@ export function Info() {
               </>
             }
           >
-            <b>Signature 15</b> — tick them off as you bag each one — and the 19 biker <b>Passes</b>, north to south. Bagged spots get a badge that shows on the guests’ version too.
+            <b>Signature 15</b> — tick them off as you bag each one — and the 18 biker <b>Passes</b>, north to south. Bagged spots get a badge that shows on the guests’ version too.
           </GuideRow>
-          <GuideRow title="Kit &amp; admin">The to-do list (bookings included), the full packing list and the cost estimate.</GuideRow>
+          <GuideRow title="Kit &amp; admin">The to-do list (add your own as things come up) and the per-brother packing lists with the shared-kit allocator.</GuideRow>
           <GuideRow title="The postbox">Everything F&amp;F have posted. Read them and remove any you don’t want to keep. You review here — guests are the ones who post.</GuideRow>
           <GuideRow
             title="The journal"

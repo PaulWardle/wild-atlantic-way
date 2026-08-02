@@ -20,24 +20,28 @@ export function NavPanel({ di, marks, pad = 18 }: { di: number; marks: StopMarks
   cpsRef.current = cps
 
   // ---- live position ----
-  const [riderKm, setRiderKm] = useState<number | null>(null)
+  // pos: { at } = standing at a checkpoint (index); { km } = on the line
+  // between stops. furthestRef never lets a GPS wobble (or an off-line spur
+  // projection) drag "next" backwards during the day.
+  const [pos, setPos] = useState<{ at?: number; km?: number } | null>(null)
   const [gps, setGps] = useState<'wait' | 'live' | 'off' | 'none'>('wait')
   const lastFixRef = useRef(0)
+  const furthestRef = useRef<number>(-1)
   const locate = (fresh = false) => {
     if (!('geolocation' in navigator)) {
       setGps('none')
       return
     }
     navigator.geolocation.getCurrentPosition(
-      (pos) => {
+      (p) => {
         lastFixRef.current = Date.now()
-        const km = dayPosition(di, pos.coords.latitude, pos.coords.longitude, cpsRef.current)
-        if (km == null) {
+        const got = dayPosition(di, p.coords.latitude, p.coords.longitude, cpsRef.current)
+        if (got == null) {
           setGps('off')
-          setRiderKm(null)
+          setPos(null)
         } else {
           setGps('live')
-          setRiderKm(km)
+          setPos(got)
         }
       },
       () => setGps((g) => (g === 'live' ? 'live' : 'none')),
@@ -97,19 +101,36 @@ export function NavPanel({ di, marks, pad = 18 }: { di: number; marks: StopMarks
   }
 
   // ---- which stop is next ----
-  const live = gps === 'live' && riderKm != null
+  const live = gps === 'live' && pos != null
+  // GPS-derived index of the next stop: standing AT checkpoint i → next is
+  // i+1 (index-based, so equal-chainage neighbours like Farren's Bar / Malin
+  // Head are never skipped); between stops → first checkpoint ahead of the
+  // furthest chainage reached today.
+  let gpsNext = -1
+  if (live) {
+    if (pos.at != null) {
+      furthestRef.current = Math.max(furthestRef.current, cps[pos.at]?.km ?? -1)
+      gpsNext = pos.at + 1
+    } else {
+      furthestRef.current = Math.max(furthestRef.current, pos.km as number)
+      gpsNext = cps.findIndex((cp, i) => i >= 1 && cp.km > furthestRef.current + 0.3)
+      if (gpsNext < 0) gpsNext = cps.length
+    }
+    while (gpsNext < cps.length && skipped.includes(cps[gpsNext].name)) gpsNext++
+  }
   let ni: number
-  if (over) {
-    const oi = cps.findIndex((cp) => cp.name === over)
-    // A live fix past the manual choice clears it (you got there).
-    ni = oi >= 1 && (!live || cps[oi].km > (riderKm as number) + 0.3) ? oi : -1
+  const oi = over ? cps.findIndex((cp) => cp.name === over) : -1
+  if (oi >= 1) {
+    // A manual choice stands — even behind you (riding back for the photo is
+    // legitimate) — until a live fix shows you AT it or past it.
+    const reached = live && (pos!.at != null ? pos!.at >= oi : (pos!.km as number) >= cps[oi].km + 0.3)
+    ni = reached ? -1 : oi
   } else {
     ni = -1
   }
   if (ni < 0) {
     if (live) {
-      ni = cps.findIndex((cp, i) => i >= 1 && cp.km > (riderKm as number) + 0.3 && !skipped.includes(cp.name))
-      if (ni < 0) ni = cps.length
+      ni = gpsNext
     } else {
       const ti = tapName === 'DONE' ? cps.length : tapName ? cps.findIndex((cp) => cp.name === tapName) : -1
       ni = ti === cps.length ? cps.length : ti >= 1 ? ti : 1
@@ -173,7 +194,8 @@ export function NavPanel({ di, marks, pad = 18 }: { di: number; marks: StopMarks
 
   const to = cps[ni]
   const from = cps[ni - 1]
-  const { url, mi, via } = navStretch(di, from, to, marks, live ? riderKm : null)
+  const liveKm = live ? (pos!.at != null ? cps[pos!.at].km : (pos!.km as number)) : null
+  const { url, mi, via } = navStretch(di, from, to, marks, liveKm)
   const after = ni + 1 < cps.length ? cps.slice(ni + 1).find((cp) => !skipped.includes(cp.name))?.name : null
 
   return (

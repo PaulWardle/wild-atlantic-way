@@ -48,9 +48,12 @@ export function Journal() {
   const doAddNote = async () => {
     if (busy) return
     setBusy(true)
-    await addNote(files)
-    setFiles([])
-    setBusy(false)
+    try {
+      await addNote(files)
+      setFiles([])
+    } finally {
+      setBusy(false)
+    }
   }
 
   const events = buildEvents(store, tripData)
@@ -277,8 +280,8 @@ export function Journal() {
                       </div>
                       {e.isNote && isBrother && (
                         <div className="waw-noprint" style={{ display: 'flex', alignItems: 'center', gap: 10, flex: '0 0 auto' }}>
-                          <button onClick={() => startEditNote(e.noteTs as number, e.text)} aria-label="Edit" style={{ fontFamily: font.mono, fontSize: 9, letterSpacing: '.04em', color: c.teal, textDecoration: 'underline' }}>Edit</button>
-                          <button onClick={() => removeNote(e.noteTs as number)} aria-label="Remove" style={{ fontFamily: font.mono, fontSize: 11, color: c.rust, lineHeight: 1 }}>×</button>
+                          <button onClick={() => startEditNote(e.noteTs as number, e.text)} aria-label="Edit" style={{ fontFamily: font.mono, fontSize: 9, letterSpacing: '.04em', color: c.teal, textDecoration: 'underline', padding: '10px 8px', margin: '-10px -4px' }}>Edit</button>
+                          <button onClick={() => removeNote(e.noteTs as number)} aria-label="Remove" style={{ fontFamily: font.mono, fontSize: 14, color: c.rust, lineHeight: 1, padding: '10px 10px', margin: '-10px -6px' }}>×</button>
                         </div>
                       )}
                     </div>

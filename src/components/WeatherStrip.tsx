@@ -140,6 +140,14 @@ export function WeatherStrip() {
     return null
   }
 
+  // Before departure, "Today · here" would claim Inishowen weather is where
+  // you are — it isn't yet. Label it as the Day 1 forecast instead.
+  let preTrip = false
+  try {
+    preTrip = Date.now() < new Date(tripData.meta.depart + 'T00:00:00').getTime()
+  } catch {
+    /* noop */
+  }
   // Wind-vs-ride needs the day's direction of travel along the official line.
   const di = Math.min(currentDayIndex(), tripData.days.length - 1)
   const headToday = dayHeading(di)
@@ -152,7 +160,7 @@ export function WeatherStrip() {
         <div style={{ flex: 1, height: 1, background: c.lineSoft }} />
       </div>
       <div style={{ display: 'flex', gap: 9 }}>
-        {today && <Card kicker="Today · here" spot={today} day={today.forecast?.days[0]} current={today.forecast?.current} heading={headToday} />}
+        {today && <Card kicker={preTrip ? 'Day 1 · first stop' : 'Today · here'} spot={today} day={today.forecast?.days[0]} current={today.forecast?.current} heading={headToday} />}
         {tomorrow && <Card kicker="Tomorrow" spot={tomorrow} day={tomorrow.forecast?.days[1]} heading={headTomorrow} />}
       </div>
     </div>

@@ -21,7 +21,7 @@ export const tripData: Trip = {
     "countdownTo": "the Wild Atlantic Way",
     "nights": 9,
     "dayCount": 10,
-    "totalMiles": "~1,700",
+    "totalMiles": "~1,760",
     "sigCount": 15,
     "intro": "The official Wild Atlantic Way — every mile of the signed route, Muff to Kinsale, rebuilt against Fáilte Ireland’s own map so the road only ever runs forward. Plus the best biker roads on the island: Mamore, Glengesh, Conor Pass, Coomanaspig and the Healy Pass at sunrise. Nine hard days off the Monday ferry; all fifteen Signature Points; finish at Kinsale then the run to the Rosslare boat."
   },
@@ -32,7 +32,7 @@ export const tripData: Trip = {
       "date": "10 AUG",
       "title": "Ferry → Larne → Muff → Inishowen",
       "tagline": "Off the boat, straight to the start line at Muff",
-      "miles": "~135mi + ferry",
+      "miles": "~150mi (~75 transfer)",
       "phase": "lead",
       "wawStart": true,
       "warnBanner": "Locked day: Larne → Derry → Muff, then the official line up Lough Foyle — Greencastle/Warren Point, Stroove — round to Culdaff, past Farren's to Malin Head, and the tent at Binion. Late boat? Muff → R238 direct to camp, Malin as a 25-mile dawn spur.",
@@ -167,7 +167,7 @@ export const tripData: Trip = {
       "date": "11 AUG",
       "title": "Mamore Gap → Fanad → Rosguill",
       "tagline": "Three peninsulas, one easy day — the recovery after the dash",
-      "miles": "~120mi",
+      "miles": "~100mi",
       "phase": "waw",
       "stops": [
         {
@@ -303,7 +303,7 @@ export const tripData: Trip = {
       "date": "12 AUG",
       "title": "Horn Head → Slieve League → Sligo",
       "tagline": "The long one — Donegal's whole west face in a day",
-      "miles": "~190mi",
+      "miles": "~235mi",
       "phase": "waw",
       "warnBanner": "Longest riding day. The official line is locked — the levers are stop time, not road: shorten Slieve League / Killybegs / Malin Beg visits if behind. Nothing official gets skipped.",
       "stops": [
@@ -481,7 +481,7 @@ export const tripData: Trip = {
       "date": "13 AUG",
       "title": "Downpatrick → Céide → Erris → Achill",
       "tagline": "Into the emptiest, wildest corner of the whole Way",
-      "miles": "~200mi",
+      "miles": "~240mi",
       "phase": "waw",
       "warnBanner": "Big day with the full Mullet loop restored — ~200mi, all of it official. Levers are stop lengths (Céide, Downpatrick), never the road.",
       "stops": [
@@ -622,7 +622,7 @@ export const tripData: Trip = {
       "date": "14 AUG",
       "title": "Keem → Westport → Doolough → Killary",
       "tagline": "The recovery day — and somehow still the prettiest",
-      "miles": "~110mi",
+      "miles": "~95mi",
       "phase": "waw",
       "stops": [
         {
@@ -756,7 +756,7 @@ export const tripData: Trip = {
       "date": "15 AUG",
       "title": "Sky Road → Connemara shore → Burren → Doolin",
       "tagline": "Bog, granite and limestone — three worlds in one day",
-      "miles": "~170mi",
+      "miles": "~180mi",
       "phase": "waw",
       "stops": [
         {
@@ -896,7 +896,7 @@ export const tripData: Trip = {
       "date": "16 AUG",
       "title": "Cliffs → Loop Head → Conor Pass → Slea Head",
       "tagline": "The monster Sunday — two counties, one ferry, one pass, one perfect evening loop",
-      "miles": "~200mi",
+      "miles": "~240mi",
       "phase": "waw",
       "warnBanner": "Biggest official-mileage day. Cliffs at 08:00 sharp, Shannon ferry is hourly on the half-hour, and the Slea Head Drive comes at golden hour with the buses gone. Levers are stop lengths only — the line is locked end to end.",
       "stops": [
@@ -1911,15 +1911,15 @@ export const tripData: Trip = {
   "bookings": [
     {
       "id": "bk1",
-      "label": "Book the ferries",
-      "note": "Outbound and homeward crossings, both directions locked to the trip dates.",
+      "label": "Ferry tickets saved offline",
+      "note": "Both crossings booked — keep the confirmations on the phone.",
       "urgent": false
     },
     {
       "id": "bk2",
-      "label": "Book the campsites",
-      "note": "One site per night, nine nights — the list and live status are on the Campsites page.",
-      "urgent": true
+      "label": "Re-confirm campsite bookings",
+      "note": "All nine booked — a quick check the week before.",
+      "urgent": false
     },
     {
       "id": "bk3",

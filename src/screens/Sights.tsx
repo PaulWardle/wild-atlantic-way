@@ -42,7 +42,7 @@ export function Sights() {
         </>
       ) : (
         <>
-          <Lede>The mountain roads are half the point — often the better half. Nineteen of them, north to south.</Lede>
+          <Lede>The mountain roads are half the point — often the better half. Eighteen of them, north to south.</Lede>
           <div style={{ marginTop: 14 }}>
             <PassRows />
           </div>

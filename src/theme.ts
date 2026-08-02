@@ -25,13 +25,13 @@ export const c = {
   inkBody2: '#4a4132',
   inkMuted: '#6b5f49',
   inkFaint: '#7a6d54',
-  inkFainter: '#8a7c5f',
-  inkFaintest: '#9a8c6c',
+  inkFainter: '#6f6349',
+  inkFaintest: '#746849',
 
   // accents
   rust: '#a8412a', // primary accent
   amber: '#b0812c', // warnings / "maybe"
-  amberGold: '#9a7b1e',
+  amberGold: '#7d5c17',
   green: '#55643a', // camp / "keep"
   greenLine: '#4a7a3a', // completed-route line
   teal: '#305a68', // biker roads

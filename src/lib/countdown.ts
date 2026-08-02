@@ -11,7 +11,7 @@ export interface CountdownParts {
 export function countdownParts(departIso: string, nowTs: number): CountdownParts {
   let departMs = 0
   try {
-    departMs = new Date(departIso).getTime()
+    departMs = new Date(departIso + 'T00:00:00').getTime()
   } catch {
     departMs = 0
   }
@@ -27,7 +27,7 @@ export function countdownParts(departIso: string, nowTs: number): CountdownParts
 /** Whole days-to-go, rounded up (the Home countdown card). */
 export function daysToGo(departIso: string, now: number = Date.now()): number {
   try {
-    return Math.max(0, Math.ceil((new Date(departIso).getTime() - now) / 86400000))
+    return Math.max(0, Math.ceil((new Date(departIso + 'T00:00:00').getTime() - now) / 86400000))
   } catch {
     return 0
   }

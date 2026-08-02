@@ -13,7 +13,7 @@
  * cleaned copy where a point is dropped if it sits much further from its
  * predecessor than the chainage gap allows.
  */
-import { wawSpine, type SpinePoint } from '../data/wawSpine'
+import { cleanedSpine, type SpinePoint } from '../data/wawSpine'
 import { tripData } from '../data/tripData'
 
 const T = tripData
@@ -27,18 +27,9 @@ function hav(aLat: number, aLon: number, bLat: number, bLon: number): number {
   return 2 * R * Math.asin(Math.sqrt(s))
 }
 
-/** Spine with KML-stitch artifacts removed: keep a point only when its
- * crow-flies distance to the last kept point is plausible for the km gap. */
-const cleanSpine: SpinePoint[] = (() => {
-  const out: SpinePoint[] = [wawSpine[0]]
-  for (let i = 1; i < wawSpine.length; i++) {
-    const p = wawSpine[i]
-    const q = out[out.length - 1]
-    const gap = p[2] - q[2]
-    if (hav(q[0], q[1], p[0], p[1]) <= gap + 8) out.push(p)
-  }
-  return out
-})()
+// One shared artifact-filtered spine (see wawSpine.ts) — the app and the
+// completion stat must never disagree about chainage.
+const cleanSpine: SpinePoint[] = cleanedSpine
 
 /** The clean point nearest a chainage mark. */
 function pointAtKm(km: number): SpinePoint {
@@ -98,12 +89,10 @@ interface Wp {
 }
 
 /** No origin on purpose: Google Maps then starts the leg from the phone's
- * CURRENT LOCATION — which is where you are when you actually tap it. */
+ * CURRENT LOCATION — which is where you are when you actually tap it.
+ * Pins arrive pre-filtered and in ride order; this only builds the URL. */
 function gmapsUrl(d: [number, number], wps: Wp[]): string {
-  // Ride order along the line; a waypoint on top of the destination is noise.
   const wp = wps
-    .sort((a, b) => a.km - b.km)
-    .filter((p) => hav(p.lat, p.lon, d[0], d[1]) > 2.5)
     .slice(0, 9)
     .map((p) => ll(p.lat, p.lon))
     .join('|')
@@ -112,6 +101,23 @@ function gmapsUrl(d: [number, number], wps: Wp[]): string {
     `&destination=${ll(d[0], d[1])}` +
     (wp ? `&waypoints=${encodeURIComponent(wp)}` : '')
   )
+}
+
+/** Ride-order pin hygiene: sort by chainage, then drop any pin whose crow
+ * distance from the previous accepted position exceeds what its chainage gap
+ * allows (a genuine road pin can never be farther by crow than by road, so
+ * this only removes pins sitting on locally-inverted spine blocks — the ones
+ * that would make Google zigzag). Anchored at the leg's start. */
+function orderPins(start: { lat: number; lon: number; km: number }, wps: Wp[]): Wp[] {
+  const out: Wp[] = []
+  let anchor = start
+  for (const p of wps.slice().sort((a, b) => a.km - b.km)) {
+    if (hav(anchor.lat, anchor.lon, p.lat, p.lon) <= 1.2 * Math.max(0, p.km - anchor.km) + 4) {
+      out.push(p)
+      anchor = p
+    }
+  }
+  return out
 }
 
 /** Up to `n+1` waypoints spread evenly along a stretch (k=0 pins the start —
@@ -197,20 +203,32 @@ export function dayCheckpoints(di: number, marks?: StopMarks): Checkpoint[] {
 }
 
 /** Where the rider actually is along the day's route, from a GPS fix.
- * Projects onto the day's stretch of official line (within 10 km), and snaps
- * to any checkpoint within 3 km — that's what places you correctly at an
- * off-line extra like Glenveagh without dragging "next" backwards. Returns
- * null when the fix is nowhere near the day (home, the ferry, a big detour). */
-export function dayPosition(di: number, lat: number, lon: number, cps: Checkpoint[]): number | null {
+ * Being AT a checkpoint (nearest one within 1.2 km) beats chainage — two
+ * stops can share a chainage (Farren's Bar and Malin Head both sit at km
+ * ~104) and only the index says which one you're at. Otherwise projects onto
+ * the day's stretch of line. Null when nowhere near the day (home, ferry,
+ * mid-detour to an off-line extra — the panel falls back to taps there). */
+export function dayPosition(
+  di: number,
+  lat: number,
+  lon: number,
+  cps: Checkpoint[],
+): { at?: number; km?: number } | null {
   const w = T.days[di]?.wawKm
   if (!w) return null
-  let best = -Infinity
+  let atIdx = -1
+  let atD = 1.2
+  cps.forEach((cp, i) => {
+    const d = hav(lat, lon, cp.lat, cp.lon)
+    if (d < atD) {
+      atD = d
+      atIdx = i
+    }
+  })
+  if (atIdx >= 0) return { at: atIdx }
   const p = nearestOnStretch(lat, lon, w[0], w[1])
-  if (hav(lat, lon, p[0], p[1]) <= 10) best = p[2]
-  for (const cp of cps) {
-    if (hav(lat, lon, cp.lat, cp.lon) <= 3) best = Math.max(best, cp.km)
-  }
-  return best === -Infinity ? null : best
+  if (hav(lat, lon, p[0], p[1]) <= 8) return { km: p[2] }
+  return null
 }
 
 /** One Google Maps link for the chosen stretch: current location → `to`,
@@ -227,16 +245,19 @@ export function navStretch(
   const dy = T.days[di]
   const dest: [number, number] = [to.lat, to.lon]
   const startKm = riderKm != null ? riderKm : from.km
+  // Never show "~0 mi" for a real leg: the crow-flies floor applies even with
+  // a live fix (off-line extras have clamped chainage that can zero the diff).
   const line = Math.max(0, to.km - startKm)
-  const mi = Math.round(Math.max(line, riderKm != null ? 0 : hav(from.lat, from.lon, to.lat, to.lon) * 1.25) * 0.6214)
+  const mi = Math.round(Math.max(line, hav(from.lat, from.lon, to.lat, to.lon)) * 0.6214) || 1
   const w = dy?.wawKm
   if (!w) return { url: gmapsUrl(dest, []), mi, via: [] }
 
   // Clamp the pinned stretch to the official window — transfer hops (Larne →
-  // Muff, Kinsale → Rosslare camp) fall outside it and go pin-free.
+  // Muff, Kinsale → Rosslare camp) fall outside it and go pin-free…
   const lo = Math.min(Math.max(w[0], startKm), w[1])
   const hi = Math.min(Math.max(w[0], to.km), w[1])
-  if (hi - lo < 2) return { url: gmapsUrl(dest, []), mi, via: [] }
+  const isTransferDest = to.km > w[1]
+  if (hi - lo < 2 && !isTransferDest) return { url: gmapsUrl(dest, []), mi, via: [] }
 
   const kept: Wp[] = []
   const via: string[] = []
@@ -249,6 +270,22 @@ export function navStretch(
     via.push(st.n)
   })
 
-  const wps = [...sampleWaypoints(lo, hi, Math.max(4, 9 - kept.length) - 1), ...kept]
-  return { url: gmapsUrl(dest, wps), mi, via }
+  let wps = [...sampleWaypoints(lo, hi, Math.max(4, 9 - kept.length) - 1), ...kept]
+  if (isTransferDest) {
+    // …but the last official miles before a transfer (the KINSALE FINISH on
+    // day 9) must be pinned, or Google shortcuts the end of the Way on its
+    // route to the far-off camp.
+    const end = pointAtKm(w[1])
+    wps.push({ km: w[1], lat: end[0], lon: end[1] })
+  } else {
+    // A pin within a couple of km of the destination BY CHAINAGE is noise;
+    // judged by chainage, not crow distance — the route may pass close to the
+    // destination with real miles still to ride (the Strandhill loop).
+    wps = wps.filter((p) => p.km <= hi - 2.5)
+  }
+  // Anchor the anti-zigzag at the LINE's start of this stretch, not at the
+  // from-checkpoint — a far-off transfer origin (Larne) must not disqualify
+  // every on-line pin.
+  const loPt = pointAtKm(lo)
+  return { url: gmapsUrl(dest, orderPins({ lat: loPt[0], lon: loPt[1], km: lo }, wps)), mi, via }
 }

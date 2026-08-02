@@ -3,7 +3,7 @@ import { c, font } from '../theme'
 import { useStore } from '../store/StoreProvider'
 
 const ACTIVE = c.rust
-const IDLE = '#7d7057'
+const IDLE = '#635944'
 
 function Tab({
   label,
@@ -67,7 +67,7 @@ export function BottomNav() {
         background: '#ded0ab',
         borderTop: `1.5px solid ${c.ink}`,
         display: 'flex',
-        padding: '6px 2px 8px',
+        padding: '6px 2px calc(8px + env(safe-area-inset-bottom))',
       }}
     >
       <Tab label="Home" ink={homeInk} active={homeInk === ACTIVE} onClick={() => nav({ screen: 'home' })}>

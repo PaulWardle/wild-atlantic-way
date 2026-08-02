@@ -19,7 +19,6 @@ import { Postbox } from './screens/Postbox'
 import { Journal } from './screens/Journal'
 import { Info } from './screens/Info'
 import { Attractions } from './screens/Attractions'
-import { Decide } from './screens/Decide'
 
 interface AppBarSpec {
   kicker: string
@@ -39,8 +38,6 @@ function appBarSpec(screen: Screen, day: number, postCount: number): AppBarSpec 
       return { kicker: 'The plan', title: 'The Ride', roundel: String(T.days.length) }
     case 'day':
       return { kicker: 'Day', title: dy.title, roundel: dy.n }
-    case 'decide':
-      return { kicker: 'Still deciding', title: 'The Ferries', roundel: '?' }
     case 'signature':
       return { kicker: 'Checklist', title: 'Signature 15', roundel: String(T.signature.length) }
     case 'passes':
@@ -92,8 +89,6 @@ function ScreenBody({ screen }: { screen: Screen }) {
       return <Info />
     case 'attractions':
       return <Attractions />
-    case 'decide':
-      return <Decide />
     case 'map':
       return null // rendered as an overlay
     default:

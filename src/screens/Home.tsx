@@ -166,9 +166,12 @@ export function Home() {
     if (locBusy) return
     setLocBusy(true)
     setLocErr('')
-    await postHere(locFiles)
-    setLocFiles([])
-    setLocBusy(false)
+    try {
+      await postHere(locFiles)
+      setLocFiles([])
+    } finally {
+      setLocBusy(false)
+    }
   }
   // Tapping "Use my location" resolves the GPS fix but does NOT send — it shows
   // a confirmation card first (so a stray tap never posts, and you can see the
@@ -178,8 +181,12 @@ export function Home() {
     setLocBusy(true)
     setLocErr('')
     setPendingPos(null)
-    const res = await resolveCurrentPlace()
-    setLocBusy(false)
+    let res: Awaited<ReturnType<typeof resolveCurrentPlace>>
+    try {
+      res = await resolveCurrentPlace()
+    } finally {
+      setLocBusy(false)
+    }
     if (typeof res !== 'string') {
       setPendingPos(res)
     } else if (res === 'denied') {
@@ -193,11 +200,14 @@ export function Home() {
   const confirmUseLocation = async () => {
     if (!pendingPos || locBusy) return
     setLocBusy(true)
-    await postResolvedPlace(pendingPos, draftNote, locFiles)
-    setPendingPos(null)
-    setLocFiles([])
-    setDraftNote('')
-    setLocBusy(false)
+    try {
+      await postResolvedPlace(pendingPos, draftNote, locFiles)
+      setPendingPos(null)
+      setLocFiles([])
+      setDraftNote('')
+    } finally {
+      setLocBusy(false)
+    }
   }
 
   const postList = posts.slice(0, 10).map((p) => {
@@ -688,7 +698,7 @@ export function Home() {
         {[
           { n: String(meta.nights), l: 'nights', accent: false },
           { n: String(meta.dayCount), l: 'days', accent: false },
-          { n: '1.7k', l: 'miles', accent: false },
+          { n: meta.totalMiles, l: 'miles', accent: false },
           { n: String(meta.sigCount), l: 'key stops', accent: true },
         ].map((st, i) => (
           <div key={i} style={{ background: c.paper, padding: '11px 4px', textAlign: 'center' }}>
@@ -741,7 +751,7 @@ export function Home() {
           {isBrother && (
             <Tile
               title="Passes"
-              sub="19 biker roads"
+              sub={`${tripData.passes.length} biker roads`}
               onClick={() => nav({ screen: 'passes' })}
               icon={
                 <svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke={c.teal} strokeWidth={1.7} strokeLinejoin="round" strokeLinecap="round">
@@ -776,7 +786,7 @@ export function Home() {
           {isBrother && (
             <Tile
               title="Kit & Admin"
-              sub="packing, costs, intel"
+              sub="to-dos & packing"
               onClick={() => nav({ screen: 'kit', kitTab: 'todo' })}
               icon={
                 <svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke={c.ink} strokeWidth={1.6} strokeLinejoin="round" strokeLinecap="round">

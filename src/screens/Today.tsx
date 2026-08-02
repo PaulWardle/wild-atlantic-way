@@ -48,7 +48,7 @@ function TimelineRow({
             {title}
           </span>
           {maybe && (
-            <span style={{ fontFamily: font.mono, fontSize: 7.5, fontWeight: 700, letterSpacing: '.08em', textTransform: 'uppercase', color: c.amber, border: `1px solid ${c.amber}`, background: c.amberPanel, borderRadius: 3, padding: '1px 5px' }}>
+            <span style={{ fontFamily: font.mono, fontSize: 7.5, fontWeight: 700, letterSpacing: '.08em', textTransform: 'uppercase', color: c.amberGold, border: `1px solid ${c.amber}`, background: c.amberPanel, borderRadius: 3, padding: '1px 5px' }}>
               maybe
             </span>
           )}
@@ -74,11 +74,13 @@ export function Today() {
 
   let departMs = 0
   try {
-    departMs = new Date(meta.depart).getTime()
+    departMs = new Date(meta.depart + 'T00:00:00').getTime()
   } catch {
     departMs = 0
   }
-  const offDays = Math.floor((nowTs - departMs) / 86400000)
+  const d0 = new Date(nowTs)
+  const todayMs = new Date(d0.getFullYear(), d0.getMonth(), d0.getDate()).getTime()
+  const offDays = Math.floor((todayMs - departMs) / 86400000)
   let todayIdx: number
   let state: 'pre' | 'live' | 'post'
   if (offDays < 0) {
@@ -135,7 +137,7 @@ export function Today() {
           {[
             { n: '10', l: 'Days', accent: false },
             { n: String(meta.sigCount), l: 'Signature', accent: true },
-            { n: '1.7k', l: 'Miles', accent: false },
+            { n: meta.totalMiles, l: 'Miles', accent: false },
           ].map((st, i) => (
             <div key={i} style={{ border: `1.5px solid ${c.ink}`, background: c.paper, borderRadius: 9, padding: '11px 13px' }}>
               <div style={{ fontFamily: font.display, fontWeight: 700, fontSize: 24, color: st.accent ? c.rust : c.ink, lineHeight: 0.9 }}>{st.n}</div>

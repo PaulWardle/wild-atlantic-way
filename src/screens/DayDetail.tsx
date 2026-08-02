@@ -56,7 +56,7 @@ function MarkButton({ label, color, bg, fg, onClick }: { label: string; color: s
       style={{
         border: `1.5px solid ${color}`,
         borderRadius: 6,
-        padding: '5px 12px',
+        padding: '10px 14px',
         fontFamily: font.display,
         fontWeight: 600,
         fontSize: 11,
