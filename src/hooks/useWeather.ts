@@ -41,6 +41,9 @@ export function useWeather(): WeatherState {
 
   const dayIdx = currentDayIndex()
   const todayRoute = route[dayIdx] || route[0]
+  // On the final day there is no "tomorrow" leg — the strip drops to one card
+  // rather than repeating today's spot under a Tomorrow label.
+  const hasTomorrow = dayIdx < route.length - 1
   const tomorrowRoute = route[Math.min(route.length - 1, dayIdx + 1)] || todayRoute
 
   // Today: the live ping if it carries coords, otherwise the itinerary area.
@@ -63,12 +66,12 @@ export function useWeather(): WeatherState {
     setState((s) => ({ ...s, loading: true }))
 
     const load = () => {
-      Promise.all([fetchForecast(todayLat, todayLon), fetchForecast(tomorrowLat, tomorrowLon)]).then(
+      Promise.all([fetchForecast(todayLat, todayLon), hasTomorrow ? fetchForecast(tomorrowLat, tomorrowLon) : Promise.resolve(null)]).then(
         ([t, tm]) => {
           if (!alive) return
           setState({
             today: { place: todayPlace, lat: todayLat, lon: todayLon, forecast: t },
-            tomorrow: { place: tomorrowPlace, lat: tomorrowLat, lon: tomorrowLon, forecast: tm },
+            tomorrow: hasTomorrow ? { place: tomorrowPlace, lat: tomorrowLat, lon: tomorrowLon, forecast: tm } : null,
             loading: false,
             tried: true,
           })

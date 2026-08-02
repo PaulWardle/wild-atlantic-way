@@ -9,7 +9,7 @@ import { c } from '../theme'
  */
 export function MapSVG({ geo, maxWidth }: { geo: MapGeometry; maxWidth?: number }) {
   return (
-    <svg
+    <svg aria-hidden="true"
       viewBox={`0 0 ${geo.eMapW} ${geo.eMapH}`}
       style={{ width: '100%', height: 'auto', display: 'block', maxWidth: maxWidth ? maxWidth : undefined }}
     >

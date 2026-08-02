@@ -71,6 +71,10 @@ function ResetPanel() {
 
 export function Info() {
   const { isBrother, isGuest } = useStore()
+  let lastErr = ''
+  try {
+    lastErr = localStorage.getItem('waw:lasterr') || ''
+  } catch {}
 
   return (
     <div style={{ animation: 'waw-fade .35s ease both', padding: '18px 16px 30px' }}>
@@ -232,6 +236,10 @@ export function Info() {
           <ResetPanel />
         </>
       )}
+      <div style={{ fontFamily: font.mono, fontSize: 8, color: c.inkFainter, textAlign: 'center', marginTop: 18, paddingBottom: 4 }}>
+        build {__BUILD__}
+        {lastErr && <div style={{ marginTop: 3, wordBreak: 'break-word' }}>last error · {lastErr}</div>}
+      </div>
     </div>
   )
 }

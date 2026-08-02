@@ -22,7 +22,7 @@ const data = JSON.parse(src.slice(src.indexOf('{', src.indexOf('tripData: Trip =
 // ---- load spine ----
 const spineSrc = fs.readFileSync(path.join(root, 'src/data/wawSpine.ts'), 'utf8')
 const TOTAL = parseFloat(spineSrc.match(/WAW_TOTAL_KM = ([\d.]+)/)[1])
-const spine = JSON.parse(spineSrc.match(/wawSpine: SpinePoint\[\] = (\[\[.*?\]\])/s)[1])
+const rawSpine = JSON.parse(spineSrc.match(/wawSpine: SpinePoint\[\] = (\[\[.*?\]\])/s)[1])
 
 const hav = (a, b) => {
   const R = 6371
@@ -31,6 +31,18 @@ const hav = (a, b) => {
   const s = Math.sin(dLat / 2) ** 2 + Math.cos((a[0] * Math.PI) / 180) * Math.cos((b[0] * Math.PI) / 180) * Math.sin(dLon / 2) ** 2
   return 2 * R * Math.asin(Math.sqrt(s))
 }
+
+// Same artifact filter as the app's `cleanedSpine` (wawSpine.ts): drop a point
+// only when it sits implausibly far from BOTH raw neighbours for its chainage
+// gap. Validating against the raw spine would let a mis-stitched point mask a
+// genuinely off-line stop (or vice versa).
+const spine = rawSpine.filter((p, i) => {
+  const far = (a, b) => hav(a, b) > Math.abs(b[2] - a[2]) + 4
+  const prev = rawSpine[i - 1]
+  const next = rawSpine[i + 1]
+  if (prev && next) return !(far(prev, p) && far(p, next))
+  return prev ? !far(prev, p) : !far(p, next)
+})
 const chainage = (lat, lon) => {
   let best = 0, bd = 1e9
   for (const [plat, plon, pkm] of spine) {

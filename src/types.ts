@@ -24,6 +24,8 @@ export type StopKind = 'waw' | 'onroute' | 'extra' | 'transfer'
 
 export interface Stop {
   n: string
+  /** Stable mark key (slug) — marks survive itinerary reorders. */
+  sid?: string
   d: string
   skip?: boolean
   finish?: boolean

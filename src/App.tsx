@@ -104,7 +104,7 @@ export function App() {
   const deskStyle: CSSProperties = phoneMode
     ? { minHeight: '100dvh', background: '#e8dcbf', display: 'block', fontFamily: "'Spectral',Georgia,serif" }
     : {
-        minHeight: '100vh',
+        minHeight: '100dvh',
         background: '#1c1813',
         backgroundImage: 'radial-gradient(120% 90% at 50% -10%, #2c2519 0%, #1c1813 60%)',
         display: 'flex',
@@ -127,7 +127,7 @@ export function App() {
         position: 'relative',
         width: '100%',
         maxWidth: 412,
-        height: 'min(880px, calc(100vh - 40px))',
+        height: 'min(880px, calc(100dvh - 40px))',
         background: '#e8dcbf',
         borderRadius: 30,
         boxShadow: '0 34px 80px rgba(0,0,0,.55), 0 0 0 10px #14110d, 0 0 0 12px #40372a',

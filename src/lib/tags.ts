@@ -1,6 +1,7 @@
 /* Shared tag / reason vocabulary — the visual language for every stop, postbox
  * message and journal entry. Ported from the original renderVals(). */
 
+import { tripData } from '../data/tripData'
 import type { Stop } from '../types'
 
 export interface TagChip {
@@ -94,3 +95,11 @@ export const jTagOptions = [
   'Road', 'Attractions', 'Update', 'Thought', 'Feeling', 'Action',
   'Key Event', 'Milestone', 'Oh Fuck! Moment', 'Other',
 ]
+
+
+/** Stable mark key for a stop: its slug id, falling back to the legacy
+ * positional key. Positional keys silently re-attach decisions to whatever
+ * stop later occupies that index — slugs survive itinerary edits. */
+export function markKey(di: number, si: number): string {
+  return tripData.days[di]?.stops[si]?.sid ?? 'd' + di + 's' + si
+}

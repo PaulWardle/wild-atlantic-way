@@ -10,6 +10,7 @@ import {
 } from 'react'
 import type { RealtimeChannel, SupabaseClient } from '@supabase/supabase-js'
 import { getSupabase } from '../lib/supabase'
+import { markKey } from '../lib/tags'
 import { tripData } from '../data/tripData'
 import { journey, journeyToSig } from '../data/journey'
 import { attachPhotos, uploadBlob, photoList, photoField } from '../lib/photos'
@@ -70,6 +71,22 @@ Object.keys(journeyToSig).forEach((label) => {
   if (idx >= 0) sigToJourneyIndex[journeyToSig[label]] = idx
 })
 
+/** Legacy positional mark keys (d{di}s{si}) → stable slug ids. Positions are
+ * correct at migration time; after this, itinerary edits can't re-aim marks. */
+const LEGACY_MARK = /^d(\d+)s(\d+)$/
+function migrateMarkKey(k: string): string {
+  const m = LEGACY_MARK.exec(k)
+  if (!m) return k
+  return tripData.days[+m[1]]?.stops[+m[2]]?.sid ?? k
+}
+function migrateMarks(marks: Record<string, 'keep' | 'maybe' | 'cut'>): Record<string, 'keep' | 'maybe' | 'cut'> {
+  const out: Record<string, 'keep' | 'maybe' | 'cut'> = {}
+  Object.keys(marks).forEach((k) => {
+    out[migrateMarkKey(k)] = marks[k]
+  })
+  return out
+}
+
 function emptyStore(role: Role = null): Store {
   return {
     role,
@@ -96,7 +113,7 @@ function normalize(raw: unknown): Store {
     posts: s.posts ?? [],
     updates: s.updates ?? [],
     notes: s.notes ?? [],
-    marks: s.marks ?? {},
+    marks: migrateMarks(s.marks ?? {}),
     sig: s.sig ?? {},
     pack: s.pack ?? {},
     book: s.book ?? {},
@@ -117,7 +134,15 @@ function loadStore(): Store {
   }
   // Deep-link: #at=<si>&t=<ts>&n=<note> seeds the latest location ping.
   const hv = parseHash()
-  if (hv) store.updates = [hv]
+  if (hv) {
+    // Merge (dedupe by ts) — replacing wiped the cached ping history offline.
+    if (!store.updates.some((u) => u.ts === hv.ts)) store.updates = [hv, ...store.updates]
+    try {
+      history.replaceState(null, '', location.pathname + location.search)
+    } catch {
+      /* noop */
+    }
+  }
   return store
 }
 
@@ -129,9 +154,11 @@ function parseHash(): Update | null {
     if (!q.has('at')) return null
     const i = parseInt(q.get('at') || '', 10)
     if (isNaN(i)) return null
+    // URLSearchParams already decoded once — a second decode corrupted notes
+    // containing literal % signs. Clamp/cap everything: this is untrusted input.
     return {
-      si: Math.max(0, i),
-      note: q.get('n') ? decodeURIComponent(q.get('n') as string) : '',
+      si: Math.max(0, Math.min(i, journey.length - 1)),
+      note: (q.get('n') || '').slice(0, 200),
       ts: q.get('t') ? parseInt(q.get('t') as string, 10) : Date.now(),
     }
   } catch {
@@ -419,6 +446,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   serverOkRef.current = serverOk
   const pullEpochRef = useRef(0)
   const lastPullRef = useRef(0)
+  const migratedMarksRef = useRef<Set<string>>(new Set())
+  const upsertRowRef = useRef<((t: TableName, row: Record<string, unknown>) => void) | null>(null)
+  const deleteRowRef = useRef<((t: TableName, col: string, val: unknown) => void) | null>(null)
   /** Re-subscribes the realtime channel — set by the init effect, called when a
    *  pull succeeds after downtime (the old channel may be permanently dead). */
   const resubFnRef = useRef<(() => void) | null>(null)
@@ -472,7 +502,14 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         if (!m.error) {
           const mm: Store['marks'] = {}
           ;((m.data || []) as Array<{ stop: string; mark: 'keep' | 'maybe' | 'cut' }>).forEach((r) => {
-            mm[r.stop] = r.mark
+            const k = migrateMarkKey(r.stop)
+            mm[k] = r.mark
+            // Converge the server onto stable keys, once per legacy row.
+            if (k !== r.stop && !migratedMarksRef.current.has(r.stop)) {
+              migratedMarksRef.current.add(r.stop)
+              upsertRowRef.current?.('marks', { stop: k, mark: r.mark })
+              deleteRowRef.current?.('marks', 'stop', r.stop)
+            }
           })
           next.marks = mm
         }
@@ -647,6 +684,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const insertRow = useCallback((t: TableName, row: Record<string, unknown>) => tryOp({ op: 'insert', t, row }, true), [tryOp])
   const upsertRow = useCallback((t: TableName, row: Record<string, unknown>) => tryOp({ op: 'upsert', t, row }, false), [tryOp])
   const deleteRow = useCallback((t: TableName, col: string, val: unknown) => tryOp({ op: 'delete', t, col, val }, false), [tryOp])
+  upsertRowRef.current = upsertRow
+  deleteRowRef.current = deleteRow
   /** Server-wide clears must not run blind: offline they'd wipe the phone,
    * leave the server intact, and the next pull would "resurrect" everything —
    * minus the user's unsent work. */
@@ -897,14 +936,14 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       // If this spot is one of the Signature 15 and not yet bagged, offer to bag it.
       const label = journey[si]?.label
       const sigId = label ? journeyToSig[label] : undefined
-      if (sigId && !storeRef.current.sig[sigId]) setLinkPrompt({ kind: 'offerBag', name: label, sigId })
+      if (sigId && !storeRef.current.sig[sigId]) setLinkPrompt({ kind: 'offerBag', name: tripData.signature.find((x) => x.id === sigId)?.name || label, sigId })
     },
     [draftI, draftNote, postLocationAt],
   )
 
   const setStopMark = useCallback(
     (di: number, si: number, val: 'keep' | 'maybe' | 'cut') => {
-      const key = 'd' + di + 's' + si
+      const key = markKey(di, si)
       const marks = { ...storeRef.current.marks }
       if (marks[key] === val) {
         delete marks[key]
@@ -1054,6 +1093,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       insertRow('notes', { body: text, author, tag, day: date, ts, ...(photo ? { photo } : {}) })
       setJNoteState('')
       setJTagOtherState('')
+      setJTimeState('')
     },
     [jNote, jDay, jTag, jTagOther, jTime, jAuthor, set, insertRow],
   )

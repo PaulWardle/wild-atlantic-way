@@ -9,7 +9,7 @@
 
 import type { Day, Marks, Stop } from '../types'
 import { WAW_TOTAL_KM } from '../data/wawSpine'
-import { isMarkable } from './tags'
+import { isMarkable, markKey } from './tags'
 
 const KM_TO_MI = 0.621371
 
@@ -36,7 +36,7 @@ export type ExtraMark = 'keep' | 'maybe' | 'cut'
  *  off-route extras (road cost) default to MAYBE — their miles are opted into. */
 export function extraStatus(day: Day, di: number, si: number, st: Stop, marks: Marks): ExtraMark | null {
   if (!isMarkable(day, st)) return null
-  const mk = marks['d' + di + 's' + si]
+  const mk = marks[markKey(di, si)]
   if (mk === 'keep' || mk === 'maybe' || mk === 'cut') return mk
   return st.kind === 'extra' ? 'maybe' : 'keep'
 }

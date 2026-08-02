@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { c, font } from '../theme'
 import { useStore } from '../store/StoreProvider'
 import { tripData } from '../data/tripData'
-import { isMarkable, jTagOptions } from '../lib/tags'
+import { isMarkable, jTagOptions, markKey } from '../lib/tags'
 import { buildEvents, buildFeed, buildGallery, buildGroups } from '../lib/journal'
 import { Kicker, ScreenTitle, Lede, Dropdown } from '../components/ui'
 import { PhotoInput } from '../components/PhotoInput'
@@ -71,7 +71,7 @@ export function Journal() {
   tripData.days.forEach((dd, di) =>
     (dd.stops || []).forEach((st, si) => {
       if (!isMarkable(dd, st)) return
-      const mk = marks['d' + di + 's' + si]
+      const mk = marks[markKey(di, si)]
       if (mk === 'keep') keep++
       else if (mk === 'maybe') maybe++
       else if (mk === 'cut') cut++
@@ -187,7 +187,7 @@ export function Journal() {
             onChange={(e) => setJNote(e.target.value)}
             rows={2}
             placeholder="What happened…"
-            style={{ width: '100%', border: `1.5px solid ${c.ink}`, borderRadius: 7, background: c.inputBg, padding: '10px 12px', fontFamily: font.serif, fontSize: 13.5, color: c.inkSoft, outline: 'none', resize: 'none', lineHeight: 1.5 }}
+            style={{ width: '100%', border: `1.5px solid ${c.ink}`, borderRadius: 7, background: c.inputBg, padding: '10px 12px', fontFamily: font.serif, fontSize: 13.5, color: c.inkSoft, resize: 'none', lineHeight: 1.5 }}
           />
           <div style={{ fontFamily: font.mono, fontSize: 8, letterSpacing: '.14em', color: c.inkFaintest, textTransform: 'uppercase', margin: '11px 0 6px' }}>Tag</div>
           <Dropdown label={jTag || 'Update'} open={openDD === 'jtag'} onToggle={() => toggleDD('jtag')} options={tagOpts.map((t) => ({ label: t, pick: () => selectJTag(t) }))} />
@@ -198,7 +198,7 @@ export function Journal() {
                 onChange={(e) => setJTagOther(e.target.value)}
                 onKeyDown={(e) => { if (e.key === 'Enter' && jTagOther.trim()) addCustomTag(jTagOther) }}
                 placeholder="Name your tag"
-                style={{ flex: 1, minWidth: 0, border: `1.5px solid ${c.ink}`, borderRadius: 7, background: c.inputBg, padding: '9px 11px', fontFamily: font.display, fontWeight: 600, fontSize: 13, textTransform: 'uppercase', color: c.ink, outline: 'none' }}
+                style={{ flex: 1, minWidth: 0, border: `1.5px solid ${c.ink}`, borderRadius: 7, background: c.inputBg, padding: '9px 11px', fontFamily: font.display, fontWeight: 600, fontSize: 13, textTransform: 'uppercase', color: c.ink }}
               />
               <button
                 onClick={() => jTagOther.trim() && addCustomTag(jTagOther)}
@@ -222,7 +222,7 @@ export function Journal() {
                 value={jTime}
                 onChange={(e) => setJTime(e.target.value)}
                 aria-label="Time for this entry"
-                style={{ width: '100%', border: `1.5px solid ${c.ink}`, borderRadius: 7, background: c.inputBg, padding: '8px 9px', fontFamily: font.mono, fontSize: 13, color: c.ink, outline: 'none' }}
+                style={{ width: '100%', border: `1.5px solid ${c.ink}`, borderRadius: 7, background: c.inputBg, padding: '8px 9px', fontFamily: font.mono, fontSize: 13, color: c.ink }}
               />
             </div>
           </div>
@@ -291,7 +291,7 @@ export function Journal() {
                           value={jEditText}
                           onChange={(ev) => setJEditText(ev.target.value)}
                           rows={2}
-                          style={{ width: '100%', marginTop: 6, border: `1.5px solid ${c.ink}`, borderRadius: 7, background: c.inputBg, padding: '8px 10px', fontFamily: font.serif, fontSize: 13, color: c.inkSoft, outline: 'none', resize: 'none', lineHeight: 1.5 }}
+                          style={{ width: '100%', marginTop: 6, border: `1.5px solid ${c.ink}`, borderRadius: 7, background: c.inputBg, padding: '8px 10px', fontFamily: font.serif, fontSize: 13, color: c.inkSoft, resize: 'none', lineHeight: 1.5 }}
                         />
                         <div style={{ display: 'flex', gap: 8, marginTop: 6 }}>
                           <button onClick={cancelEditNote} style={{ border: `1.5px solid ${c.ink}`, borderRadius: 6, background: 'transparent', color: c.ink, padding: '6px 14px', fontFamily: font.display, fontWeight: 600, fontSize: 11, textTransform: 'uppercase', letterSpacing: '.04em' }}>Cancel</button>

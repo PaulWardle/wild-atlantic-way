@@ -14,6 +14,7 @@
  * predecessor than the chainage gap allows.
  */
 import { cleanedSpine, type SpinePoint } from '../data/wawSpine'
+import { markKey } from './tags'
 import { tripData } from '../data/tripData'
 
 const T = tripData
@@ -178,7 +179,7 @@ export function dayCheckpoints(di: number, marks?: StopMarks): Checkpoint[] {
   const camp = campCoord(di)
   dy.stops.forEach((st, si) => {
     if (st.kind === 'transfer' || !st.kind || st.lat == null || st.lon == null) return
-    if (st.kind === 'extra' && marks?.['d' + di + 's' + si] === 'cut') return
+    if (st.kind === 'extra' && marks?.[markKey(di, si)] === 'cut') return
     // Skip a stop that sits on top of the previous checkpoint or the camp —
     // the neighbour covers it. (0.9 km: Farren's Bar and Malin Head are
     // 1.1 km apart and both belong in the list.)
@@ -263,7 +264,7 @@ export function navStretch(
   const via: string[] = []
   dy.stops.forEach((st, si) => {
     if (st.kind !== 'extra' || st.lat == null || st.lon == null) return
-    if (marks?.['d' + di + 's' + si] !== 'keep') return
+    if (marks?.[markKey(di, si)] !== 'keep') return
     const km = nearestOnStretch(st.lat, st.lon, w[0], w[1])[2]
     if (km < lo - 3 || km > hi + 3) return
     kept.push({ km, lat: st.lat, lon: st.lon })

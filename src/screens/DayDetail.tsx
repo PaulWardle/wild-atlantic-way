@@ -1,7 +1,7 @@
 import { c, font, phaseInfo } from '../theme'
 import { useStore } from '../store/StoreProvider'
 import { tripData } from '../data/tripData'
-import { buildTags, isMarkable } from '../lib/tags'
+import { buildTags, isMarkable, markKey } from '../lib/tags'
 import { summarizeDay, fmtH } from '../lib/daymath'
 import { NavPanel } from '../components/NavPanel'
 import { TagChips } from '../components/ui'
@@ -146,7 +146,7 @@ export function DayDetail() {
           {isBrother ? 'The route · keep, maybe or cut each stop' : 'The route · every stop, in order'}
         </div>
         {(dy.stops || []).map((st, si) => {
-          const key = 'd' + di + 's' + si
+          const key = markKey(di, si)
           // 100% WAW mode: only optional extras can carry a mark. Locked
           // official stops IGNORE marks entirely — this also makes stale
           // position-keyed marks from older itinerary versions inert.

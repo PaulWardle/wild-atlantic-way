@@ -45,7 +45,8 @@ export const tripData: Trip = {
           "tags": [
             "logistics"
           ],
-          "kind": "transfer"
+          "kind": "transfer",
+          "sid": "d1-douglas-larne"
         },
         {
           "n": "Muff — the Way begins",
@@ -58,7 +59,8 @@ export const tripData: Trip = {
           "kind": "waw",
           "stopMin": 10,
           "lat": 55.067,
-          "lon": -7.269
+          "lon": -7.269,
+          "sid": "d1-muff-the-way-begins"
         },
         {
           "n": "Moville → Greencastle & Warren Point",
@@ -71,7 +73,8 @@ export const tripData: Trip = {
           ],
           "d": "The first miles of the Way proper up Lough Foyle — Moville, then Greencastle with the square-towered Warren Point lighthouse at the harbour mouth.",
           "lat": 55.202,
-          "lon": -6.987
+          "lon": -6.987,
+          "sid": "d1-moville-greencastle-warren-point"
         },
         {
           "n": "Stroove & Inishowen Head",
@@ -83,7 +86,8 @@ export const tripData: Trip = {
           ],
           "d": "Shrove beach, the Stroove lighthouse and the Inishowen Head corner — the first Discovery Points fall inside the opening hour.",
           "lat": 55.226,
-          "lon": -6.929
+          "lon": -6.929,
+          "sid": "d1-stroove-inishowen-head"
         },
         {
           "n": "Kinnagoe Bay",
@@ -95,7 +99,8 @@ export const tripData: Trip = {
           "kind": "onroute",
           "stopMin": 10,
           "lat": 55.259,
-          "lon": -7.01
+          "lon": -7.01,
+          "sid": "d1-kinnagoe-bay"
         },
         {
           "n": "Culdaff",
@@ -107,7 +112,8 @@ export const tripData: Trip = {
           "kind": "onroute",
           "stopMin": 0,
           "lat": 55.289,
-          "lon": -7.164
+          "lon": -7.164,
+          "sid": "d1-culdaff"
         },
         {
           "n": "Farren's Bar",
@@ -118,7 +124,8 @@ export const tripData: Trip = {
           "kind": "onroute",
           "stopMin": 15,
           "lat": 55.371,
-          "lon": -7.376
+          "lon": -7.376,
+          "sid": "d1-farren-s-bar"
         },
         {
           "n": "MALIN HEAD",
@@ -131,7 +138,8 @@ export const tripData: Trip = {
           "kind": "onroute",
           "stopMin": 25,
           "lat": 55.381,
-          "lon": -7.373
+          "lon": -7.373,
+          "sid": "d1-malin-head"
         },
         {
           "n": "Doagh → Pollan Bay → camp",
@@ -143,7 +151,8 @@ export const tripData: Trip = {
           "kind": "waw",
           "stopMin": 0,
           "lat": 55.278,
-          "lon": -7.39
+          "lon": -7.39,
+          "sid": "d1-doagh-pollan-bay-camp"
         }
       ],
       "night": {
@@ -180,7 +189,8 @@ export const tripData: Trip = {
           "kind": "onroute",
           "stopMin": 10,
           "lat": 55.243,
-          "lon": -7.457
+          "lon": -7.457,
+          "sid": "d2-gap-of-mamore"
         },
         {
           "n": "Fort Dunree",
@@ -199,7 +209,8 @@ export const tripData: Trip = {
           "viaMi": 4,
           "impactSrc": "manual road estimate · verify in Google Maps before the trip · checked 26 Jul 2026",
           "lat": 55.1946,
-          "lon": -7.5546
+          "lon": -7.5546,
+          "sid": "d2-fort-dunree"
         },
         {
           "n": "Round the Swilly",
@@ -210,7 +221,8 @@ export const tripData: Trip = {
           "kind": "waw",
           "stopMin": 0,
           "lat": 55.12,
-          "lon": -7.46
+          "lon": -7.46,
+          "sid": "d2-round-the-swilly"
         },
         {
           "n": "Knockalla coast road",
@@ -221,7 +233,8 @@ export const tripData: Trip = {
           ],
           "kind": "waw",
           "lat": 55.225,
-          "lon": -7.585
+          "lon": -7.585,
+          "sid": "d2-knockalla-coast-road"
         },
         {
           "n": "Ballymastocker Bay / Portsalon",
@@ -233,7 +246,8 @@ export const tripData: Trip = {
           "kind": "onroute",
           "stopMin": 15,
           "lat": 55.205,
-          "lon": -7.62
+          "lon": -7.62,
+          "sid": "d2-ballymastocker-bay-portsalon"
         },
         {
           "n": "FANAD HEAD",
@@ -246,7 +260,8 @@ export const tripData: Trip = {
           "kind": "onroute",
           "stopMin": 25,
           "lat": 55.276,
-          "lon": -7.632
+          "lon": -7.632,
+          "sid": "d2-fanad-head"
         },
         {
           "n": "Harry Blaney Bridge",
@@ -256,7 +271,8 @@ export const tripData: Trip = {
           ],
           "kind": "waw",
           "lat": 55.185,
-          "lon": -7.7
+          "lon": -7.7,
+          "sid": "d2-harry-blaney-bridge"
         },
         {
           "n": "Atlantic Drive, Rosguill",
@@ -268,7 +284,8 @@ export const tripData: Trip = {
           "kind": "waw",
           "stopMin": 10,
           "lat": 55.207,
-          "lon": -7.835
+          "lon": -7.835,
+          "sid": "d2-atlantic-drive-rosguill"
         },
         {
           "n": "Dunfanaghy",
@@ -280,7 +297,8 @@ export const tripData: Trip = {
           "kind": "onroute",
           "stopMin": 45,
           "lat": 55.184,
-          "lon": -7.885
+          "lon": -7.885,
+          "sid": "d2-dunfanaghy"
         }
       ],
       "night": {
@@ -317,7 +335,8 @@ export const tripData: Trip = {
           "kind": "waw",
           "stopMin": 15,
           "lat": 55.22,
-          "lon": -7.99
+          "lon": -7.99,
+          "sid": "d3-horn-head-loop"
         },
         {
           "n": "Bloody Foreland",
@@ -329,7 +348,8 @@ export const tripData: Trip = {
           "kind": "onroute",
           "stopMin": 5,
           "lat": 55.138,
-          "lon": -8.287
+          "lon": -8.287,
+          "sid": "d3-bloody-foreland"
         },
         {
           "n": "Glenveagh / Errigal",
@@ -348,7 +368,8 @@ export const tripData: Trip = {
           "viaMi": 20,
           "impactSrc": "manual road estimate · verify in Google Maps before the trip · checked 26 Jul 2026",
           "lat": 55.0331,
-          "lon": -7.9557
+          "lon": -7.9557,
+          "sid": "d3-glenveagh-errigal"
         },
         {
           "n": "The Rosses",
@@ -360,7 +381,8 @@ export const tripData: Trip = {
           "kind": "waw",
           "stopMin": 0,
           "lat": 54.951,
-          "lon": -8.359
+          "lon": -8.359,
+          "sid": "d3-the-rosses"
         },
         {
           "n": "Maghera & Assaranca",
@@ -372,7 +394,8 @@ export const tripData: Trip = {
           "kind": "onroute",
           "stopMin": 15,
           "lat": 54.752,
-          "lon": -8.56
+          "lon": -8.56,
+          "sid": "d3-maghera-assaranca"
         },
         {
           "n": "Glengesh Pass",
@@ -384,7 +407,8 @@ export const tripData: Trip = {
           "kind": "onroute",
           "stopMin": 10,
           "lat": 54.714,
-          "lon": -8.463
+          "lon": -8.463,
+          "sid": "d3-glengesh-pass"
         },
         {
           "n": "Glencolmcille & Malin Beg",
@@ -396,7 +420,8 @@ export const tripData: Trip = {
           "kind": "onroute",
           "stopMin": 20,
           "lat": 54.703,
-          "lon": -8.724
+          "lon": -8.724,
+          "sid": "d3-glencolmcille-malin-beg"
         },
         {
           "n": "SLIEVE LEAGUE / SLIABH LIAG",
@@ -409,7 +434,8 @@ export const tripData: Trip = {
           "kind": "onroute",
           "stopMin": 45,
           "lat": 54.627,
-          "lon": -8.681
+          "lon": -8.681,
+          "sid": "d3-slieve-league-sliabh-liag"
         },
         {
           "n": "Killybegs",
@@ -421,7 +447,8 @@ export const tripData: Trip = {
           "kind": "onroute",
           "stopMin": 40,
           "lat": 54.634,
-          "lon": -8.448
+          "lon": -8.448,
+          "sid": "d3-killybegs"
         },
         {
           "n": "Donegal Bay run",
@@ -433,7 +460,8 @@ export const tripData: Trip = {
           "kind": "waw",
           "stopMin": 0,
           "lat": 54.478,
-          "lon": -8.28
+          "lon": -8.28,
+          "sid": "d3-donegal-bay-run"
         },
         {
           "n": "MULLAGHMORE HEAD",
@@ -446,7 +474,8 @@ export const tripData: Trip = {
           "kind": "onroute",
           "stopMin": 20,
           "lat": 54.47,
-          "lon": -8.452
+          "lon": -8.452,
+          "sid": "d3-mullaghmore-head"
         },
         {
           "n": "Drumcliffe → Strandhill",
@@ -458,7 +487,8 @@ export const tripData: Trip = {
           "kind": "onroute",
           "stopMin": 15,
           "lat": 54.27,
-          "lon": -8.596
+          "lon": -8.596,
+          "sid": "d3-drumcliffe-strandhill"
         }
       ],
       "night": {
@@ -468,7 +498,7 @@ export const tripData: Trip = {
         "backup": "Greenlands, Rosses Point",
         "sellout": false,
         "deviationMi": 0.1,
-        "retraceMi": 0
+        "retraceMi": 8
       },
       "wawKm": [
         279,
@@ -494,7 +524,8 @@ export const tripData: Trip = {
           ],
           "kind": "waw",
           "lat": 54.213,
-          "lon": -9.093
+          "lon": -9.093,
+          "sid": "d4-the-sligo-surf-coast"
         },
         {
           "n": "Ballina & Killala",
@@ -505,7 +536,8 @@ export const tripData: Trip = {
           ],
           "kind": "onroute",
           "lat": 54.213,
-          "lon": -9.22
+          "lon": -9.22,
+          "sid": "d4-ballina-killala"
         },
         {
           "n": "DOWNPATRICK HEAD",
@@ -518,7 +550,8 @@ export const tripData: Trip = {
           "kind": "onroute",
           "stopMin": 25,
           "lat": 54.326,
-          "lon": -9.349
+          "lon": -9.349,
+          "sid": "d4-downpatrick-head"
         },
         {
           "n": "Céide Fields",
@@ -530,7 +563,8 @@ export const tripData: Trip = {
           "kind": "onroute",
           "stopMin": 30,
           "lat": 54.309,
-          "lon": -9.456
+          "lon": -9.456,
+          "sid": "d4-ceide-fields"
         },
         {
           "n": "North Mayo cliff road",
@@ -541,7 +575,8 @@ export const tripData: Trip = {
           ],
           "kind": "waw",
           "lat": 54.3,
-          "lon": -9.58
+          "lon": -9.58,
+          "sid": "d4-north-mayo-cliff-road"
         },
         {
           "n": "The Mullet & Blacksod",
@@ -553,7 +588,8 @@ export const tripData: Trip = {
           "kind": "waw",
           "stopMin": 15,
           "lat": 54.1,
-          "lon": -10.06
+          "lon": -10.06,
+          "sid": "d4-the-mullet-blacksod"
         },
         {
           "n": "Ballycroy / Wild Nephin",
@@ -564,7 +600,8 @@ export const tripData: Trip = {
           ],
           "kind": "waw",
           "lat": 54.03,
-          "lon": -9.83
+          "lon": -9.83,
+          "sid": "d4-ballycroy-wild-nephin"
         },
         {
           "n": "Mulranny → Achill Sound",
@@ -575,7 +612,8 @@ export const tripData: Trip = {
           ],
           "kind": "waw",
           "lat": 53.93,
-          "lon": -9.92
+          "lon": -9.92,
+          "sid": "d4-mulranny-achill-sound"
         },
         {
           "n": "Achill Atlantic Drive",
@@ -587,7 +625,8 @@ export const tripData: Trip = {
           "kind": "waw",
           "stopMin": 10,
           "lat": 53.9,
-          "lon": -9.98
+          "lon": -9.98,
+          "sid": "d4-achill-atlantic-drive"
         },
         {
           "n": "Keel",
@@ -599,7 +638,8 @@ export const tripData: Trip = {
           "kind": "onroute",
           "stopMin": 0,
           "lat": 53.973,
-          "lon": -10.08
+          "lon": -10.08,
+          "sid": "d4-keel"
         }
       ],
       "night": {
@@ -637,7 +677,8 @@ export const tripData: Trip = {
           "kind": "onroute",
           "stopMin": 25,
           "lat": 53.968,
-          "lon": -10.194
+          "lon": -10.194,
+          "sid": "d5-keem-bay-at-dawn"
         },
         {
           "n": "Mulranny → Newport",
@@ -648,7 +689,8 @@ export const tripData: Trip = {
           ],
           "kind": "waw",
           "lat": 53.884,
-          "lon": -9.55
+          "lon": -9.55,
+          "sid": "d5-mulranny-newport"
         },
         {
           "n": "Westport",
@@ -661,7 +703,8 @@ export const tripData: Trip = {
           "kind": "onroute",
           "stopMin": 75,
           "lat": 53.801,
-          "lon": -9.52
+          "lon": -9.52,
+          "sid": "d5-westport"
         },
         {
           "n": "Croagh Patrick",
@@ -673,7 +716,8 @@ export const tripData: Trip = {
           "kind": "onroute",
           "stopMin": 10,
           "lat": 53.78,
-          "lon": -9.64
+          "lon": -9.64,
+          "sid": "d5-croagh-patrick"
         },
         {
           "n": "Doolough Valley",
@@ -686,7 +730,8 @@ export const tripData: Trip = {
           "kind": "onroute",
           "stopMin": 10,
           "lat": 53.658,
-          "lon": -9.77
+          "lon": -9.77,
+          "sid": "d5-doolough-valley"
         },
         {
           "n": "Aasleagh Falls → Leenane",
@@ -697,7 +742,8 @@ export const tripData: Trip = {
           ],
           "kind": "onroute",
           "lat": 53.595,
-          "lon": -9.685
+          "lon": -9.685,
+          "sid": "d5-aasleagh-falls-leenane"
         },
         {
           "n": "KILLARY HARBOUR",
@@ -710,7 +756,8 @@ export const tripData: Trip = {
           "kind": "onroute",
           "stopMin": 15,
           "lat": 53.61,
-          "lon": -9.78
+          "lon": -9.78,
+          "sid": "d5-killary-harbour"
         },
         {
           "n": "Letterfrack & Connemara NP",
@@ -721,7 +768,8 @@ export const tripData: Trip = {
           ],
           "kind": "waw",
           "lat": 53.55,
-          "lon": -9.95
+          "lon": -9.95,
+          "sid": "d5-letterfrack-connemara-np"
         },
         {
           "n": "Cleggan → Omey Island",
@@ -733,7 +781,8 @@ export const tripData: Trip = {
           "kind": "onroute",
           "stopMin": 30,
           "lat": 53.545,
-          "lon": -10.12
+          "lon": -10.12,
+          "sid": "d5-cleggan-omey-island"
         }
       ],
       "night": {
@@ -769,7 +818,8 @@ export const tripData: Trip = {
           "kind": "onroute",
           "stopMin": 15,
           "lat": 53.494,
-          "lon": -10.08
+          "lon": -10.08,
+          "sid": "d6-sky-road"
         },
         {
           "n": "DERRIGIMLAGH",
@@ -782,7 +832,8 @@ export const tripData: Trip = {
           "kind": "onroute",
           "stopMin": 45,
           "lat": 53.459,
-          "lon": -10.02
+          "lon": -10.02,
+          "sid": "d6-derrigimlagh"
         },
         {
           "n": "Roundstone",
@@ -795,7 +846,8 @@ export const tripData: Trip = {
           "kind": "onroute",
           "stopMin": 20,
           "lat": 53.385,
-          "lon": -9.92
+          "lon": -9.92,
+          "sid": "d6-roundstone"
         },
         {
           "n": "South Connemara shore",
@@ -806,7 +858,8 @@ export const tripData: Trip = {
           "kind": "waw",
           "stopMin": 0,
           "lat": 53.32,
-          "lon": -9.84
+          "lon": -9.84,
+          "sid": "d6-south-connemara-shore"
         },
         {
           "n": "Spiddal → Galway",
@@ -817,7 +870,8 @@ export const tripData: Trip = {
           "kind": "waw",
           "stopMin": 20,
           "lat": 53.272,
-          "lon": -9.05
+          "lon": -9.05,
+          "sid": "d6-spiddal-galway"
         },
         {
           "n": "Kinvara",
@@ -829,7 +883,8 @@ export const tripData: Trip = {
           "kind": "onroute",
           "stopMin": 10,
           "lat": 53.139,
-          "lon": -8.936
+          "lon": -8.936,
+          "sid": "d6-kinvara"
         },
         {
           "n": "Poulnabrone dolmen",
@@ -848,7 +903,8 @@ export const tripData: Trip = {
           "viaMi": 10,
           "impactSrc": "manual road estimate · verify in Google Maps before the trip · checked 26 Jul 2026",
           "lat": 53.0489,
-          "lon": -9.14
+          "lon": -9.14,
+          "sid": "d6-poulnabrone-dolmen"
         },
         {
           "n": "Black Head R477",
@@ -861,7 +917,8 @@ export const tripData: Trip = {
           "kind": "waw",
           "stopMin": 5,
           "lat": 53.152,
-          "lon": -9.266
+          "lon": -9.266,
+          "sid": "d6-black-head-r477"
         },
         {
           "n": "Fanore → Doolin",
@@ -873,7 +930,8 @@ export const tripData: Trip = {
           "kind": "waw",
           "stopMin": 0,
           "lat": 53.014,
-          "lon": -9.38
+          "lon": -9.38,
+          "sid": "d6-fanore-doolin"
         }
       ],
       "night": {
@@ -911,7 +969,8 @@ export const tripData: Trip = {
           "kind": "onroute",
           "stopMin": 60,
           "lat": 52.972,
-          "lon": -9.426
+          "lon": -9.426,
+          "sid": "d7-cliffs-of-moher-08-00"
         },
         {
           "n": "Lahinch → Spanish Point",
@@ -923,7 +982,8 @@ export const tripData: Trip = {
           "kind": "onroute",
           "stopMin": 5,
           "lat": 52.847,
-          "lon": -9.437
+          "lon": -9.437,
+          "sid": "d7-lahinch-spanish-point"
         },
         {
           "n": "Kilkee Cliffs",
@@ -935,7 +995,8 @@ export const tripData: Trip = {
           "kind": "onroute",
           "stopMin": 15,
           "lat": 52.677,
-          "lon": -9.66
+          "lon": -9.66,
+          "sid": "d7-kilkee-cliffs"
         },
         {
           "n": "LOOP HEAD",
@@ -948,7 +1009,8 @@ export const tripData: Trip = {
           "kind": "onroute",
           "stopMin": 25,
           "lat": 52.56,
-          "lon": -9.93
+          "lon": -9.93,
+          "sid": "d7-loop-head"
         },
         {
           "n": "Killimer → Tarbert ferry",
@@ -960,7 +1022,8 @@ export const tripData: Trip = {
           "kind": "waw",
           "stopMin": 30,
           "lat": 52.617,
-          "lon": -9.375
+          "lon": -9.375,
+          "sid": "d7-killimer-tarbert-ferry"
         },
         {
           "n": "Ballybunion",
@@ -972,7 +1035,8 @@ export const tripData: Trip = {
           "kind": "onroute",
           "stopMin": 15,
           "lat": 52.511,
-          "lon": -9.67
+          "lon": -9.67,
+          "sid": "d7-ballybunion"
         },
         {
           "n": "Camp → Castlegregory",
@@ -984,7 +1048,8 @@ export const tripData: Trip = {
           "kind": "waw",
           "stopMin": 0,
           "lat": 52.254,
-          "lon": -10.017
+          "lon": -10.017,
+          "sid": "d7-camp-castlegregory"
         },
         {
           "n": "CONOR PASS",
@@ -996,7 +1061,8 @@ export const tripData: Trip = {
           "kind": "onroute",
           "stopMin": 15,
           "lat": 52.19,
-          "lon": -10.202
+          "lon": -10.202,
+          "sid": "d7-conor-pass"
         },
         {
           "n": "Dingle town",
@@ -1009,7 +1075,8 @@ export const tripData: Trip = {
           "kind": "onroute",
           "stopMin": 45,
           "lat": 52.141,
-          "lon": -10.269
+          "lon": -10.269,
+          "sid": "d7-dingle-town"
         },
         {
           "n": "SLEA HEAD DRIVE — evening",
@@ -1024,7 +1091,8 @@ export const tripData: Trip = {
           "d": "The loop at golden hour, buses gone, sun over the water: Ventry, the beehive huts, Slea Head itself — then DUNMORE HEAD, mainland Ireland's westernmost point and the Blasket Islands view. Signature Point eleven, in the best light of the day.",
           "lat": 52.097,
           "lon": -10.45,
-          "warn": "Ride it CLOCKWISE (Ventry → Slea Head → Dunquin) — the coaches’ one-way convention; going the other way means meeting them head-on on the cliff sections. The NEXT STOP button already routes it the right way round."
+          "warn": "Ride it CLOCKWISE (Ventry → Slea Head → Dunquin) — the coaches’ one-way convention; going the other way means meeting them head-on on the cliff sections. The NEXT STOP button already routes it the right way round.",
+          "sid": "d7-slea-head-drive-evening"
         },
         {
           "n": "Dunquin → Ballyferriter → Gallarus",
@@ -1036,7 +1104,8 @@ export const tripData: Trip = {
           ],
           "d": "Round the loop's west side — Kruger's (Ireland's westernmost pub) at Dunquin — to the tent beside the 1,200-year-old Gallarus Oratory. The official line continues FORWARD from here through Dingle tomorrow: zero repeated road.",
           "lat": 52.173,
-          "lon": -10.348
+          "lon": -10.348,
+          "sid": "d7-dunquin-ballyferriter-gallarus"
         }
       ],
       "night": {
@@ -1072,7 +1141,8 @@ export const tripData: Trip = {
           ],
           "d": "The line itself runs from Gallarus back through Dingle harbour — forward official kilometres, not a retrace. Coffee in Dingle at 07:30 before the town wakes.",
           "lat": 52.141,
-          "lon": -10.269
+          "lon": -10.269,
+          "sid": "d8-gallarus-dingle-forward"
         },
         {
           "n": "South Pole Inn, Annascaul",
@@ -1084,7 +1154,8 @@ export const tripData: Trip = {
           "kind": "onroute",
           "stopMin": 10,
           "lat": 52.152,
-          "lon": -10.062
+          "lon": -10.062,
+          "sid": "d8-south-pole-inn-annascaul"
         },
         {
           "n": "Inch Strand",
@@ -1095,7 +1166,8 @@ export const tripData: Trip = {
           "kind": "onroute",
           "stopMin": 5,
           "lat": 52.139,
-          "lon": -9.985
+          "lon": -9.985,
+          "sid": "d8-inch-strand"
         },
         {
           "n": "Killorglin → the N70 coast",
@@ -1107,7 +1179,8 @@ export const tripData: Trip = {
           "kind": "waw",
           "lat": 51.947,
           "lon": -10.22,
-          "warn": "Coaches do the Ring anticlockwise — the same direction we ride it, so you never meet one head-on at a pinch point. Overtake the odd one and forget them."
+          "warn": "Coaches do the Ring anticlockwise — the same direction we ride it, so you never meet one head-on at a pinch point. Overtake the odd one and forget them.",
+          "sid": "d8-killorglin-the-n70-coast"
         },
         {
           "n": "Portmagee & Kerry Cliffs",
@@ -1120,7 +1193,8 @@ export const tripData: Trip = {
           "kind": "onroute",
           "stopMin": 30,
           "lat": 51.886,
-          "lon": -10.36
+          "lon": -10.36,
+          "sid": "d8-portmagee-kerry-cliffs"
         },
         {
           "n": "Coomanaspig Pass",
@@ -1132,7 +1206,8 @@ export const tripData: Trip = {
           "kind": "onroute",
           "stopMin": 10,
           "lat": 51.865,
-          "lon": -10.355
+          "lon": -10.355,
+          "sid": "d8-coomanaspig-pass"
         },
         {
           "n": "Waterville → Coomakista",
@@ -1144,7 +1219,8 @@ export const tripData: Trip = {
           "kind": "onroute",
           "stopMin": 10,
           "lat": 51.772,
-          "lon": -10.143
+          "lon": -10.143,
+          "sid": "d8-waterville-coomakista"
         },
         {
           "n": "Derrynane, Caherdaniel",
@@ -1156,7 +1232,8 @@ export const tripData: Trip = {
           "kind": "onroute",
           "stopMin": 15,
           "lat": 51.762,
-          "lon": -10.11
+          "lon": -10.11,
+          "sid": "d8-derrynane-caherdaniel"
         },
         {
           "n": "Kenmare",
@@ -1169,7 +1246,8 @@ export const tripData: Trip = {
           "kind": "onroute",
           "stopMin": 45,
           "lat": 51.88,
-          "lon": -9.583
+          "lon": -9.583,
+          "sid": "d8-kenmare"
         },
         {
           "n": "DURSEY SOUND",
@@ -1182,7 +1260,8 @@ export const tripData: Trip = {
           "kind": "onroute",
           "stopMin": 20,
           "lat": 51.612,
-          "lon": -10.141
+          "lon": -10.141,
+          "sid": "d8-dursey-sound"
         },
         {
           "n": "Castletownbere & McCarthy's Bar",
@@ -1194,7 +1273,8 @@ export const tripData: Trip = {
           "kind": "onroute",
           "stopMin": 25,
           "lat": 51.65,
-          "lon": -9.91
+          "lon": -9.91,
+          "sid": "d8-castletownbere-mccarthy-s-bar"
         }
       ],
       "night": {
@@ -1238,7 +1318,8 @@ export const tripData: Trip = {
           "viaMi": 9,
           "impactSrc": "manual road estimate · verify in Google Maps before the trip · checked 26 Jul 2026",
           "lat": 51.7268,
-          "lon": -9.7466
+          "lon": -9.7466,
+          "sid": "d9-healy-pass-at-sunrise"
         },
         {
           "n": "Glengarriff → Bantry",
@@ -1250,7 +1331,8 @@ export const tripData: Trip = {
           ],
           "d": "Out of Beara along the harbour, Garnish Island offshore, into Bantry under Whiddy.",
           "lat": 51.68,
-          "lon": -9.454
+          "lon": -9.454,
+          "sid": "d9-glengarriff-bantry"
         },
         {
           "n": "SHEEP'S HEAD loop",
@@ -1263,7 +1345,8 @@ export const tripData: Trip = {
           ],
           "d": "The quiet peninsula — Durrus out the north side to the tip at Tooreen (Seefin viewpoint), back the south side. Official line, restored and locked: ~35mi of the emptiest riding in Cork.",
           "lat": 51.543,
-          "lon": -9.86
+          "lon": -9.86,
+          "sid": "d9-sheep-s-head-loop"
         },
         {
           "n": "MIZEN HEAD",
@@ -1276,7 +1359,8 @@ export const tripData: Trip = {
           ],
           "d": "Ireland’s south-westernmost point — the footbridge over the gorge, the signal station, the Fastnet out to sea. Signature Point fourteen.",
           "lat": 51.45,
-          "lon": -9.811
+          "lon": -9.811,
+          "sid": "d9-mizen-head"
         },
         {
           "n": "Barleycove → Schull",
@@ -1288,7 +1372,8 @@ export const tripData: Trip = {
           ],
           "d": "The tsunami-built dunes at Barleycove, then coffee at Schull under Mount Gabriel.",
           "lat": 51.526,
-          "lon": -9.547
+          "lon": -9.547,
+          "sid": "d9-barleycove-schull"
         },
         {
           "n": "Lough Hyne → BALTIMORE",
@@ -1301,7 +1386,8 @@ export const tripData: Trip = {
           ],
           "d": "RESTORED official line: past Lough Hyne (Ireland’s only saltwater lake) down to the Baltimore beacon, then back up through Skibbereen. TIME CHECK at Skibbereen: 14:30 or better keeps everything live.",
           "lat": 51.484,
-          "lon": -9.373
+          "lon": -9.373,
+          "sid": "d9-lough-hyne-baltimore"
         },
         {
           "n": "Toe Head → Galley Head coast",
@@ -1313,7 +1399,8 @@ export const tripData: Trip = {
           ],
           "d": "RESTORED official line: the coastal wiggle by Castletownshend, Toe Head and the Galley Head view — not the N71 shortcut.",
           "lat": 51.532,
-          "lon": -8.954
+          "lon": -8.954,
+          "sid": "d9-toe-head-galley-head-coast"
         },
         {
           "n": "Drombeg Stone Circle",
@@ -1324,7 +1411,8 @@ export const tripData: Trip = {
           ],
           "d": "Bronze-age circle five minutes off the road — free, atmospheric, aligned on the winter solstice sunset.",
           "lat": 51.564,
-          "lon": -9.087
+          "lon": -9.087,
+          "sid": "d9-drombeg-stone-circle"
         },
         {
           "n": "Clonakilty → Timoleague",
@@ -1336,7 +1424,8 @@ export const tripData: Trip = {
           ],
           "d": "Through Clon (Michael Collins country) past the abbey ruin on the estuary at Timoleague.",
           "lat": 51.643,
-          "lon": -8.766
+          "lon": -8.766,
+          "sid": "d9-clonakilty-timoleague"
         },
         {
           "n": "OLD HEAD OF KINSALE",
@@ -1350,7 +1439,8 @@ export const tripData: Trip = {
           ],
           "d": "The spur to the signal tower viewpoint — official line to the gate; the Lusitania sank 11 miles off this head. Signature Point fifteen — the set, complete.",
           "lat": 51.607,
-          "lon": -8.538
+          "lon": -8.538,
+          "sid": "d9-old-head-of-kinsale"
         },
         {
           "n": "KINSALE",
@@ -1364,7 +1454,8 @@ export const tripData: Trip = {
           ],
           "d": "THE OFFICIAL END OF THE WILD ATLANTIC WAY — every metre of the line from Muff behind you. WAW completion: 100.0%. Finish-line photo at the marker, Charles Fort if the clock allows, fuel for the run.",
           "lat": 51.706,
-          "lon": -8.523
+          "lon": -8.523,
+          "sid": "d9-kinsale"
         },
         {
           "n": "N25 run to Rosslare",
@@ -1375,7 +1466,8 @@ export const tripData: Trip = {
             "logistics"
           ],
           "warn": "Long transfer after the biggest day — fuel at Cork, heads down.",
-          "d": "Kinsale → Cork → N25 east — ~130mi of main road, ~2h45. Tent by ~20:00. The price of the morning boat — but the Way is 100.0% won."
+          "d": "Kinsale → Cork → N25 east — ~130mi of main road, ~2h45. Tent by ~20:00. The price of the morning boat — but the Way is 100.0% won.",
+          "sid": "d9-n25-run-to-rosslare"
         }
       ],
       "night": {
@@ -1408,7 +1500,9 @@ export const tripData: Trip = {
           "tags": [
             "logistics"
           ],
-          "kind": "transfer"
+          "kind": "transfer",
+          "sid": "d10-rosslare-fishguard",
+          "skip": true
         },
         {
           "n": "Fishguard → Preston",
@@ -1416,7 +1510,9 @@ export const tripData: Trip = {
           "tags": [
             "logistics"
           ],
-          "kind": "transfer"
+          "kind": "transfer",
+          "sid": "d10-fishguard-preston",
+          "skip": true
         }
       ],
       "night": null

@@ -1,7 +1,7 @@
 import { c, font, phaseInfo } from '../theme'
 import { useStore } from '../store/StoreProvider'
 import { tripData } from '../data/tripData'
-import { isMarkable } from '../lib/tags'
+import { isMarkable, markKey } from '../lib/tags'
 
 function Tally({ n, label, color, bg }: { n: number; label: string; color: string; bg: string }) {
   return (
@@ -23,7 +23,7 @@ export function Days() {
   T.days.forEach((dd, di) =>
     (dd.stops || []).forEach((st, si) => {
       if (!isMarkable(dd, st)) return
-      const mk = marks['d' + di + 's' + si]
+      const mk = marks[markKey(di, si)]
       if (mk === 'keep') keep++
       else if (mk === 'maybe') maybe++
       else if (mk === 'cut') cut++

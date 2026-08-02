@@ -99,8 +99,7 @@ export function Home() {
     galIdx,
     setGalIdx,
     jFeedIdx,
-    jFeedSwipeStart,
-    jFeedSwipeEnd,
+    setJFeedIdx,
   } = s
   const { geo, curLabel, liveActive, wawPct } = useMap()
 
@@ -215,11 +214,14 @@ export function Home() {
     return { name: p.name, verb: m.verb, reason: p.reason, msg: p.msg, when: relTime(p.ts), tagInk: m.ink, tagBg: m.bg }
   })
   const postCount = posts.length
-  const postCountLabel = postCount + (postCount === 1 ? ' message' : ' messages')
+  // Past ten, be honest that the carousel shows only the newest ten — the full
+  // set lives on the Postbox / Journal tabs.
+  const postCountLabel = postCount > 10 ? `latest 10 of ${postCount}` : postCount + (postCount === 1 ? ' message' : ' messages')
 
   const events = buildEvents(store, tripData)
-  const feed = buildFeed(events).slice(0, 10)
-  const jFeedCountLabel = events.length + (events.length === 1 ? ' entry' : ' entries')
+  const feedAll = buildFeed(events)
+  const feed = feedAll.slice(0, 10)
+  const jFeedCountLabel = feedAll.length > 10 ? `latest 10 of ${feedAll.length}` : feedAll.length + (feedAll.length === 1 ? ' entry' : ' entries')
 
   const locOptions = trackStops.map((st, i) => ({ label: st.label, pick: () => setDraftI(i) }))
   const locLabel = (trackStops[draftI != null ? draftI : 0] || trackStops[0] || { label: 'Pick a spot' }).label || 'Pick a spot'
@@ -603,15 +605,27 @@ export function Home() {
           <Slider
             idx={galIdx}
             onDot={setGalIdx}
-            slides={gallery.map((g, i) => (
-              <div key={i} style={{ position: 'relative' }}>
-                <img src={g.url} alt={g.caption} loading="lazy" style={{ width: '100%', display: 'block', maxHeight: 320, objectFit: 'cover' }} />
-                <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, background: 'linear-gradient(transparent, rgba(20,16,10,.78))', padding: '26px 14px 10px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: 8 }}>
-                  <span style={{ fontFamily: font.display, fontWeight: 700, fontSize: 15, color: c.cream, textTransform: 'uppercase', letterSpacing: '.01em', lineHeight: 1.1 }}>{g.caption}</span>
-                  <span style={{ fontFamily: font.mono, fontSize: 8.5, color: c.gold, whiteSpace: 'nowrap' }}>{g.when}</span>
+            slides={gallery.map((g, i) => {
+              // Only the visible slide and its neighbours mount an <img> — a
+              // long trip means dozens of Supabase photos, and mounting them all
+              // at once hammers memory and the connection on a phone.
+              const n = gallery.length
+              const active = n > 0 ? ((galIdx % n) + n) % n : 0
+              const near = n <= 3 || Math.min(Math.abs(i - active), n - Math.abs(i - active)) <= 1
+              return (
+                <div key={i} style={{ position: 'relative' }}>
+                  {near ? (
+                    <img src={g.url} alt={g.caption} loading="lazy" style={{ width: '100%', display: 'block', maxHeight: 320, objectFit: 'cover' }} />
+                  ) : (
+                    <div style={{ width: '100%', height: 220, background: c.paperMuted }} />
+                  )}
+                  <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, background: 'linear-gradient(transparent, rgba(20,16,10,.78))', padding: '26px 14px 10px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: 8 }}>
+                    <span style={{ fontFamily: font.display, fontWeight: 700, fontSize: 15, color: c.cream, textTransform: 'uppercase', letterSpacing: '.01em', lineHeight: 1.1 }}>{g.caption}</span>
+                    <span style={{ fontFamily: font.mono, fontSize: 8.5, color: c.gold, whiteSpace: 'nowrap' }}>{g.when}</span>
+                  </div>
                 </div>
-              </div>
-            ))}
+              )
+            })}
           />
         </div>
       )}
@@ -670,8 +684,7 @@ export function Home() {
         {feed.length > 0 ? (
           <Slider
             idx={jFeedIdx}
-            onSwipeStart={jFeedSwipeStart}
-            onSwipeEnd={jFeedSwipeEnd}
+            onDot={setJFeedIdx}
             slides={feed.map((e, i) => (
               <div key={i} style={{ padding: '12px 15px 13px', minHeight: 94 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>

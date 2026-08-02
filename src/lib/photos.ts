@@ -8,17 +8,24 @@ const isOffline = () => typeof navigator !== 'undefined' && navigator.onLine ===
  * keeps the shared backend unchanged and every old single-photo row valid. */
 
 /** Decode a `photo` field into a list of URLs/tokens (0, 1 or many). */
+/** Only URLs from our own storage (or queued local: tokens) may render —
+ * the table is world-writable, so a crafted row must not point every
+ * viewer's <img> at an arbitrary host. */
+function safePhotoUrl(u: string): boolean {
+  return u.startsWith('local:') || u.startsWith('https://qvirtvvwjthahwcfbjnz.supabase.co/')
+}
+
 export function photoList(photo: string | undefined | null): string[] {
   if (!photo) return []
   if (photo[0] === '[') {
     try {
       const a = JSON.parse(photo)
-      if (Array.isArray(a)) return a.filter((x) => typeof x === 'string' && x)
+      if (Array.isArray(a)) return a.filter((x) => typeof x === 'string' && x && safePhotoUrl(x))
     } catch {
       /* not JSON — treat as a single URL */
     }
   }
-  return [photo]
+  return safePhotoUrl(photo) ? [photo] : []
 }
 
 /** Encode a list of URLs/tokens back into the `photo` field (undefined if empty). */

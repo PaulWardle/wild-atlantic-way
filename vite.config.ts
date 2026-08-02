@@ -1,5 +1,17 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import { execSync } from 'node:child_process'
+
+// Build stamp shown in the Info footer and on the crash card, so "which version
+// is on your phone?" is answerable from the roadside.
+function buildId(): string {
+  const date = new Date().toISOString().slice(0, 10)
+  try {
+    return execSync('git rev-parse --short HEAD', { stdio: ['ignore', 'pipe', 'ignore'] }).toString().trim() + ' · ' + date
+  } catch {
+    return date
+  }
+}
 
 // Static SPA. All shared state lives in Supabase; all device state in localStorage.
 // Build output (dist/) is a plain multi-file static bundle — deploy anywhere
@@ -10,6 +22,9 @@ import react from '@vitejs/plugin-react'
 // the aggressive-browser-cache problem the original single-file build hit.
 export default defineConfig({
   plugins: [react()],
+  define: {
+    __BUILD__: JSON.stringify(buildId()),
+  },
   build: {
     rollupOptions: {
       output: {

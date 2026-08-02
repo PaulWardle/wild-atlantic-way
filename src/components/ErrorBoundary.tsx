@@ -20,7 +20,7 @@ export class ErrorBoundary extends Component<{ children: ReactNode }, State> {
   render() {
     if (!this.state.err) return this.props.children
     return (
-      <div style={{ minHeight: '100vh', background: c.paper, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+      <div style={{ minHeight: '100dvh', background: c.paper, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
         <div style={{ maxWidth: 340, width: '100%', border: `1.5px solid ${c.ink}`, borderRadius: 10, background: c.paperMuted, padding: '22px 20px', textAlign: 'center' }}>
           <div style={{ fontFamily: font.display, fontWeight: 700, fontSize: 22, textTransform: 'uppercase', color: c.ink, lineHeight: 1.1 }}>
             Bit of a pothole
@@ -37,6 +37,7 @@ export class ErrorBoundary extends Component<{ children: ReactNode }, State> {
           <div style={{ fontFamily: font.mono, fontSize: 8, color: c.inkFainter, marginTop: 12, wordBreak: 'break-word' }}>
             {String(this.state.err?.message || this.state.err)}
           </div>
+          <div style={{ fontFamily: font.mono, fontSize: 8, color: c.inkFainter, marginTop: 4 }}>build {__BUILD__}</div>
         </div>
       </div>
     )

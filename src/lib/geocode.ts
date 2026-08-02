@@ -31,7 +31,7 @@ export function nearestJourneyIndex(lat: number, lon: number): number {
  */
 export async function reverseGeocode(lat: number, lon: number): Promise<string | null> {
   try {
-    const url = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`
+    const url = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat.toFixed(3)}&longitude=${lon.toFixed(3)}&localityLanguage=en`
     const r = await fetch(url)
     if (!r.ok) return null
     const j = (await r.json()) as {

@@ -64,7 +64,7 @@ export function Postbox() {
             value={postName}
             onChange={(e) => setPostName(e.target.value)}
             placeholder="Full Name"
-            style={{ width: '100%', border: `1.5px solid ${c.ink}`, borderRadius: 7, background: c.inputBg, padding: '10px 12px', fontFamily: font.display, fontWeight: 600, fontSize: 14, color: c.ink, outline: 'none' }}
+            style={{ width: '100%', border: `1.5px solid ${c.ink}`, borderRadius: 7, background: c.inputBg, padding: '10px 12px', fontFamily: font.display, fontWeight: 600, fontSize: 14, color: c.ink }}
           />
 
           <div style={{ fontFamily: font.mono, fontSize: 8, letterSpacing: '.14em', color: c.inkFaintest, textTransform: 'uppercase', margin: '12px 0 6px' }}>This is a…</div>
@@ -83,7 +83,7 @@ export function Postbox() {
             onChange={(e) => setPostMsg(e.target.value)}
             rows={3}
             placeholder="Say your piece…"
-            style={{ width: '100%', border: `1.5px solid ${c.ink}`, borderRadius: 7, background: c.inputBg, padding: '10px 12px', fontFamily: font.serif, fontSize: 13.5, color: c.inkSoft, outline: 'none', resize: 'none', lineHeight: 1.5 }}
+            style={{ width: '100%', border: `1.5px solid ${c.ink}`, borderRadius: 7, background: c.inputBg, padding: '10px 12px', fontFamily: font.serif, fontSize: 13.5, color: c.inkSoft, resize: 'none', lineHeight: 1.5 }}
           />
 
           <PhotoInput

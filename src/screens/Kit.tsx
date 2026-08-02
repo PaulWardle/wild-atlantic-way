@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { c, font } from '../theme'
 import { useStore } from '../store/StoreProvider'
 import { tripData } from '../data/tripData'
@@ -50,10 +50,11 @@ function AddRow({ placeholder, onAdd, boxed = false }: { placeholder: string; on
           if (e.key === 'Enter') commit()
         }}
         placeholder={placeholder}
+        aria-label={placeholder}
         autoCapitalize="sentences"
         autoCorrect="on"
         spellCheck
-        style={{ flex: 1, border: 'none', borderBottom: boxed ? 'none' : `1px dashed ${c.lineSoft}`, background: 'transparent', fontFamily: font.serif, fontSize: 13.5, color: c.inkSoft, padding: '3px 2px', outline: 'none' }}
+        style={{ flex: 1, border: 'none', borderBottom: boxed ? 'none' : `1px dashed ${c.lineSoft}`, background: 'transparent', fontFamily: font.serif, fontSize: 13.5, color: c.inkSoft, padding: '3px 2px' }}
       />
       {txt.trim() !== '' && (
         <button onClick={commit} style={{ fontFamily: font.mono, fontSize: 9, fontWeight: 700, letterSpacing: '.08em', textTransform: 'uppercase', color: c.paper, background: c.green, border: `1.5px solid ${c.green}`, borderRadius: 4, padding: '3px 9px' }}>
@@ -67,7 +68,7 @@ function AddRow({ placeholder, onAdd, boxed = false }: { placeholder: string; on
 /** SVG cross — a text × sits on a font baseline and drifts off-centre. */
 function RemoveBtn({ onRemove }: { onRemove: () => void }) {
   return (
-    <button onClick={onRemove} style={{ flex: '0 0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center', width: 32, height: 32, background: c.amberPanelDeep, border: `1.5px solid ${c.rust}`, borderRadius: 4, padding: 0 }}>
+    <button onClick={onRemove} aria-label="Remove item" style={{ flex: '0 0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center', width: 32, height: 32, background: c.amberPanelDeep, border: `1.5px solid ${c.rust}`, borderRadius: 4, padding: 0 }}>
       <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke={c.rust} strokeWidth={3.4} strokeLinecap="round" aria-hidden="true">
         <path d="M5 5 L19 19 M19 5 L5 19" />
       </svg>
@@ -77,12 +78,14 @@ function RemoveBtn({ onRemove }: { onRemove: () => void }) {
 
 const SEC_SHORT: Record<Sec, string> = { P: 'P', C: 'CJ', S: 'SH' }
 
-/** Edit-mode controls: shuffle an item to another list, or bin it. */
-function EditControls({ current, onMove, onRemove }: { current: Sec; onMove: (dest: Sec) => void; onRemove: () => void }) {
+/** Edit-mode controls: shuffle an item to another list, or bin it. `dests`
+ * narrows the move targets — personal STOCK items only offer →SH, because both
+ * brothers share the same personal template so a P↔C "move" would just make
+ * the item vanish from one list. */
+function EditControls({ current, onMove, onRemove, dests }: { current: Sec; onMove: (dest: Sec) => void; onRemove: () => void; dests?: Sec[] }) {
   return (
     <div style={{ display: 'flex', gap: 4, flex: '0 0 auto', alignItems: 'center' }}>
-      {(['P', 'C', 'S'] as Sec[])
-        .filter((s) => s !== current)
+      {(dests ?? (['P', 'C', 'S'] as Sec[]).filter((s) => s !== current))
         .map((s) => (
           <button
             key={s}
@@ -213,16 +216,40 @@ export function Kit() {
 
   const removed = (sec: Sec, gi: number, ii: number) => !!kit[`rm:${sec}:${gi}_${ii}`]
 
-  /** Add a typed item to a section — skipped if it's already on that list. */
-  const addItem = (sec: Sec, label: string) => {
+  // "Already on the list" flash for the add rows — a silent no-op reads as a
+  // broken add button.
+  const [dupMsg, setDupMsg] = useState('')
+  useEffect(() => {
+    if (!dupMsg) return
+    const t = window.setTimeout(() => setDupMsg(''), 2500)
+    return () => window.clearTimeout(t)
+  }, [dupMsg])
+
+  /** Add a typed item to a section. Re-typing a removed stock item restores it
+   * (clears the rm: tombstone) instead of minting an add: duplicate; a true
+   * duplicate flashes a note. `quiet` = internal move, no flash. */
+  const addItem = (sec: Sec, label: string, quiet = false) => {
+    const lower = label.toLowerCase()
+    const stock = sec === 'S' ? T.sharedKit : T.packing
+    for (let gi = 0; gi < stock.length; gi++) {
+      for (let ii = 0; ii < stock[gi].items.length; ii++) {
+        if (stock[gi].items[ii].toLowerCase() === lower && removed(sec, gi, ii)) {
+          setKit(`rm:${sec}:${gi}_${ii}`, null)
+          return
+        }
+      }
+    }
     const have = new Set<string>()
-    ;(sec === 'S' ? T.sharedKit : T.packing).forEach((g, gi) =>
+    stock.forEach((g, gi) =>
       g.items.forEach((it, ii) => {
         if (!removed(sec, gi, ii)) have.add(it.toLowerCase())
       }),
     )
     addedItems(kit, sec).forEach((a) => have.add(a.label.toLowerCase()))
-    if (have.has(label.toLowerCase())) return
+    if (have.has(lower)) {
+      if (!quiet) setDupMsg(`“${label}” is already on the list`)
+      return
+    }
     setKit(`add:${sec}:a${Date.now()}`, label)
   }
 
@@ -246,11 +273,11 @@ export function Kit() {
 
   /** Shuffle a stock item to another list: off here, added there (deduped). */
   const moveStock = (sec: Sec, gi: number, ii: number, label: string, dest: Sec) => {
-    addItem(dest, label)
+    addItem(dest, label, true)
     setKit(`rm:${sec}:${gi}_${ii}`, '1')
   }
   const moveAdded = (sec: Sec, id: string, label: string, dest: Sec) => {
-    addItem(dest, label)
+    addItem(dest, label, true)
     removeAdded(sec, id)
   }
 
@@ -290,7 +317,7 @@ export function Kit() {
                     ticked={!!kit[k]}
                     label={r.label}
                     onToggle={() => setKit(k, kit[k] ? null : '1')}
-                    extra={editing ? <EditControls current={who} onMove={(d) => moveStock(who, gi, r.ii, r.label, d)} onRemove={() => setKit(`rm:${who}:${gi}_${r.ii}`, '1')} /> : undefined}
+                    extra={editing ? <EditControls current={who} dests={['S']} onMove={(d) => moveStock(who, gi, r.ii, r.label, d)} onRemove={() => setKit(`rm:${who}:${gi}_${r.ii}`, '1')} /> : undefined}
                   />
                 )
               })}
@@ -315,6 +342,7 @@ export function Kit() {
           </div>
         )}
         <AddRow placeholder={`Add to ${WHO_NAME[who]}’s list…`} onAdd={(label) => addItem(who, label)} />
+        {dupMsg && <div role="status" style={{ fontFamily: font.mono, fontSize: 9, letterSpacing: '.04em', color: c.rust, padding: '4px 2px 0' }}>{dupMsg}</div>}
       </div>
     )
   }
@@ -427,7 +455,7 @@ export function Kit() {
 
           <div style={{ fontFamily: font.serif, fontStyle: 'italic', fontSize: 12.5, color: c.inkMuted, marginBottom: 10 }}>
             {editing
-              ? 'Tap × to remove an item, →P / →CJ / →SH to move it to another list. Type at the bottom to add — spelling and capitals get tidied.'
+              ? 'Tap × to remove an item, or the arrow chips to move it to another list. Type at the bottom to add — spelling and capitals get tidied.'
               : packView === 'S'
                 ? 'Carried once between the pair — tap PAUL or CJ on an item to allocate who brings it.'
                 : `${WHO_NAME[packView as Who]}’s own list — ticks sync live to the other phone.`}
@@ -481,6 +509,7 @@ export function Kit() {
             </div>
           )}
               <AddRow placeholder="Add shared kit…" onAdd={(label) => addItem('S', label)} />
+              {dupMsg && <div role="status" style={{ fontFamily: font.mono, fontSize: 9, letterSpacing: '.04em', color: c.rust, padding: '4px 2px 0' }}>{dupMsg}</div>}
               <div style={{ fontFamily: font.serif, fontStyle: 'italic', fontSize: 11.5, color: c.inkFainter, lineHeight: 1.5, marginTop: 8 }}>
                 Unallocated shared items belong to nobody yet — divvy them up before the panniers close.
               </div>

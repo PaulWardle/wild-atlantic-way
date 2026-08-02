@@ -1,7 +1,7 @@
 import { c, font, phaseInfo } from '../theme'
 import { useStore } from '../store/StoreProvider'
 import { tripData } from '../data/tripData'
-import { isMarkable } from '../lib/tags'
+import { isMarkable, markKey } from '../lib/tags'
 import { countdownParts } from '../lib/countdown'
 import { NavPanel } from '../components/NavPanel'
 
@@ -161,11 +161,11 @@ export function Today() {
   const timelineStops = (tdy.stops || [])
     // Marks only apply to optional extras — locked official stops ignore them
     // (and stale position-keyed marks from older itineraries stay inert).
-    .map((st, si) => ({ st, mk: isMarkable(tdy, st) ? marks['d' + todayIdx + 's' + si] || null : null }))
+    .map((st, si) => ({ st, mk: isMarkable(tdy, st) ? marks[markKey(todayIdx, si)] || null : null }))
     .filter((x) => x.mk !== 'cut')
     .map((x) => ({ n: x.st.n, maybe: x.mk === 'maybe', skip: !!x.st.skip }))
   const highlights = (tdy.stops || [])
-    .filter((st, si) => (st.tags || []).indexOf('s') >= 0 && !(isMarkable(tdy, st) && marks['d' + todayIdx + 's' + si] === 'cut'))
+    .filter((st, si) => (st.tags || []).indexOf('s') >= 0 && !(isMarkable(tdy, st) && marks[markKey(todayIdx, si)] === 'cut'))
     .map((st) => st.n)
   const night = tdy.night
   const hasCall = !!tdy.warnBanner && isBrother
@@ -213,6 +213,7 @@ export function Today() {
             title={s.n}
             maybe={s.maybe}
             dim={s.skip && !s.maybe}
+            last={!night && i === timelineStops.length - 1}
           />
         ))}
         {night && <TimelineRow dot={c.green} tent title={night.primary} sub={`Tonight — ${night.area}`} last />}

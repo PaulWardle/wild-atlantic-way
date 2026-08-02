@@ -1,7 +1,7 @@
 import { c, font } from '../theme'
 import { useStore } from '../store/StoreProvider'
 import { tripData } from '../data/tripData'
-import { isMarkable } from '../lib/tags'
+import { isMarkable, markKey } from '../lib/tags'
 import { Kicker, ScreenTitle, Lede } from '../components/ui'
 
 export function Attractions() {
@@ -43,7 +43,7 @@ export function Attractions() {
         const bk = tg.indexOf('b') >= 0
         // Only optional extras can be cut — locked official stops ignore marks
         // (also inoculates against stale position-keyed marks from old versions).
-        const cut = isMarkable(d2, st) && marks['d' + ai + 's' + x.si] === 'cut'
+        const cut = isMarkable(d2, st) && marks[markKey(ai, x.si)] === 'cut'
         // Guests never see a stop the brothers have cut — same rule as the
         // day cards (this screen used to leak them struck-through).
         if (!isBrother && cut) return null

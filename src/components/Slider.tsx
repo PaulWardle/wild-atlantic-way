@@ -8,7 +8,7 @@ function Dots({ n, active, onDot }: { n: number; active: number; onDot?: (i: num
         <button
           key={i}
           onClick={() => onDot?.(i)}
-          aria-label="Show slide"
+          aria-label={`Show slide ${i + 1}`} aria-current={i === active ? true : undefined}
           style={{
             width: i === active ? 16 : 6,
             height: 6,

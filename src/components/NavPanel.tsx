@@ -24,7 +24,9 @@ export function NavPanel({ di, marks, pad = 18 }: { di: number; marks: StopMarks
   // between stops. furthestRef never lets a GPS wobble (or an off-line spur
   // projection) drag "next" backwards during the day.
   const [pos, setPos] = useState<{ at?: number; km?: number } | null>(null)
-  const [gps, setGps] = useState<'wait' | 'live' | 'off' | 'none'>('wait')
+  // 'stale' = we HAD a live fix but the latest attempt failed — the next stop
+  // still comes from that old fix, and the label says how old it is.
+  const [gps, setGps] = useState<'wait' | 'live' | 'stale' | 'off' | 'none'>('wait')
   const lastFixRef = useRef(0)
   const furthestRef = useRef<number>(-1)
   const locate = (fresh = false) => {
@@ -44,7 +46,9 @@ export function NavPanel({ di, marks, pad = 18 }: { di: number; marks: StopMarks
           setPos(got)
         }
       },
-      () => setGps((g) => (g === 'live' ? 'live' : 'none')),
+      // A failed fix must not lie: a previously-live panel goes 'stale' (not
+      // "live"), and "you're not on the Way" survives a flaky retry.
+      () => setGps((g) => (g === 'live' || g === 'stale' ? 'stale' : g === 'off' ? 'off' : 'none')),
       // A manual re-locate must not serve a cached fix — that's the tap that
       // says "I've moved, look again".
       { timeout: 8000, maximumAge: fresh ? 0 : 30000 },
@@ -101,7 +105,9 @@ export function NavPanel({ di, marks, pad = 18 }: { di: number; marks: StopMarks
   }
 
   // ---- which stop is next ----
-  const live = gps === 'live' && pos != null
+  // A stale fix still computes (furthestRef keeps it monotonic) — only the
+  // label changes, so the rider knows how much to trust it.
+  const live = (gps === 'live' || gps === 'stale') && pos != null
   // GPS-derived index of the next stop: standing AT checkpoint i → next is
   // i+1 (index-based, so equal-chainage neighbours like Farren's Bar / Malin
   // Head are never skipped); between stops → first checkpoint ahead of the
@@ -160,14 +166,17 @@ export function NavPanel({ di, marks, pad = 18 }: { di: number; marks: StopMarks
     saveTap(cps[1].name)
   }
 
+  const fixAgeMin = lastFixRef.current ? Math.max(1, Math.round((Date.now() - lastFixRef.current) / 60000)) : 0
   const gpsLine =
     gps === 'live'
       ? '📍 live — next stop is what’s actually ahead of you'
-      : gps === 'off'
-        ? '📍 you’re not on the Way right now — advancing by taps'
-        : gps === 'none'
-          ? 'no GPS — advancing by taps'
-          : '📍 locating…'
+      : gps === 'stale'
+        ? `📍 GPS not answering — going by the last fix, ${fixAgeMin}m ago`
+        : gps === 'off'
+          ? '📍 you’re not on the Way right now — advancing by taps'
+          : gps === 'none'
+            ? 'no GPS — advancing by taps'
+            : '📍 locating…'
 
   const shell: React.CSSProperties = { margin: `14px ${pad}px 0`, border: `1.5px solid ${c.ink}`, borderRadius: 9, overflow: 'hidden' }
   const head: React.CSSProperties = { background: c.teal, color: c.cream, padding: '6px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }

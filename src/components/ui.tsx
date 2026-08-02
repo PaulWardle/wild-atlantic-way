@@ -23,7 +23,7 @@ export function Kicker({ children, color = c.rust, style }: { children: ReactNod
 /** Big Oswald screen title. */
 export function ScreenTitle({ children, style }: { children: ReactNode; style?: CSSProperties }) {
   return (
-    <div
+    <h1
       style={{
         fontFamily: font.display,
         fontWeight: 700,
@@ -36,7 +36,7 @@ export function ScreenTitle({ children, style }: { children: ReactNode; style?: 
       }}
     >
       {children}
-    </div>
+    </h1>
   )
 }
 
