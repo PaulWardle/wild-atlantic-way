@@ -210,6 +210,8 @@ export function Dropdown({
     <div style={overlay ? { position: 'relative' } : undefined}>
       <button
         onClick={onToggle}
+        aria-expanded={open}
+        aria-haspopup="listbox"
         style={{
           width: '100%',
           display: 'flex',

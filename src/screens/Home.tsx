@@ -152,9 +152,12 @@ export function Home() {
 
   // ---- photo gallery (every trip photo, newest first; a row may hold several) ----
   const gallery: { url: string; caption: string; when: string; ts: number }[] = []
-  updates.forEach((u) => photoList(u.photo).forEach((url) => gallery.push({ url, caption: u.place || (trackStops[u.si] || { label: 'On the road' }).label || 'On the road', when: relTime(u.ts), ts: u.ts })))
-  ;(store.notes || []).forEach((n) => photoList(n.photo).forEach((url) => gallery.push({ url, caption: n.author ? `${n.author} · ${n.tag}` : n.tag, when: relTime(n.ts), ts: n.ts })))
-  posts.forEach((p) => photoList(p.photo).forEach((url) => gallery.push({ url, caption: p.name, when: relTime(p.ts), ts: p.ts })))
+  // local: tokens are queued offline photos — a raw <img> renders them as a
+  // broken tile, so they join the carousel once their upload lands.
+  const remote = (url: string) => !url.startsWith('local:')
+  updates.forEach((u) => photoList(u.photo).filter(remote).forEach((url) => gallery.push({ url, caption: u.place || (trackStops[u.si] || { label: 'On the road' }).label || 'On the road', when: relTime(u.ts), ts: u.ts })))
+  ;(store.notes || []).forEach((n) => photoList(n.photo).filter(remote).forEach((url) => gallery.push({ url, caption: n.author ? `${n.author} · ${n.tag}` : n.tag, when: relTime(n.ts), ts: n.ts })))
+  posts.forEach((p) => photoList(p.photo).filter(remote).forEach((url) => gallery.push({ url, caption: p.name, when: relTime(p.ts), ts: p.ts })))
   gallery.sort((a, b) => b.ts - a.ts)
 
   const [locFiles, setLocFiles] = useState<File[]>([])
@@ -219,7 +222,7 @@ export function Home() {
   const postCountLabel = postCount > 10 ? `latest 10 of ${postCount}` : postCount + (postCount === 1 ? ' message' : ' messages')
 
   const events = buildEvents(store, tripData)
-  const feedAll = buildFeed(events)
+  const feedAll = buildFeed(events, Infinity)
   const feed = feedAll.slice(0, 10)
   const jFeedCountLabel = feedAll.length > 10 ? `latest 10 of ${feedAll.length}` : feedAll.length + (feedAll.length === 1 ? ' entry' : ' entries')
 
@@ -272,7 +275,7 @@ export function Home() {
       )}
       {hasUnsent && (
         <div style={{ margin: '12px 16px 0', border: `1.5px solid ${c.amber}`, background: c.amberPanel, borderRadius: 9, padding: '10px 13px' }}>
-          <div style={{ fontFamily: font.mono, fontSize: 8, fontWeight: 700, letterSpacing: '.12em', color: c.amber, textTransform: 'uppercase', marginBottom: 3 }}>
+          <div style={{ fontFamily: font.mono, fontSize: 8, fontWeight: 700, letterSpacing: '.12em', color: c.amberGold, textTransform: 'uppercase', marginBottom: 3 }}>
             {outbox.length} waiting to send
           </div>
           <div style={{ fontFamily: font.serif, fontSize: 12.5, color: '#5a4f3b', lineHeight: 1.45 }}>
@@ -372,7 +375,7 @@ export function Home() {
       <div style={{ margin: '18px 16px 0', border: `1.5px solid ${c.ink}`, borderRadius: 10, background: c.paperMap, overflow: 'hidden' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 12px', borderBottom: `1.5px solid ${c.ink}`, background: c.paperMuted }}>
           <span style={{ fontFamily: font.mono, fontSize: 9, letterSpacing: '.16em', color: c.ink, textTransform: 'uppercase' }}>The shape of the journey</span>
-          <button onClick={() => nav({ screen: 'map' })} style={{ fontFamily: font.mono, fontSize: 9, color: c.inkFainter, letterSpacing: '.06em' }}>
+          <button onClick={() => nav({ screen: 'map' })} style={{ fontFamily: font.mono, fontSize: 9, color: c.inkOnMuted, letterSpacing: '.06em' }}>
             Muff → Kinsale
           </button>
         </div>
@@ -477,7 +480,6 @@ export function Home() {
                 fontFamily: font.serif,
                 fontSize: 13,
                 color: c.inkSoft,
-                outline: 'none',
               }}
             />
             <PhotoInput

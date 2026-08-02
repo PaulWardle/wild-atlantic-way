@@ -44,7 +44,7 @@ function TimelineRow({
       <div style={{ flex: 1, minWidth: 0, paddingBottom: last ? 2 : 14 }}>
         {sub && <div style={{ fontFamily: font.mono, fontSize: 8, letterSpacing: '.12em', color: c.inkFaintest, textTransform: 'uppercase', marginBottom: 2 }}>{sub}</div>}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-          <span style={{ fontFamily: font.display, fontWeight: 600, fontSize: 15, color: maybe ? c.amber : dim ? c.inkFainter : c.ink, textTransform: 'uppercase', letterSpacing: '.01em', lineHeight: 1.15 }}>
+          <span style={{ fontFamily: font.display, fontWeight: 600, fontSize: 15, color: maybe ? c.amberGold : dim ? c.inkFainter : c.ink, textTransform: 'uppercase', letterSpacing: '.01em', lineHeight: 1.15 }}>
             {title}
           </span>
           {maybe && (

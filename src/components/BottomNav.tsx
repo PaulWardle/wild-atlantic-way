@@ -2,7 +2,7 @@ import type { ReactNode } from 'react'
 import { c, font } from '../theme'
 import { useStore } from '../store/StoreProvider'
 
-const ACTIVE = c.rust
+const ACTIVE = '#8f3722' // rust darkened to pass 4.5:1 at 8px on the nav bar
 const IDLE = '#635944'
 
 function Tab({

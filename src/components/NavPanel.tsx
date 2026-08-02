@@ -84,6 +84,10 @@ export function NavPanel({ di, marks, pad = 18 }: { di: number; marks: StopMarks
     }
   })
   const [over, setOver] = useState<string | null>(null)
+  // Was the override BEHIND the rider when picked? A backwards choice ("riding
+  // back for the photo") must only clear on arrival — the km check is already
+  // true for anything behind, which made backwards overrides instant no-ops.
+  const overBehindRef = useRef(false)
   const [pick, setPick] = useState(false)
   if (cps.length < 2) return null
 
@@ -119,7 +123,11 @@ export function NavPanel({ di, marks, pad = 18 }: { di: number; marks: StopMarks
       gpsNext = pos.at + 1
     } else {
       furthestRef.current = Math.max(furthestRef.current, pos.km as number)
-      gpsNext = cps.findIndex((cp, i) => i >= 1 && cp.km > furthestRef.current + 0.3)
+      // ">= furthest − 0.2": a stop at a spur tip shares its chainage with the
+      // final approach road, so requiring "> +0.3" skipped a stop the rider
+      // was still riding TOWARDS. A stop only drops behind once the rider is
+      // measurably past its km (or the at-checkpoint branch has fired).
+      gpsNext = cps.findIndex((cp, i) => i >= 1 && cp.km >= furthestRef.current - 0.2)
       if (gpsNext < 0) gpsNext = cps.length
     }
     while (gpsNext < cps.length && skipped.includes(cps[gpsNext].name)) gpsNext++
@@ -128,8 +136,15 @@ export function NavPanel({ di, marks, pad = 18 }: { di: number; marks: StopMarks
   const oi = over ? cps.findIndex((cp) => cp.name === over) : -1
   if (oi >= 1) {
     // A manual choice stands — even behind you (riding back for the photo is
-    // legitimate) — until a live fix shows you AT it or past it.
-    const reached = live && (pos!.at != null ? pos!.at >= oi : (pos!.km as number) >= cps[oi].km + 0.3)
+    // legitimate) — until a live fix shows you AT it or past it. For a
+    // backwards choice "past it" is meaningless, so only arrival clears it.
+    const reached =
+      live &&
+      (overBehindRef.current
+        ? pos!.at != null && pos!.at >= oi
+        : pos!.at != null
+          ? pos!.at >= oi
+          : (pos!.km as number) >= cps[oi].km + 0.3)
     ni = reached ? -1 : oi
   } else {
     ni = -1
@@ -146,15 +161,29 @@ export function NavPanel({ di, marks, pad = 18 }: { di: number; marks: StopMarks
   const done = ni >= cps.length
 
   const advance = () => {
+    if (over && cps[ni]?.name === over) {
+      // Riding to a manually-chosen stop: keep the override (it clears when a
+      // fix shows arrival) and record it as the tap fallback — losing GPS
+      // mid-leg must not shift the target.
+      saveTap(over)
+      return
+    }
     setOver(null)
     const n = Math.min(ni + 1, cps.length)
     saveTap(n >= cps.length ? 'DONE' : cps[n].name)
   }
   const skipStop = () => {
-    if (!done) saveSkips([...skipped, cps[ni].name])
-    if (!live) advance()
+    if (done) return
+    const name = cps[ni].name
+    saveSkips([...skipped, name])
+    if (over === name) setOver(null)
+    if (!live) {
+      const n = Math.min(ni + 1, cps.length)
+      saveTap(n >= cps.length ? 'DONE' : cps[n].name)
+    }
   }
   const jumpTo = (i: number) => {
+    overBehindRef.current = live ? (pos!.at != null ? i <= pos!.at : cps[i].km <= (pos!.km as number) + 0.3) : false
     setOver(cps[i].name)
     saveTap(cps[i].name)
     if (skipped.includes(cps[i].name)) saveSkips(skipped.filter((n) => n !== cps[i].name))

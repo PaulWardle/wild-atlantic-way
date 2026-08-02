@@ -48,7 +48,7 @@ export function Days() {
           </div>
           <div style={{ display: 'flex', gap: 6, marginBottom: 14 }}>
             <Tally n={keep} label="keep" color={c.green} bg={c.greenPanel} />
-            <Tally n={maybe} label="maybe" color={c.amber} bg={c.amberPanel} />
+            <Tally n={maybe} label="maybe" color={c.amberGold} bg={c.amberPanel} />
             <Tally n={cut} label="cut" color={c.rust} bg={c.amberPanelDeep} />
           </div>
         </>
@@ -75,7 +75,7 @@ export function Days() {
           >
             <div style={{ flex: '0 0 62px', background: c.paperMuted, borderRight: `1.5px solid ${c.ink}`, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '8px 4px' }}>
               <div style={{ fontFamily: font.display, fontWeight: 700, fontSize: 26, color: c.ink, lineHeight: 0.9 }}>{day.n}</div>
-              <div style={{ fontFamily: font.mono, fontSize: 8, letterSpacing: '.05em', color: c.inkFaint, marginTop: 3 }}>{day.dow}</div>
+              <div style={{ fontFamily: font.mono, fontSize: 8, letterSpacing: '.05em', color: c.inkOnMuted, marginTop: 3 }}>{day.dow}</div>
               <div style={{ fontFamily: font.mono, fontSize: 8, letterSpacing: '.02em', color: c.rust }}>{day.date}</div>
             </div>
             <div style={{ flex: 1, minWidth: 0, padding: '10px 12px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>

@@ -78,8 +78,11 @@ export async function uploadBlob(blob: Blob): Promise<string | null> {
   try {
     const sb = getSupabase()
     const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.jpg`
-    const { error } = await sb.storage.from('photos').upload(path, blob, { contentType: 'image/jpeg', upsert: false })
-    if (error) return null
+    // A hung lie-fi upload must fail fast into the offline photo queue rather
+    // than pin "Posting…" for minutes. null = the caller queues it locally.
+    const up = sb.storage.from('photos').upload(path, blob, { contentType: 'image/jpeg', upsert: false })
+    const res = await Promise.race([up, new Promise<null>((r) => setTimeout(() => r(null), 15000))])
+    if (!res || res.error) return null
     return sb.storage.from('photos').getPublicUrl(path).data.publicUrl
   } catch {
     return null

@@ -6,26 +6,39 @@
  * Supabase when there's a connection, and the app's own offline outbox handles
  * the rest.
  *
+ * The shell upgrade is ATOMIC: we never store an index.html whose hashed
+ * assets we don't also hold — a deploy on one bar of signal must not leave a
+ * cache that white-screens offline. Assets are precached at INSTALL, so one
+ * online visit makes the app fully offline-capable.
+ *
  * Bump CACHE when the caching logic itself changes — old caches are cleared on
  * activate. Build assets are content-hashed, so they never go stale.
  */
 
-const CACHE = 'waw-shell-v2'
+const CACHE = 'waw-shell-v3'
 
-// The bits with stable URLs that make up the shell. Hashed /assets/* files are
-// cached on demand (cache-first) the first time they're requested.
-const SHELL = ['/', '/index.html', '/manifest.webmanifest', '/icon-192.png', '/icon-512.png', '/apple-touch-icon.png']
+// Stable-URL extras (icons, manifest) — best-effort, not shell-critical.
+const EXTRAS = ['/manifest.webmanifest', '/icon-192.png', '/icon-512.png', '/apple-touch-icon.png']
 
 const FONT_HOSTS = ['fonts.googleapis.com', 'fonts.gstatic.com']
 
+const assetsIn = (html) => html.match(/\/assets\/[^"' )]+/g) || []
+
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches
-      .open(CACHE)
-      // addAll is atomic — if one 404s the whole install fails, so add the
-      // must-haves atomically and the fonts best-effort.
-      .then((cache) => cache.addAll(['/', '/index.html']).then(() => cache.addAll(SHELL).catch(() => {})))
-      .then(() => self.skipWaiting()),
+    (async () => {
+      const cache = await caches.open(CACHE)
+      // Fresh HTML (bypassing the HTTP cache), then its assets FIRST, then the
+      // HTML itself — so a failed asset download fails the whole install and
+      // the previous service worker (with its intact cache) stays in charge.
+      const res = await fetch(new Request('/index.html', { cache: 'reload' }))
+      if (!res.ok) throw new Error('install: index.html ' + res.status)
+      const html = await res.clone().text()
+      await cache.addAll(assetsIn(html))
+      await cache.put('/index.html', res)
+      await Promise.all(EXTRAS.map((u) => cache.add(u).catch(() => {})))
+      await self.skipWaiting()
+    })(),
   )
 })
 
@@ -47,8 +60,7 @@ async function pruneAssets(cache) {
   try {
     const doc = await cache.match('/index.html')
     if (!doc) return
-    const html = await doc.clone().text()
-    const referenced = new Set(html.match(/\/assets\/[^"' )]+/g) || [])
+    const referenced = new Set(assetsIn(await doc.clone().text()))
     const keys = await cache.keys()
     await Promise.all(
       keys.map((k) => {
@@ -56,17 +68,42 @@ async function pruneAssets(cache) {
         if (p.startsWith('/assets/') && !referenced.has(p)) return cache.delete(k)
       }),
     )
-  } catch {}
+  } catch {
+    /* best-effort */
+  }
 }
 
-async function cacheFirst(request, allowOpaque) {
+/* Atomic shell refresh after a successful navigation fetch: cache any NEW
+ * assets first; only if they all land does the new HTML replace the old one
+ * (then stale assets are pruned). If asset caching fails mid-deploy, the old,
+ * self-consistent shell stays — the live session still got the fresh page. */
+async function refreshShell(cache, res) {
+  try {
+    const html = await res.clone().text()
+    const wanted = assetsIn(html)
+    const missing = []
+    for (const a of wanted) {
+      if (!(await cache.match(a))) missing.push(a)
+    }
+    if (missing.length) await cache.addAll(missing)
+    await cache.put('/index.html', res.clone())
+    await pruneAssets(cache)
+  } catch {
+    /* keep the previous shell intact */
+  }
+}
+
+async function cacheFirst(request, event, allowOpaque) {
   const cache = await caches.open(CACHE)
   const hit = await cache.match(request)
   if (hit) return hit
   const res = await fetch(request)
-  // Google Fonts CSS arrives opaque (no-cors <link>) — status is unreadable, but
-  // caching it is the only way type survives offline, so allow it for fonts.
-  if (res && (res.ok || (allowOpaque && res.type === 'opaque'))) cache.put(request, res.clone())
+  // Google Fonts CSS can arrive opaque (no-cors <link>) — status is unreadable,
+  // but caching it is the only way type survives offline, so allow it for fonts.
+  if (res && (res.ok || (allowOpaque && res.type === 'opaque'))) {
+    const put = cache.put(request, res.clone()).catch(() => {})
+    if (event) event.waitUntil(put)
+  }
   return res
 }
 
@@ -74,12 +111,9 @@ async function networkFirstDoc(request, event) {
   const cache = await caches.open(CACHE)
   // Lie-fi guard: one bar of phantom signal must not hang the app shell. If the
   // network hasn't answered in 3.5s and we have a cached shell, boot from cache —
-  // the fetch carries on in the background and refreshes the cache for next time.
+  // the fetch carries on in the background and (atomically) refreshes the cache.
   const netP = fetch(request).then((res) => {
-    if (res && res.ok) {
-      const put = cache.put('/index.html', res.clone()).then(() => pruneAssets(cache))
-      if (event) event.waitUntil(put)
-    }
+    if (res && res.ok && event) event.waitUntil(refreshShell(cache, res))
     return res
   })
   try {
@@ -90,7 +124,7 @@ async function networkFirstDoc(request, event) {
   } catch {
     // Offline or timed out: serve the cached shell so the SPA can boot and
     // render from localStorage / the outbox.
-    const hit = (await cache.match('/index.html')) || (await cache.match('/'))
+    const hit = await cache.match('/index.html')
     if (hit) {
       if (event) event.waitUntil(netP.catch(() => {}))
       return hit
@@ -114,13 +148,13 @@ self.addEventListener('fetch', (event) => {
 
   // Google Fonts (cross-origin): cache-first so type still loads offline.
   if (FONT_HOSTS.includes(url.hostname)) {
-    event.respondWith(cacheFirst(req, true))
+    event.respondWith(cacheFirst(req, event, true))
     return
   }
 
   // Same-origin static (hashed build assets, icons, manifest): cache-first.
   if (url.origin === self.location.origin) {
-    event.respondWith(cacheFirst(req))
+    event.respondWith(cacheFirst(req, event))
     return
   }
 

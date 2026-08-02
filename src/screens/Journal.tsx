@@ -244,7 +244,7 @@ export function Journal() {
           <div style={{ display: 'flex', gap: 7 }}>
             {[
               { n: keep, l: 'keep', color: c.green, bg: c.greenPanel },
-              { n: maybe, l: 'maybe', color: c.amber, bg: c.amberPanel },
+              { n: maybe, l: 'maybe', color: c.amberGold, bg: c.amberPanel },
               { n: cut, l: 'cut', color: c.rust, bg: c.amberPanelDeep },
             ].map((t, i) => (
               <div key={i} style={{ flex: 1, border: `1.5px solid ${t.color}`, borderRadius: 7, padding: '7px 4px', textAlign: 'center', background: t.bg }}>

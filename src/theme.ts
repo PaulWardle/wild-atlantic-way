@@ -24,6 +24,7 @@ export const c = {
   inkBody: '#544a39', // body copy
   inkBody2: '#4a4132',
   inkMuted: '#6b5f49',
+  inkOnMuted: '#645940', // faint ink that still passes 4.5:1 on paperMuted/paperDeep
   inkFaint: '#7a6d54',
   inkFainter: '#6f6349',
   inkFaintest: '#746849',

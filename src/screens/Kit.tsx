@@ -187,7 +187,7 @@ function tabStyle(active: boolean): React.CSSProperties {
 }
 
 export function Kit() {
-  const { store, kitTab, setKitTab, setKit } = useStore()
+  const { store, kitTab, setKitTab, setKit, isBrother } = useStore()
   const [editing, setEditing] = useState(false)
   // Which packing list is on screen — remembered per phone.
   const [packView, setPackViewState] = useState<Sec>(() => {
@@ -224,6 +224,11 @@ export function Kit() {
     const t = window.setTimeout(() => setDupMsg(''), 2500)
     return () => window.clearTimeout(t)
   }, [dupMsg])
+
+  // Brothers only — the tiles that lead here are already gated, but the nav
+  // history isn't a security boundary and setKit writes to the shared table.
+  // (After every hook, so a mid-session role switch can't corrupt hook order.)
+  if (!isBrother) return null
 
   /** Add a typed item to a section. Re-typing a removed stock item restores it
    * (clears the rm: tombstone) instead of minting an add: duplicate; a true

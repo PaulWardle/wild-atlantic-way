@@ -53,8 +53,14 @@ function Tile({ photo, onOpen }: { photo: GalleryPhoto; onOpen: () => void }) {
 }
 
 function Lightbox({ photos, index, onClose, onNav }: { photos: GalleryPhoto[]; index: number; onClose: () => void; onNav: (d: number) => void }) {
-  const photo = photos[index]
-  const { src } = usePhotoSrc(photo.url)
+  // The list can shrink WHILE the lightbox is open (the other phone deletes a
+  // post; realtime pull lands) — clamp, and bail out if nothing is left.
+  const photo = photos.length ? photos[Math.max(0, Math.min(index, photos.length - 1))] : undefined
+  const { src } = usePhotoSrc(photo ? photo.url : '')
+
+  useEffect(() => {
+    if (!photo) onClose()
+  }, [photo, onClose])
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -68,6 +74,8 @@ function Lightbox({ photos, index, onClose, onNav }: { photos: GalleryPhoto[]; i
 
   const touch = useRef<{ x: number; y: number } | null>(null)
   const swiped = useRef(false)
+
+  if (!photo) return null
 
   return (
     <div

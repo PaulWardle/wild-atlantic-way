@@ -172,7 +172,10 @@ const eSide: Record<string, { a: 'start' | 'middle' | 'end'; dx: number; dy: num
 export function computeMapGeometry(trip: Trip, current: CurrentPos | null): MapGeometry {
   const G = trip.geo
   const R = trip.route
-  const M = G.malin
+  // The official line starts at the Muff village marker (km 0) — anchoring the
+  // rust arc (and the green progress line) at Malin drew the start ~100 km in
+  // and made day-1 progress from Muff invisible.
+  const MUFF = { lat: 55.0673, lon: -7.2691 }
   const fi = G.ferryIn
   const hf = G.homeFerry
   const liveActive = !!current
@@ -180,13 +183,13 @@ export function computeMapGeometry(trip: Trip, current: CurrentPos | null): MapG
   const curPhaseWaw = current ? journey[curIdx].phase === 'waw' : false
 
   // Route arcs along the real coast.
-  const idxMalin = nearestRingIndex(M.lat, M.lon)
+  const idxMuff = nearestRingIndex(MUFF.lat, MUFF.lon)
   const idxKinsale = nearestRingIndex(R[9].lat, R[9].lon)
   const idxLarne = nearestRingIndex(fi.lat, fi.lon)
-  const wawCoords = westArc(idxMalin, idxKinsale).map((i) => ring[i]) as [number, number][]
-  const leadCoords = shortArc(idxLarne, idxMalin).map((i) => ring[i]) as [number, number][]
+  const wawCoords = westArc(idxMuff, idxKinsale).map((i) => ring[i]) as [number, number][]
+  const leadCoords = shortArc(idxLarne, idxMuff).map((i) => ring[i]) as [number, number][]
 
-  // Green "done" — the coast arc from Malin up to the point nearest the live position.
+  // Green "done" — the coast arc from Muff up to the point nearest the live position.
   let eDone = ''
   if (current && curPhaseWaw) {
     const k = nearestInList(wawCoords, current.lat, current.lon)

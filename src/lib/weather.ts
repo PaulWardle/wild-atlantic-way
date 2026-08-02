@@ -82,7 +82,8 @@ export async function fetchForecast(lat: number, lon: number): Promise<Forecast 
     '&timezone=Europe%2FDublin&forecast_days=2&temperature_unit=celsius&wind_speed_unit=mph'
 
   try {
-    const res = await fetch(url)
+    // Lie-fi guard: a hung fetch here blanks the strip for minutes.
+    const res = await fetch(url, { signal: AbortSignal.timeout(8000) })
     if (!res.ok) throw new Error(String(res.status))
     const j = await res.json()
     const d = j.daily || {}

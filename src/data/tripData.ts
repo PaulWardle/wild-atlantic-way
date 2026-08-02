@@ -1398,8 +1398,8 @@ export const tripData: Trip = {
             "b"
           ],
           "d": "RESTORED official line: the coastal wiggle by Castletownshend, Toe Head and the Galley Head view — not the N71 shortcut.",
-          "lat": 51.532,
-          "lon": -8.954,
+          "lat": 51.4786,
+          "lon": -9.2323,
           "sid": "d9-toe-head-galley-head-coast"
         },
         {

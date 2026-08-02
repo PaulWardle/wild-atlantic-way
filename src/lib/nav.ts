@@ -204,9 +204,11 @@ export function dayCheckpoints(di: number, marks?: StopMarks): Checkpoint[] {
 }
 
 /** Where the rider actually is along the day's route, from a GPS fix.
- * Being AT a checkpoint (nearest one within 1.2 km) beats chainage — two
+ * Being AT a checkpoint (nearest one within 1.5 km) beats chainage — two
  * stops can share a chainage (Farren's Bar and Malin Head both sit at km
- * ~104) and only the index says which one you're at. Otherwise projects onto
+ * ~104) and only the index says which one you're at; on out-and-back spurs
+ * the projection can wobble to the other lane, so the radius must comfortably
+ * cover a stop approached from either side. Otherwise projects onto
  * the day's stretch of line. Null when nowhere near the day (home, ferry,
  * mid-detour to an off-line extra — the panel falls back to taps there). */
 export function dayPosition(
@@ -218,7 +220,7 @@ export function dayPosition(
   const w = T.days[di]?.wawKm
   if (!w) return null
   let atIdx = -1
-  let atD = 1.2
+  let atD = 1.5
   cps.forEach((cp, i) => {
     const d = hav(lat, lon, cp.lat, cp.lon)
     if (d < atD) {

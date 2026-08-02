@@ -77,6 +77,45 @@ const warn = (m) => console.log('  ⚠', m)
 console.log('== WAW route validation ==')
 console.log('official line:', TOTAL, 'km · spine points:', spine.length)
 
+// 0. spine continuity — the gate that would have caught the 2026-08 corruption.
+// A road can NEVER be shorter than the crow-flies line, so for every
+// consecutive pair the crow distance must not exceed the chainage gap, within
+// slack: +4 km absolute (sampling holes) or ×1.65 relative (the official-km
+// anchoring compresses gaps up to ~1.6× across the two known unsampled
+// stretches). Displaced blocks ran 3–10× over — this still fails them loudly.
+console.log('\n-- spine continuity --')
+{
+  let seams = 0
+  for (let i = 1; i < spine.length; i++) {
+    const gap = spine[i][2] - spine[i - 1][2]
+    const crow = hav([spine[i - 1][0], spine[i - 1][1]], [spine[i][0], spine[i][1]])
+    if (gap <= 0) { bad(`spine chainage not increasing at km ${spine[i - 1][2]}`); seams++ }
+    else if (crow > Math.max(gap + 4, gap * 1.65)) { bad(`impossible seam km ${spine[i - 1][2]}→${spine[i][2]}: ${crow.toFixed(1)}km crow over ${gap.toFixed(1)}km of road`); seams++ }
+  }
+  if (!seams) ok(`all ${spine.length - 1} consecutive pairs physically plausible (crow ≤ max(gap+4, gap×1.65))`)
+}
+
+// 0b. stop ordering — every located stop must sit on its day's stretch and the
+// stops must map to non-decreasing chainage in itinerary order (small backward
+// tolerance for out-and-back spur pairs).
+console.log('\n-- stop ordering --')
+{
+  let stopFails = 0
+  data.days.forEach((d, i) => {
+    if (!d.wawKm) return
+    const [a, b] = d.wawKm
+    let prevKm = a - 8
+    ;(d.stops || []).forEach((s) => {
+      if (s.lat == null || s.lon == null || s.kind === 'extra') return
+      const { km, off } = chainageWithin(s.lat, s.lon, a, b)
+      if (off > 10) { bad(`day ${i + 1} stop "${s.n}" is ${off.toFixed(0)}km off the day's stretch`); stopFails++ }
+      else if (km < prevKm - 8) { bad(`day ${i + 1} stop "${s.n}" at km ${km.toFixed(0)} is BEHIND the previous stop (km ${prevKm.toFixed(0)}) — route order broken`); stopFails++ }
+      prevKm = Math.max(prevKm, km)
+    })
+  })
+  if (!stopFails) ok('every located stop sits on its day’s stretch, in riding order')
+}
+
 // 1. windows contiguous + forward
 console.log('\n-- day windows --')
 let cursor = 0

@@ -11,7 +11,7 @@ function WindLine({ day, heading }: { day: DayForecast; heading: number | null }
   if (day.gust == null || day.windDir == null) return null
   const rel = heading != null ? windVsRide(day.windDir, heading) : null
   // 30+ mph gusts are hard work on a bike; 45+ on exposed headland is a rethink.
-  const rough = day.gust >= 45 ? c.rust : day.gust >= 30 ? c.amber : null
+  const rough = day.gust >= 45 ? c.rust : day.gust >= 30 ? c.amberGold : null
   const tint = rough ?? (rel === 'crosswind' ? c.amberGold : c.inkFaint)
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 5, marginTop: 5, fontFamily: font.mono, fontSize: 8.5, color: tint }}>

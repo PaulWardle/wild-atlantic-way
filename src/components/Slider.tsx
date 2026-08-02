@@ -13,7 +13,7 @@ function Dots({ n, active, onDot }: { n: number; active: number; onDot?: (i: num
             width: i === active ? 16 : 6,
             height: 6,
             borderRadius: 3,
-            background: i === active ? c.rust : '#c9ba94',
+            background: i === active ? c.rust : '#8a7c55',
             border: 0,
             padding: 0,
             transition: 'width .3s ease, background .3s ease',

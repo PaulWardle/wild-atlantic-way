@@ -33,6 +33,22 @@ export function Gate() {
   const meta = tripData.meta
   const cd = countdownParts(meta.depart, nowTs)
   const { geo } = useMap()
+  // The gate greets people all trip long — a dead 0d 00:00:00 from Aug 10
+  // onward reads as broken. Pre-trip: countdown; live: Day N of 10; after:
+  // the ride is ridden.
+  const trip = (() => {
+    try {
+      const departMs = new Date(meta.depart + 'T00:00:00').getTime()
+      const now = new Date(nowTs)
+      const todayMs = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime()
+      const idx = Math.floor((todayMs - departMs) / 86400000)
+      if (idx < 0) return { phase: 'pre' as const, day: 0 }
+      if (idx < tripData.days.length) return { phase: 'live' as const, day: idx + 1 }
+      return { phase: 'post' as const, day: tripData.days.length }
+    } catch {
+      return { phase: 'pre' as const, day: 0 }
+    }
+  })()
 
   return (
     <div
@@ -95,12 +111,23 @@ export function Gate() {
           {meta.dates}
         </div>
 
-        <div style={{ display: 'flex', gap: 6, marginTop: 20 }}>
-          <CdCell n={cd.days} label="Days" />
-          <CdCell n={cd.hrs} label="Hrs" />
-          <CdCell n={cd.mins} label="Min" />
-          <CdCell n={cd.secs} label="Sec" />
-        </div>
+        {trip.phase === 'pre' ? (
+          <div style={{ display: 'flex', gap: 6, marginTop: 20 }}>
+            <CdCell n={cd.days} label="Days" />
+            <CdCell n={cd.hrs} label="Hrs" />
+            <CdCell n={cd.mins} label="Min" />
+            <CdCell n={cd.secs} label="Sec" />
+          </div>
+        ) : (
+          <div style={{ marginTop: 20, textAlign: 'center' }}>
+            <div style={{ fontFamily: font.display, fontWeight: 700, fontSize: 34, textTransform: 'uppercase', color: c.rust, lineHeight: 1 }}>
+              {trip.phase === 'live' ? `Day ${trip.day} of ${tripData.days.length}` : 'Ridden ✓'}
+            </div>
+            <div style={{ fontFamily: font.serif, fontStyle: 'italic', fontSize: 13, color: c.inkMuted, marginTop: 5 }}>
+              {trip.phase === 'live' ? 'They’re out there right now' : 'Muff to Kinsale, done — the record lives inside'}
+            </div>
+          </div>
+        )}
 
         <div
           style={{
@@ -208,7 +235,6 @@ export function Gate() {
                   letterSpacing: '.14em',
                   textTransform: 'uppercase',
                   color: c.ink,
-                  outline: 'none',
                 }}
               />
               <button

@@ -80,12 +80,18 @@ export function useWeather(): WeatherState {
     }
     load()
 
-    // Refresh when connectivity returns.
+    // Refresh when connectivity returns — and every 30 minutes while the app
+    // stays open. The gust warning is a safety feature; a phone on the bar
+    // mount must not show the 07:30 forecast at 18:00.
     const onOnline = () => load()
     window.addEventListener('online', onOnline)
+    const refresh = window.setInterval(() => {
+      if (document.visibilityState === 'visible') load()
+    }, 30 * 60000)
     return () => {
       alive = false
       window.removeEventListener('online', onOnline)
+      window.clearInterval(refresh)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key])

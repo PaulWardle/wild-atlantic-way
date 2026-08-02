@@ -34,8 +34,9 @@ export function Postbox() {
     if (busy) return
     setBusy(true)
     try {
-      await submitPost(files)
-      setFiles([])
+      // Only a sent message clears the composer — a validation miss (no name)
+      // must not throw away photos the guest already attached.
+      if (await submitPost(files)) setFiles([])
     } finally {
       setBusy(false)
     }
@@ -119,7 +120,7 @@ export function Postbox() {
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
                 <span style={{ fontFamily: font.mono, fontSize: 7.5, fontWeight: 700, letterSpacing: '.08em', textTransform: 'uppercase', color: p.tagInk, background: p.tagBg, border: `1px solid ${p.tagInk}`, borderRadius: 3, padding: '1px 5px' }}>{p.reason}</span>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: '0 0 auto' }}>
-                  {p.pending && <span style={{ fontFamily: font.mono, fontSize: 7.5, fontWeight: 700, letterSpacing: '.06em', textTransform: 'uppercase', color: c.amber, border: `1px solid ${c.amber}`, borderRadius: 3, padding: '1px 5px' }}>not sent</span>}
+                  {p.pending && <span style={{ fontFamily: font.mono, fontSize: 7.5, fontWeight: 700, letterSpacing: '.06em', textTransform: 'uppercase', color: c.amberGold, border: `1px solid ${c.amber}`, borderRadius: 3, padding: '1px 5px' }}>not sent</span>}
                   <span style={{ fontFamily: font.mono, fontSize: 8.5, color: c.inkFaintest }}>{p.when}</span>
                   {isBrother && (
                     <button onClick={() => removePost(p.ts)} aria-label="Remove" style={{ width: 30, height: 30, border: `1.5px solid ${c.rust}`, borderRadius: '50%', color: c.rust, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: font.display, fontSize: 13, lineHeight: 1, flex: '0 0 auto' }}>
