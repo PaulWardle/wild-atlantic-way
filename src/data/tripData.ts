@@ -1906,14 +1906,34 @@ export const tripData: Trip = {
       "group": "Riding gear",
       "items": [
         "Waterproof textile / ADV suit (it WILL rain)",
-        "Thermal base layers",
+        "Waterproof over-trousers",
+        "Thermal base layers ×2",
         "Mid-layer fleece (essential even in August)",
-        "Waterproof + summer gloves",
+        "Summer gloves",
+        "Waterproof gloves",
+        "Helmet — pinlock fitted",
         "Spare visor / pinlock",
+        "Visor cleaner + microfibre cloth",
         "Neck tube ×2",
         "Earplugs (multi-day = non-negotiable)",
         "Waterproof boots",
-        "Waterproof liner socks"
+        "Waterproof liner socks",
+        "Hi-vis vest (dawn, dusk, tunnels)"
+      ]
+    },
+    {
+      "group": "Off-bike clothes",
+      "items": [
+        "T-shirts ×4 (quick-dry)",
+        "Underwear ×5",
+        "Socks ×5 (incl. a thermal pair)",
+        "Jeans / casual trousers",
+        "Shorts (optimism)",
+        "Warm hoodie / fleece",
+        "Beanie",
+        "Trainers / camp shoes",
+        "Swim shorts (Keem Bay, seaweed baths)",
+        "Packable waterproof jacket (off-bike)"
       ]
     },
     {
@@ -1922,10 +1942,25 @@ export const tripData: Trip = {
         "3-season sleeping bag",
         "Inflatable mat",
         "Compact pillow",
+        "Sleep clothes",
         "Headtorch + spare batteries",
         "Dry bags for EVERYTHING",
-        "Travel towel",
-        "Camp sandals"
+        "Travel towel (quick-dry)",
+        "Camp sandals",
+        "Eye mask + sleep earplugs"
+      ]
+    },
+    {
+      "group": "Wash & health",
+      "items": [
+        "Wash kit (brush, paste, soap, deodorant)",
+        "Razor",
+        "Suncream stick + lip balm",
+        "Personal meds",
+        "Painkillers / ibuprofen",
+        "Plasters + blister kit",
+        "Hand sanitiser",
+        "Emergency loo roll (dry-bagged)"
       ]
     },
     {
@@ -1934,7 +1969,9 @@ export const tripData: Trip = {
         "Disc lock + reminder cable",
         "Bungees / cargo net",
         "Phone mount + USB power",
-        "Spare key (carried by the OTHER brother)"
+        "Spare key (carried by the OTHER brother)",
+        "Small padlocks",
+        "Ratchet strap (ferry decks)"
       ]
     },
     {
@@ -1944,29 +1981,38 @@ export const tripData: Trip = {
         "Confirm policy covers Republic of Ireland (not just third-party)",
         "European breakdown cover",
         "All ferry bookings saved offline + printed",
-        "GHIC cards",
+        "GHIC card",
         "Passports / photo ID (checked on Irish Sea ferries)",
         "Both € and £ cash (NI = £, ROI = €)",
-        "UK identifier on plates"
-      ]
-    },
-    {
-      "group": "Personal",
-      "items": [
-        "Quick-dry clothing ×3 rotations",
-        "Swim shorts (Keem Bay, seaweed baths)",
-        "Power bank 20,000mAh",
-        "Painkillers / ibuprofen",
-        "Small padlocks"
+        "UK identifier on plates",
+        "Emergency contacts card (in jacket pocket)"
       ]
     },
     {
       "group": "Phone & tech",
       "items": [
+        "Phone + long charging cable",
+        "3-pin plug with twin USB",
+        "Power bank 20,000mAh",
+        "Intercom + charger",
+        "Camera / GoPro + spare cards",
         "Offline Google Maps for ALL of Ireland (real signal gaps)",
         "Ferry apps",
         "park4night app",
         "Booking.com / campsite numbers saved offline"
+      ]
+    },
+    {
+      "group": "Odds & sods",
+      "items": [
+        "Sunglasses",
+        "Water bottle",
+        "Snack stash",
+        "Travel-sickness tablets (ferry)",
+        "Bin bags for wet kit",
+        "Zip-lock bags",
+        "Small notebook + pen",
+        "Playing cards"
       ]
     }
   ],
@@ -2609,11 +2655,16 @@ export const tripData: Trip = {
       "group": "Camp kit",
       "items": [
         "Lightweight 2–3 man tent",
+        "Tent footprint / groundsheet",
         "Stove + gas (buy screw-on canisters after the ferry if challenged)",
         "Pots / mugs / sporks",
+        "Sharp knife + mini chopping board",
         "Lighter ×2",
+        "Coffee kit (morale-critical)",
+        "Washing-up kit (sponge + drops)",
         "Small tarp",
-        "20m paracord (drying line)"
+        "20m paracord (drying line)",
+        "Spare tent pegs"
       ]
     },
     {
@@ -2625,7 +2676,8 @@ export const tripData: Trip = {
         "Gaffer tape",
         "Spare bulbs & fuses",
         "Tool roll",
-        "Ratchet strap for ferry decks"
+        "Tyre pressure gauge",
+        "WD-40 mini"
       ]
     },
     {
@@ -2635,7 +2687,8 @@ export const tripData: Trip = {
         "Sewing kit",
         "Midge repellent (Smidge)",
         "Suncream (yes, actually)",
-        "iPad + charger"
+        "iPad + charger",
+        "Spare buckle straps"
       ]
     }
   ]
