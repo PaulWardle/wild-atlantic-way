@@ -184,7 +184,7 @@ export function Today() {
         <div style={{ display: 'inline-flex', fontFamily: font.mono, fontSize: 8, fontWeight: 700, letterSpacing: '.1em', textTransform: 'uppercase', color: tPi.color, border: `1px solid ${tPi.color}`, borderRadius: 3, padding: '1px 6px', marginTop: 10 }}>
           {tPi.label}
         </div>
-        <div style={{ fontFamily: font.display, fontWeight: 700, fontSize: 24, textTransform: 'uppercase', lineHeight: 1.04, margin: '7px 0 2px' }}>{tdy.title}</div>
+        <h1 style={{ fontFamily: font.display, fontWeight: 700, fontSize: 24, textTransform: 'uppercase', lineHeight: 1.04, margin: '7px 0 2px' }}>{tdy.title}</h1>
         <div style={{ fontFamily: font.serif, fontStyle: 'italic', fontSize: 14, color: '#c9bfa6' }}>{tdy.tagline}</div>
         <div style={{ display: 'inline-block', marginTop: 10, fontFamily: font.mono, fontSize: 10, letterSpacing: '.04em', color: c.paper, border: '1.5px solid #7a6d54', borderRadius: 20, padding: '3px 10px' }}>{tdy.miles}</div>
       </div>

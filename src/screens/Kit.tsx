@@ -374,8 +374,8 @@ export function Kit() {
   return (
     <div style={{ animation: 'waw-fade .35s ease both', padding: '16px 16px 28px' }}>
       <div style={{ display: 'flex', gap: 3, border: `1.5px solid ${c.ink}`, borderRadius: 9, padding: 3, background: c.paperMuted, marginBottom: 16 }}>
-        <button onClick={() => setKitTab('todo')} style={tabStyle(tab === 'todo')}>To do</button>
-        <button onClick={() => setKitTab('packing')} style={tabStyle(tab === 'packing')}>Packing</button>
+        <button onClick={() => setKitTab('todo')} aria-pressed={tab === 'todo'} style={tabStyle(tab === 'todo')}>To do</button>
+        <button onClick={() => setKitTab('packing')} aria-pressed={tab === 'packing'} style={tabStyle(tab === 'packing')}>Packing</button>
       </div>
 
       {tab === 'todo' && (
@@ -467,7 +467,7 @@ export function Kit() {
               const n = sectionCount(v)
               const on = packView === v
               return (
-                <button key={v} onClick={() => setPackView(v)} style={{ ...tabStyle(on), display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+                <button key={v} onClick={() => setPackView(v)} aria-pressed={on} style={{ ...tabStyle(on), display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
                   <span>{v === 'S' ? 'Shared' : WHO_NAME[v]}</span>
                   <span style={{ fontFamily: font.mono, fontSize: 8, fontWeight: 400, color: on ? (n.done === n.total ? '#b5d0a0' : c.gold) : c.inkFainter }}>
                     {n.done}/{n.total}

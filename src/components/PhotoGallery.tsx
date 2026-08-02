@@ -74,11 +74,17 @@ function Lightbox({ photos, index, onClose, onNav }: { photos: GalleryPhoto[]; i
 
   const touch = useRef<{ x: number; y: number } | null>(null)
   const swiped = useRef(false)
+  const dlgRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    dlgRef.current?.focus() // move keyboard focus INTO the dialog on open
+  }, [])
 
   if (!photo) return null
 
   return (
     <div
+      ref={dlgRef}
+      tabIndex={-1}
       onClick={() => {
         if (swiped.current) {
           swiped.current = false

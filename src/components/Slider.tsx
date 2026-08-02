@@ -82,7 +82,7 @@ export function Slider({
       </div>
       {n > 1 && n <= 12 && <Dots n={n} active={active} onDot={onDot} />}
       {n > 12 && (
-        <div style={{ textAlign: 'center', padding: '3px 12px 11px', fontFamily: "'Space Mono',monospace", fontSize: 9, letterSpacing: '.08em', color: '#8a7c55' }}>
+        <div style={{ textAlign: 'center', padding: '3px 12px 11px', fontFamily: "'Space Mono',monospace", fontSize: 9, letterSpacing: '.08em', color: '#645940' }}>
           {active + 1} / {n}
         </div>
       )}

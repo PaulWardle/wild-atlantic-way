@@ -37,9 +37,9 @@ export function Days() {
       <div style={{ fontFamily: font.mono, fontSize: 9, letterSpacing: '.18em', color: c.rust, textTransform: 'uppercase' }}>
         Muff to Kinsale · the official route
       </div>
-      <div style={{ fontFamily: font.display, fontWeight: 700, fontSize: 30, textTransform: 'uppercase', color: c.ink, lineHeight: 1, margin: '3px 0 12px' }}>
+      <h1 style={{ fontFamily: font.display, fontWeight: 700, fontSize: 30, textTransform: 'uppercase', color: c.ink, lineHeight: 1, margin: '3px 0 12px' }}>
         The Ride
-      </div>
+      </h1>
 
       {isBrother && (
         <>

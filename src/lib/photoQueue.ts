@@ -29,8 +29,15 @@ function tx<T>(mode: IDBTransactionMode, fn: (store: IDBObjectStore) => IDBReque
       new Promise<T>((resolve, reject) => {
         const t = db.transaction(STORE, mode)
         const req = fn(t.objectStore(STORE))
-        req.onsuccess = () => resolve(req.result)
+        let result: T
+        req.onsuccess = () => {
+          result = req.result
+        }
         req.onerror = () => reject(req.error)
+        // Resolve on transaction COMPLETE, not request success — quota aborts
+        // fire at commit time, after the request already "succeeded".
+        t.oncomplete = () => resolve(result)
+        t.onabort = () => reject(t.error || new Error('idb abort'))
       }),
   )
 }
@@ -43,13 +50,15 @@ export function localId(token: string): string {
   return token.slice(TOKEN.length)
 }
 
-/** Stash a processed blob; returns the `local:<id>` token to store on the row. */
-export async function queuePhoto(blob: Blob, presetId?: string): Promise<string> {
+/** Stash a processed blob; returns the `local:<id>` token to store on the row,
+ * or null when the write genuinely failed (quota / private mode) — a dangling
+ * token would show "uploading soon" forever for a photo that never existed. */
+export async function queuePhoto(blob: Blob, presetId?: string): Promise<string | null> {
   const id = presetId || 'p-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8)
   try {
     await tx('readwrite', (s) => s.put(blob, id))
   } catch {
-    /* if IDB is unavailable the caller falls back to dropping the photo */
+    return null // caller drops the photo with its normal couldn't-process path
   }
   return TOKEN + id
 }

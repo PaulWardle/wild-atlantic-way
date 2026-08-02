@@ -152,7 +152,7 @@ export function Info() {
             Have a nose around: <b>Days</b> for the ride day by day, <b>Today</b> for what’s on now, and <b>Sights &amp; Roads</b> for the headline spots and biker passes. Campsites and the day plans are all there to explore.
           </GuideRow>
           <div style={{ marginTop: 14, fontFamily: font.serif, fontStyle: 'italic', fontSize: 12.5, color: c.inkFainter, lineHeight: 1.55 }}>
-            Tip: add it to your home screen (Share → Add to Home Screen) to open it like an app — it even works offline. Your messages are saved on this device; keep the link handy to check back in.
+            Tip: add it to your home screen (Share → Add to Home Screen) to open it like an app — it even works offline. Your messages land on the shared board the moment they send; keep the link handy to check back in.
           </div>
         </>
       )}
@@ -172,7 +172,7 @@ export function Info() {
             chips={
               <>
                 <Chip label="Keep" ink={c.green} bg={c.greenPanel} />
-                <Chip label="Maybe" ink={c.amber} bg={c.amberPanel} />
+                <Chip label="Maybe" ink={c.amberGold} bg={c.amberPanel} />
                 <Chip label="Cut" ink={c.rust} bg={c.amberPanelDeep} />
               </>
             }
@@ -215,7 +215,7 @@ export function Info() {
           </GuideRow>
           <GuideRow title="The map">The whole route with the live pin — from the home card or full-screen. A fix that’s off the route or outside Ireland still posts, it just won’t sit on the route line.</GuideRow>
           <GuideRow title="Install &amp; offline">
-            Add it to your home screen (Share → <b>Add to Home Screen</b>) and it runs like a proper app. It works with <b>no signal</b> — the whole thing loads offline, and anything you post (words and photos) is saved on the phone and syncs the moment you’re back on. A banner tells you when the trip server can’t be reached.
+            Add it to your home screen (Share → <b>Add to Home Screen</b>) and it runs like a proper app. It works with <b>no signal</b> — the app itself loads offline, and anything you post (words and photos) is saved on the phone and syncs the moment you’re back on. Photos from the server need a connection to display the first time. A banner tells you when the trip server can’t be reached.
           </GuideRow>
 
           <div style={{ marginTop: 18, border: `1.5px solid ${c.ink}`, borderRadius: 10, background: c.greenPanel, padding: '13px 14px' }}>

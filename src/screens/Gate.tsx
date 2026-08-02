@@ -86,7 +86,7 @@ export function Gate() {
         <div style={{ fontFamily: font.mono, fontSize: 10, letterSpacing: '.26em', color: c.rust, textTransform: 'uppercase' }}>
           Bald(ing) Brothers · Aug 2026
         </div>
-        <div
+        <h1
           style={{
             fontFamily: font.display,
             fontWeight: 700,
@@ -101,13 +101,13 @@ export function Gate() {
           Wild
           <br />
           Atlantic Way
-        </div>
+        </h1>
         <div style={{ display: 'flex', alignItems: 'center', gap: 9, marginTop: 12 }}>
           <div style={{ height: 1.5, width: 24, background: c.line }} />
           <div style={{ fontFamily: font.serif, fontStyle: 'italic', fontSize: 13.5, color: '#5a4f3b' }}>{meta.route}</div>
           <div style={{ height: 1.5, width: 24, background: c.line }} />
         </div>
-        <div style={{ fontFamily: font.serif, fontStyle: 'italic', fontSize: 13, color: c.inkFaint, marginTop: 3 }}>
+        <div style={{ fontFamily: font.serif, fontStyle: 'italic', fontSize: 13, color: c.inkOnMuted, marginTop: 3 }}>
           {meta.dates}
         </div>
 
@@ -152,7 +152,7 @@ export function Gate() {
             <span style={{ fontFamily: font.mono, fontSize: 9, letterSpacing: '.16em', color: c.ink, textTransform: 'uppercase' }}>
               The shape of the journey
             </span>
-            <span style={{ fontFamily: font.mono, fontSize: 9, color: c.inkFainter, letterSpacing: '.06em' }}>
+            <span style={{ fontFamily: font.mono, fontSize: 9, color: c.inkOnMuted, letterSpacing: '.06em' }}>
               Muff → Kinsale
             </span>
           </div>
@@ -210,7 +210,7 @@ export function Gate() {
 
         {pwOpen && (
           <div style={{ width: '100%', maxWidth: 300, marginTop: 24, textAlign: 'left' }}>
-            <div style={{ fontFamily: font.mono, fontSize: 9, letterSpacing: '.16em', color: c.inkFaintest, textTransform: 'uppercase', marginBottom: 7 }}>
+            <div style={{ fontFamily: font.mono, fontSize: 9, letterSpacing: '.16em', color: c.inkOnMuted, textTransform: 'uppercase', marginBottom: 7 }}>
               Brothers only · the password
             </div>
             <div style={{ position: 'relative' }}>
@@ -222,6 +222,7 @@ export function Gate() {
                 }}
                 type={showPw ? 'text' : 'password'}
                 placeholder="Password"
+                  aria-label="Password"
                 autoCapitalize="characters"
                 style={{
                   width: '100%',

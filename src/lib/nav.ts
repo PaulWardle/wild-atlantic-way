@@ -228,7 +228,17 @@ export function dayPosition(
       atIdx = i
     }
   })
-  if (atIdx >= 0) return { at: atIdx }
+  if (atIdx >= 0) {
+    // A MID-WINDOW campsite (Strandhill: camp at ~km 630 in a window ending
+    // 661) is ridden PAST during the day — being near it must not read as
+    // "day ridden". If the final checkpoint's assigned km sits far ahead of
+    // where this position actually projects, fall through to chainage.
+    if (atIdx === cps.length - 1) {
+      const proj = nearestOnStretch(lat, lon, w[0], w[1])
+      if (cps[atIdx].km - proj[2] > 10) return { km: proj[2] }
+    }
+    return { at: atIdx }
+  }
   const p = nearestOnStretch(lat, lon, w[0], w[1])
   if (hav(lat, lon, p[0], p[1]) <= 8) return { km: p[2] }
   return null
@@ -274,7 +284,7 @@ export function navStretch(
     const km = nearestOnStretch(st.lat, st.lon, w[0], w[1])[2]
     if (km < lo - 3 || km > hi + 3) return
     kept.push({ km, lat: st.lat, lon: st.lon })
-    via.push(st.n)
+    if (st.n !== to.name) via.push(st.n) // "X via X" when the kept extra IS the destination
   })
 
   let wps = [...sampleWaypoints(lo, hi, Math.max(4, 9 - kept.length) - 1), ...kept]

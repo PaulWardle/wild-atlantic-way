@@ -57,7 +57,10 @@ self.addEventListener('install', (event) => {
       // serving it offline produced a network error, breaking offline boot
       // entirely. Assets cached FIRST so a failed download fails the install
       // and the previous worker (with its intact cache) stays in charge.
-      const res = await fetch(new Request('/', { cache: 'reload' }))
+      const res = await Promise.race([
+        fetch(new Request('/', { cache: 'reload' })),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('install timeout')), 15000)),
+      ])
       if (!res.ok) throw new Error('install: shell ' + res.status)
       const html = await res.clone().text()
       await addAssets(cache, assetsIn(html))
@@ -73,6 +76,25 @@ self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches
       .keys()
+      // Carry cached fonts across the version bump — deleting them meant the
+      // first offline launch after an upgrade rendered in system fonts.
+      .then(async (keys) => {
+        const cache = await caches.open(CACHE)
+        for (const k of keys.filter((k2) => k2 !== CACHE)) {
+          try {
+            const oldCache = await caches.open(k)
+            for (const req of await oldCache.keys()) {
+              if (FONT_HOSTS.includes(new URL(req.url).hostname) && !(await cache.match(req))) {
+                const res = await oldCache.match(req)
+                if (res) await cache.put(req, res)
+              }
+            }
+          } catch {
+            /* best-effort */
+          }
+        }
+        return keys
+      })
       .then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k))))
       .then(() => caches.open(CACHE))
       .then((cache) => serialize(() => pruneAssets(cache)))

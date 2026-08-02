@@ -80,6 +80,7 @@ export function Home() {
   const {
     store,
     serverOk,
+    persistFailed,
     isBrother,
     isGuest,
     signOut,
@@ -276,6 +277,16 @@ export function Home() {
           </div>
         </div>
       )}
+      {persistFailed && (
+        <div style={{ margin: '12px 16px 0', border: `1.5px solid ${c.rust}`, background: c.amberPanelDeep, borderRadius: 9, padding: '10px 13px' }}>
+          <div style={{ fontFamily: font.mono, fontSize: 8, fontWeight: 700, letterSpacing: '.12em', color: c.rust, textTransform: 'uppercase', marginBottom: 3 }}>
+            This phone can’t save
+          </div>
+          <div style={{ fontFamily: font.serif, fontSize: 12.5, color: '#5a4f3b', lineHeight: 1.45 }}>
+            Storage is full (or private browsing is on) — new posts and ticks only live in memory and would be lost if the app closes. Free up space or clear old photos.
+          </div>
+        </div>
+      )}
       {hasUnsent && (
         <div style={{ margin: '12px 16px 0', border: `1.5px solid ${c.amber}`, background: c.amberPanel, borderRadius: 9, padding: '10px 13px' }}>
           <div style={{ fontFamily: font.mono, fontSize: 8, fontWeight: 700, letterSpacing: '.12em', color: c.amberGold, textTransform: 'uppercase', marginBottom: 3 }}>
@@ -289,9 +300,9 @@ export function Home() {
 
       {/* header */}
       <div style={{ padding: '26px 20px 6px' }}>
-        <div style={{ fontFamily: font.display, fontWeight: 700, fontSize: 30, letterSpacing: '.01em', textTransform: 'uppercase', color: c.ink, lineHeight: 0.9, whiteSpace: 'nowrap' }}>
+        <h1 style={{ fontFamily: font.display, fontWeight: 700, fontSize: 30, letterSpacing: '.01em', textTransform: 'uppercase', color: c.ink, lineHeight: 0.9, whiteSpace: 'nowrap', margin: 0 }}>
           Bald(ing) Brothers
-        </div>
+        </h1>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '12px 0 0' }}>
           <div style={{ fontFamily: font.display, fontWeight: 500, fontSize: 13.5, letterSpacing: '.26em', textTransform: 'uppercase', color: c.inkMuted, whiteSpace: 'nowrap' }}>
             August Adventures
@@ -528,7 +539,7 @@ export function Home() {
             {/* Confirmation — nothing is posted until you tap Post it. */}
             {pendingPos && (
               <div style={{ marginTop: 9, border: `1.5px solid ${c.ink}`, background: c.paperMuted, borderRadius: 9, padding: '11px 13px' }}>
-                <div style={{ fontFamily: font.mono, fontSize: 8, fontWeight: 700, letterSpacing: '.12em', color: c.inkFaint, textTransform: 'uppercase', marginBottom: 4 }}>Post your location?</div>
+                <div style={{ fontFamily: font.mono, fontSize: 8, fontWeight: 700, letterSpacing: '.12em', color: c.inkOnMuted, textTransform: 'uppercase', marginBottom: 4 }}>Post your location?</div>
                 <div style={{ fontFamily: font.display, fontWeight: 700, fontSize: 18, textTransform: 'uppercase', color: c.ink, lineHeight: 1.05, letterSpacing: '.01em' }}>{pendingPos.place}</div>
                 {!pendingPos.inIreland && (
                   <div style={{ fontFamily: font.serif, fontStyle: 'italic', fontSize: 12, color: c.rust, lineHeight: 1.4, marginTop: 4 }}>

@@ -141,7 +141,7 @@ export async function attachPhoto(file: File): Promise<string | undefined> {
     if (url) return url
   }
   // No signal, or the upload failed — queue it locally for the outbox.
-  return await queuePhoto(blob, id)
+  return (await queuePhoto(blob, id)) ?? undefined
 }
 
 /** Attach several picked photos; returns the packed `photo` field (or undefined). */

@@ -52,7 +52,7 @@ export function PhotoView({
   if (!resolved) {
     if (!pending) return null
     return (
-      <div style={{ marginTop: 8, borderRadius: rounded, border: `1.5px dashed ${c.inkFainter}`, background: c.paperMuted, padding: '14px 12px', textAlign: 'center', fontFamily: font.mono, fontSize: 8.5, letterSpacing: '.1em', color: c.inkFainter, textTransform: 'uppercase' }}>
+      <div style={{ marginTop: 8, borderRadius: rounded, border: `1.5px dashed ${c.inkFainter}`, background: c.paperMuted, padding: '14px 12px', textAlign: 'center', fontFamily: font.mono, fontSize: 8.5, letterSpacing: '.1em', color: c.inkOnMuted, textTransform: 'uppercase' }}>
         Photo waiting to upload
       </div>
     )
@@ -87,9 +87,21 @@ export function PhotoView({
           role="dialog"
           aria-modal="true"
           aria-label={alt}
+          ref={(el) => el?.focus()}
+          tabIndex={-1}
+          onKeyDown={(e) => {
+            if (e.key === 'Escape') setOpen(false)
+          }}
           style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(12,10,7,.92)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16, animation: 'waw-fade .2s ease both' }}
         >
           <img src={resolved} alt={alt} style={{ maxWidth: '100%', maxHeight: '100%', borderRadius: 6, objectFit: 'contain' }} />
+          <button
+            onClick={() => setOpen(false)}
+            aria-label="Close photo"
+            style={{ position: 'absolute', top: 14, right: 14, width: 38, height: 38, borderRadius: '50%', border: '1.5px solid rgba(246,236,214,.7)', background: 'rgba(12,10,7,.5)', color: '#f6ecd6', fontFamily: font.display, fontSize: 19, lineHeight: 1 }}
+          >
+            ×
+          </button>
         </div>
       )}
     </>

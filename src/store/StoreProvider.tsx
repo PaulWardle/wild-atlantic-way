@@ -139,7 +139,14 @@ function loadStore(): Store {
   const hv = parseHash()
   if (hv) {
     // Merge (dedupe by ts) — replacing wiped the cached ping history offline.
-    if (!store.updates.some((u) => u.ts === hv.ts)) store.updates = [hv, ...store.updates]
+    if (!store.updates.some((u) => u.ts === hv.ts)) {
+      store.updates = [hv, ...store.updates]
+      try {
+        localStorage.setItem(LS_KEY, JSON.stringify(store)) // persist the arrival itself
+      } catch {
+        /* quota — best-effort */
+      }
+    }
     try {
       history.replaceState(null, '', location.pathname + location.search)
     } catch {
@@ -192,6 +199,7 @@ export interface StoreContextValue {
   ready: boolean
   /** null = unknown yet, true = reached the backend, false = unreachable (paused/offline). */
   serverOk: boolean | null
+  persistFailed: boolean
 
   // navigation
   screen: Screen
@@ -321,12 +329,23 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const storeRef = useRef(store)
 
   // persist + keep the ref in sync so async callbacks (flush/pull) read fresh state
+  const [persistFailed, setPersistFailed] = useState(false)
+  const persistFailedRef = useRef(false)
   const commit = useCallback((next: Store) => {
     storeRef.current = next
     try {
       localStorage.setItem(LS_KEY, JSON.stringify(next))
+      if (persistFailedRef.current) {
+        persistFailedRef.current = false
+        setPersistFailed(false)
+      }
     } catch {
-      /* quota / private mode — device mirror is best-effort */
+      // Quota / private mode: everything now lives in memory only — including
+      // the outbox. The user must know their queued work won't survive a kill.
+      if (!persistFailedRef.current) {
+        persistFailedRef.current = true
+        setPersistFailed(true)
+      }
     }
     setStore(next)
   }, [])
@@ -518,8 +537,14 @@ export function StoreProvider({ children }: { children: ReactNode }) {
             // Converge the server onto stable keys, once per legacy row.
             if (k !== r.stop && !migratedMarksRef.current.has(r.stop)) {
               migratedMarksRef.current.add(r.stop)
-              upsertRowRef.current?.('marks', { stop: k, mark: r.mark })
-              deleteRowRef.current?.('marks', 'stop', r.stop)
+              // Deferred: queueing inside this pull would be overwritten by the
+              // snapshot commit below (its outbox array predates these ops).
+              const stop = r.stop
+              const mark = r.mark
+              setTimeout(() => {
+                upsertRowRef.current?.('marks', { stop: k, mark })
+                deleteRowRef.current?.('marks', 'stop', stop)
+              }, 0)
             }
           })
           next.marks = mm
@@ -635,8 +660,12 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         const blob = await loadPhoto(id)
         if (!blob) continue // blob gone — drop just this photo, keep the rest
         const url = await uploadBlob(blob, id + '.jpg') // deterministic: retries converge on one object
-        // Upload still failing (offline / storage down): keep the whole op queued.
-        if (!url) return { error: { message: 'photo upload pending' } }
+        if (!url) {
+          // Upload still failing: keep the op queued — but SAVE the tokens
+          // already resolved this cycle so the retry doesn't redo them.
+          if (o.row && resolved.length) o.row.photo = photoField([...resolved, ...tokens.slice(tokens.indexOf(tok))])
+          return { error: { message: 'photo upload pending' } }
+        }
         resolved.push(url)
         uploaded.push(id)
       }
@@ -648,16 +677,19 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       if (o.row) o.row.photo = row.photo as string | undefined
     }
     const q = sb.from(o.t)
+    // Deadline on every table op — one lie-fi hang latched the whole engine
+    // for minutes while every new write silently queued behind it.
+    const signal = AbortSignal.timeout(30000)
     if (o.op === 'insert') {
-      const res = await q.insert(row as Record<string, unknown>)
+      const res = await q.insert(row as Record<string, unknown>).abortSignal(signal)
       // Blobs are deleted only AFTER the row lands — an upload followed by a
       // failed insert must keep the op (and its photos) replayable.
       if (!res.error) uploaded.forEach((id) => removePhoto(id))
       return res
     }
-    if (o.op === 'upsert') return q.upsert(row as Record<string, unknown>)
-    if (o.op === 'update') return q.update(row as Record<string, unknown>).eq(o.col as string, o.val as string | number)
-    return q.delete().eq(o.col as string, o.val as string | number)
+    if (o.op === 'upsert') return q.upsert(row as Record<string, unknown>).abortSignal(signal)
+    if (o.op === 'update') return q.update(row as Record<string, unknown>).eq(o.col as string, o.val as string | number).abortSignal(signal)
+    return q.delete().eq(o.col as string, o.val as string | number).abortSignal(signal)
   }, [])
 
   /** One key per LOGICAL ROW (no op in it): a later op on the same row must
@@ -665,6 +697,14 @@ export function StoreProvider({ children }: { children: ReactNode }) {
    * upsert and a delete racing each other at flush time. The '#suffix' makes
    * each queued instance unique so flush removes exactly what it sent. */
   const opSeqRef = useRef(0)
+  if (opSeqRef.current === 0) {
+    // Seed past every persisted suffix — a fresh session must never mint a
+    // _k that collides with an op queued before the reload.
+    ;(storeRef.current.outbox || []).forEach((x) => {
+      const m = /#(\d+)$/.exec(x._k)
+      if (m) opSeqRef.current = Math.max(opSeqRef.current, Number(m[1]))
+    })
+  }
   const queueOp = useCallback((o: Omit<OutboxOp, '_k'>, flag: boolean) => {
     const cur: Store = { ...storeRef.current }
     const logical = o.t + '|' + String(o.row ? o.row.ts ?? o.row.stop ?? o.row.sid ?? o.row.k ?? o.val : o.val)
@@ -717,6 +757,14 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   /** Server-wide clears must not run blind: offline they'd wipe the phone,
    * leave the server intact, and the next pull would "resurrect" everything —
    * minus the user's unsent work. */
+  /** Clears wait out any in-flight flush — an insert already on the wire
+   * could land after the server DELETE and resurrect "cleared" content. */
+  const settleFlush = useCallback(async () => {
+    for (let i = 0; i < 100 && flushingRef.current; i++) {
+      await new Promise((r) => setTimeout(r, 100))
+    }
+  }, [])
+
   const requireOnline = useCallback((): boolean => {
     if (!sbRef.current || isOffline() || serverOkRef.current === false) {
       try {
@@ -1142,19 +1190,36 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     [postName, postMsg, postReason, set, insertRow],
   )
 
+  /** Bucket paths referenced by a row's photo field (own-storage URLs only). */
+  const storagePathsOf = useCallback((photo?: string): string[] => {
+    const out: string[] = []
+    photoList(photo).forEach((u) => {
+      const m = /\/photos\/([^/?]+)(?:\?|$)/.exec(u)
+      if (m) out.push(decodeURIComponent(m[1]))
+    })
+    return out
+  }, [])
+  const removeStorage = useCallback((paths: string[]) => {
+    const sb = sbRef.current
+    if (sb && paths.length) sb.storage.from('photos').remove(paths).then(() => {}, () => {})
+  }, [])
+
   const removePost = useCallback(
     (ts: number) => {
       if (typeof window !== 'undefined' && !window.confirm('Remove this message?')) return
+      const gone = (storeRef.current.posts || []).find((p) => p.ts === ts)
       const posts = (storeRef.current.posts || []).filter((p) => p.ts !== ts)
       set({ posts })
       deleteRow('posts', 'ts', ts)
+      removeStorage(storagePathsOf(gone?.photo))
     },
-    [set, deleteRow],
+    [set, deleteRow, storagePathsOf, removeStorage],
   )
 
   const clearPosts = useCallback(async () => {
     if (typeof window !== 'undefined' && !window.confirm('Clear the whole board? This can’t be undone.')) return
     if (!requireOnline()) return
+    await settleFlush()
     const err = await deleteAll('posts')
     if (err) {
       try { window.alert('The trip server couldn’t clear the board — nothing was changed.') } catch { /* noop */ }
@@ -1179,8 +1244,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       // Optional time-of-day → an exact timestamp so it lands in the right slot.
       const tm = /^(\d{1,2}):(\d{2})$/.exec(jTime || '')
       let ts: number
-      if (tm) ts = dayMid + Number(tm[1]) * 3600000 + Number(tm[2]) * 60000 + Math.floor(Math.random() * 1000)
-      else ts = jd === 'today' ? Date.now() : dayMid + 12 * 3600000 + Math.floor(Math.random() * 1000) // noon-ish if a past day has no time
+      if (tm) ts = dayMid + Number(tm[1]) * 3600000 + Number(tm[2]) * 60000 + Math.floor(Math.random() * 60000)
+      else ts = jd === 'today' ? Date.now() : dayMid + 12 * 3600000 + Math.floor(Math.random() * 3600000) // midday-ish if a past day has no time
       // ts is the row's identity (UNIQUE on the server). Two notes filed to the
       // same day+minute must never collide — the colliding insert would be
       // treated as already-delivered and the second note silently vanishes.
@@ -1245,9 +1310,11 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const removeNote = useCallback(
     (ts: number) => {
       if (typeof window !== 'undefined' && !window.confirm('Delete this note?')) return
+      const gone = (storeRef.current.notes || []).find((n) => n.ts === ts)
       const notes = (storeRef.current.notes || []).filter((n) => n.ts !== ts)
       set({ notes })
       deleteRow('notes', 'ts', ts)
+      removeStorage(storagePathsOf(gone?.photo))
     },
     [set, deleteRow],
   )
@@ -1255,6 +1322,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const clearNotes = useCallback(async () => {
     if (typeof window !== 'undefined' && !window.confirm('Delete ALL journal notes? This can’t be undone.')) return
     if (!requireOnline()) return
+    await settleFlush()
     const err = await deleteAll('notes')
     if (err) {
       try { window.alert('The trip server couldn’t clear the notes — nothing was changed.') } catch { /* noop */ }
@@ -1269,6 +1337,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const clearMarksSig = useCallback(async () => {
     if (typeof window !== 'undefined' && !window.confirm('Clear all keep/maybe/cut marks and Signature picks?')) return
     if (!requireOnline()) return
+    await settleFlush()
     const errs = await Promise.all([wipe('marks', 'stop'), wipe('sig', 'sid')])
     if (errs.some((e) => e != null)) {
       try { window.alert('The trip server couldn’t clear the marks — nothing was changed.') } catch { /* noop */ }
@@ -1284,6 +1353,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const clearUpdates = useCallback(async () => {
     if (typeof window !== 'undefined' && !window.confirm('Clear all posted locations?')) return
     if (!requireOnline()) return
+    await settleFlush()
     const err = await deleteAll('locations')
     if (err) {
       try { window.alert('The trip server couldn’t clear the locations — nothing was changed.') } catch { /* noop */ }
@@ -1307,31 +1377,36 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     if (!requireOnline()) return
     const sb = sbRef.current
     if (!sb) return
-    // The confirm promises deletion, so DELIVER deletion: collect every stored
-    // object path first, null the columns, then remove the objects themselves —
-    // otherwise anyone holding a URL could fetch "cleared" photos forever.
-    const paths: string[] = []
-    const collect = (rows: Array<{ photo?: string }>) =>
-      rows.forEach((r) =>
-        photoList(r.photo).forEach((u) => {
-          const m = /\/photos\/([^/?]+)(?:\?|$)/.exec(u)
-          if (m) paths.push(m[1])
-        }),
-      )
-    collect(storeRef.current.posts || [])
-    collect(storeRef.current.notes || [])
-    collect(storeRef.current.updates || [])
-    sb.from('posts').update({ photo: null }).not('photo', 'is', null).then(() => {}, () => {})
-    sb.from('notes').update({ photo: null }).not('photo', 'is', null).then(() => {}, () => {})
-    sb.from('locations').update({ photo: null }).not('photo', 'is', null).then(() => {}, () => {})
-    if (paths.length) sb.storage.from('photos').remove(paths).then(() => {}, () => {})
+    await settleFlush()
+    // The confirm promises deletion, so DELIVER deletion — verified, like every
+    // other clear: null the columns first (awaited), then remove the storage
+    // objects, then clear locally. A failed column update aborts with nothing
+    // half-done on this device.
+    const paths = [
+      ...(storeRef.current.posts || []).flatMap((r) => storagePathsOf(r.photo)),
+      ...(storeRef.current.notes || []).flatMap((r) => storagePathsOf(r.photo)),
+      ...(storeRef.current.updates || []).flatMap((r) => storagePathsOf(r.photo)),
+    ]
+    const errs = await Promise.all(
+      (['posts', 'notes', 'locations'] as const).map((t) =>
+        Promise.resolve(sb.from(t).update({ photo: null }).not('photo', 'is', null)).then(
+          (r) => (r as { error?: unknown } | null)?.error ?? null,
+          (e) => e ?? { message: 'network' },
+        ),
+      ),
+    )
+    if (errs.some((e) => e != null)) {
+      try { window.alert('The trip server couldn’t clear the photos — nothing was changed.') } catch { /* noop */ }
+      return
+    }
+    removeStorage(paths)
     const cur: Store = { ...storeRef.current }
     cur.posts = (cur.posts || []).map((p) => ({ ...p, photo: undefined }))
     cur.notes = (cur.notes || []).map((n) => ({ ...n, photo: undefined }))
     cur.updates = (cur.updates || []).map((u) => ({ ...u, photo: undefined }))
     commit(cur)
     clearAllPending()
-  }, [commit, requireOnline])
+  }, [commit, requireOnline, settleFlush, storagePathsOf, removeStorage])
 
   const resetEverything = useCallback(async () => {
     if (typeof window === 'undefined') return
@@ -1343,26 +1418,54 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       return
     if (!window.confirm('Last chance — really wipe it all? Tap Cancel to grab a Backup first.')) return
     if (!requireOnline()) return
-    // Server first, AWAITED and VERIFIED — a timeout or any failed delete
-    // aborts the local wipe entirely. Proceeding blind produced the worst
-    // outcome: a permanent partial wipe with zero signal to the user.
-    const work = Promise.all([
-      deleteAll('posts'),
-      deleteAll('locations'),
-      deleteAll('notes'),
-      wipe('marks', 'stop'),
-      wipe('sig', 'sid'),
-      wipe('kit', 'k'),
-    ])
-    const results = await Promise.race([work, new Promise<null>((r) => setTimeout(() => r(null), 10000))])
-    if (results == null || results.some((e) => e != null)) {
+    await settleFlush()
+    // Collected BEFORE the wipe so the bucket objects can be removed after.
+    const photoPaths = [
+      ...(storeRef.current.posts || []).flatMap((r) => storagePathsOf(r.photo)),
+      ...(storeRef.current.notes || []).flatMap((r) => storagePathsOf(r.photo)),
+      ...(storeRef.current.updates || []).flatMap((r) => storagePathsOf(r.photo)),
+    ]
+    // ONE server transaction (reset_everything RPC): all six tables or none —
+    // parallel REST deletes could partially land and leave a wipe nobody asked
+    // for. Falls back to the parallel deletes only if the RPC is missing.
+    const sb = sbRef.current
+    let failed = true
+    try {
+      const rpc = await Promise.race([
+        Promise.resolve(sb!.rpc('reset_everything')).then(
+          (r) => (r as { error?: { message?: string } | null })?.error ?? null,
+          (e) => e ?? { message: 'network' },
+        ),
+        new Promise<{ message: string }>((r) => setTimeout(() => r({ message: 'timeout' }), 10000)),
+      ])
+      if (rpc == null) failed = false
+      else if (/function|not exist|404/i.test(String((rpc as { message?: string }).message || ''))) {
+        const results = await Promise.race([
+          Promise.all([
+            deleteAll('posts'),
+            deleteAll('locations'),
+            deleteAll('notes'),
+            wipe('marks', 'stop'),
+            wipe('sig', 'sid'),
+            wipe('kit', 'k'),
+          ]),
+          new Promise<null>((r) => setTimeout(() => r(null), 10000)),
+        ])
+        failed = results == null || results.some((e) => e != null)
+      }
+    } catch {
+      failed = true
+    }
+    if (failed) {
       try {
-        window.alert('Couldn’t confirm the server wipe (weak signal or the server refused) — NOTHING was cleared, on the server or this phone. Try again with better signal.')
+        window.alert('Couldn’t confirm the server wipe (weak signal or the server refused). The reset may or may not have gone through — nothing was cleared on this phone, and the app will now re-sync to show the true state.')
       } catch {
         /* noop */
       }
+      pullAll()
       return
     }
+    removeStorage(photoPaths)
     const keepRole = storeRef.current.role || null
     commit(emptyStore(keepRole))
     clearAllPending()
@@ -1533,6 +1636,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     isGuest,
     ready: true,
     serverOk,
+    persistFailed,
     screen,
     day,
     kitTab,

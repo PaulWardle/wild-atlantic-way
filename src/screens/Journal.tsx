@@ -93,7 +93,7 @@ export function Journal() {
   const tagOpts = [...jTagOptions.filter((t) => t !== 'Other'), ...customTags, 'Other']
 
   const authTab = (label: string, active: boolean, onClick: () => void) => (
-    <button onClick={onClick} style={{ flex: 1, borderRadius: 6, padding: '8px 4px', textAlign: 'center', fontFamily: font.display, fontWeight: 600, fontSize: 12.5, textTransform: 'uppercase', letterSpacing: '.03em', background: active ? c.ink : 'transparent', color: active ? c.paper : c.inkMuted }}>
+    <button onClick={onClick} aria-pressed={active} style={{ flex: 1, borderRadius: 6, padding: '8px 4px', textAlign: 'center', fontFamily: font.display, fontWeight: 600, fontSize: 12.5, textTransform: 'uppercase', letterSpacing: '.03em', background: active ? c.ink : 'transparent', color: active ? c.paper : c.inkMuted }}>
       {label}
     </button>
   )
@@ -124,7 +124,7 @@ export function Journal() {
             </button>
           </div>
           <div className="waw-noprint" style={{ fontFamily: font.serif, fontStyle: 'italic', fontSize: 11.5, color: c.inkFainter, lineHeight: 1.45, marginTop: 7 }}>
-            Saves the whole record as a PDF to keep forever — works offline, even after the trip. Best done at journey’s end.
+            Saves the whole record as a PDF to keep forever — best saved while online — the photos need a connection. Best done at journey’s end.
           </div>
         </>
       )}

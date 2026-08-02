@@ -211,7 +211,6 @@ export function Dropdown({
       <button
         onClick={onToggle}
         aria-expanded={open}
-        aria-haspopup="listbox"
         style={{
           width: '100%',
           display: 'flex',

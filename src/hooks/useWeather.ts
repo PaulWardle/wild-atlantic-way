@@ -96,10 +96,17 @@ export function useWeather(): WeatherState {
     const refresh = window.setInterval(() => {
       if (document.visibilityState === 'visible') load()
     }, 30 * 60000)
+    // Waking from a long background must not show the morning's gusts — the
+    // fetch layer's 30-min cache keeps this cheap when nothing is stale.
+    const onVis = () => {
+      if (document.visibilityState === 'visible') load()
+    }
+    document.addEventListener('visibilitychange', onVis)
     return () => {
       alive = false
       window.removeEventListener('online', onOnline)
       window.clearInterval(refresh)
+      document.removeEventListener('visibilitychange', onVis)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key])

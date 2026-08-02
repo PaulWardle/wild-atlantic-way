@@ -20,7 +20,7 @@ export function Camp() {
           Camping — {confirmed} of {T.campsites.length} confirmed
         </span>
         {pending > 0 && (
-          <span style={{ fontFamily: font.mono, fontSize: 9, fontWeight: 700, letterSpacing: '.06em', color: c.amber, background: c.amberPanel, border: `1px solid ${c.amber}`, borderRadius: 3, padding: '1.5px 7px', textTransform: 'uppercase' }}>
+          <span style={{ fontFamily: font.mono, fontSize: 9, fontWeight: 700, letterSpacing: '.06em', color: c.amberGold, background: c.amberPanel, border: `1px solid ${c.amber}`, borderRadius: 3, padding: '1.5px 7px', textTransform: 'uppercase' }}>
             {pending} pending
           </span>
         )}

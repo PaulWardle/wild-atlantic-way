@@ -53,7 +53,7 @@ export function Attractions() {
   })
 
   const chip = (label: string, active: boolean, activeBg: string, activeFg: string, borderColor: string, onClick: () => void) => (
-    <button onClick={onClick} style={{ flex: 1, border: `1.5px solid ${borderColor}`, borderRadius: 7, padding: '8px 4px', textAlign: 'center', background: active ? activeBg : c.paper, color: active ? activeFg : c.ink, fontFamily: font.display, fontWeight: 600, fontSize: 11.5, textTransform: 'uppercase', letterSpacing: '.03em' }}>
+    <button onClick={onClick} aria-pressed={active} style={{ flex: 1, border: `1.5px solid ${borderColor}`, borderRadius: 7, padding: '8px 4px', textAlign: 'center', background: active ? activeBg : c.paper, color: active ? activeFg : c.ink, fontFamily: font.display, fontWeight: 600, fontSize: 11.5, textTransform: 'uppercase', letterSpacing: '.03em' }}>
       {label}
     </button>
   )

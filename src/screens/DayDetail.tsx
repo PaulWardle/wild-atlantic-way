@@ -17,7 +17,7 @@ function KindBadge({ st }: { st: Stop }) {
       : k === 'onroute'
         ? { t: '📍 ON ROUTE', ink: c.green, bg: c.greenPanel, bd: c.green }
         : k === 'extra'
-          ? { t: '🏍 OPTIONAL', ink: c.amber, bg: c.amberPanel, bd: c.amber }
+          ? { t: '🏍 OPTIONAL', ink: c.amberGold, bg: c.amberPanel, bd: c.amber }
           : { t: 'TRANSFER', ink: c.inkFainter, bg: c.paperMuted, bd: c.inkFainter }
   return (
     <span style={{ fontFamily: font.mono, fontSize: 7.5, fontWeight: 700, letterSpacing: '.07em', textTransform: 'uppercase', color: spec.ink, background: spec.bg, border: `1px solid ${spec.bd}`, borderRadius: 3, padding: '1px 6px', whiteSpace: 'nowrap' }}>
@@ -88,7 +88,7 @@ export function DayDetail() {
     <div style={{ animation: 'waw-fade .35s ease both' }}>
       <div style={{ background: c.paperMuted, borderBottom: `1.5px solid ${c.ink}`, padding: '16px 18px 15px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ fontFamily: font.mono, fontSize: 9, letterSpacing: '.14em', color: c.inkFaint, textTransform: 'uppercase' }}>
+          <div style={{ fontFamily: font.mono, fontSize: 9, letterSpacing: '.14em', color: c.inkOnMuted, textTransform: 'uppercase' }}>
             {dy.dow} · {dy.date}
           </div>
           <div style={{ fontFamily: font.mono, fontSize: 9, letterSpacing: '.14em', color: c.rust }}>DAY {dy.n} / {T.meta.dayCount}</div>
@@ -96,7 +96,7 @@ export function DayDetail() {
         <div style={{ display: 'inline-flex', fontFamily: font.mono, fontSize: 8, fontWeight: 700, letterSpacing: '.1em', textTransform: 'uppercase', color: pi.color, border: `1px solid ${pi.color}`, borderRadius: 3, padding: '1px 6px', marginTop: 9 }}>
           {pi.label}
         </div>
-        <div style={{ fontFamily: font.display, fontWeight: 700, fontSize: 25, textTransform: 'uppercase', color: c.ink, lineHeight: 1.02, margin: '6px 0 2px' }}>{dy.title}</div>
+        <h1 style={{ fontFamily: font.display, fontWeight: 700, fontSize: 25, textTransform: 'uppercase', color: c.ink, lineHeight: 1.02, margin: '6px 0 2px' }}>{dy.title}</h1>
         <div style={{ fontFamily: font.serif, fontStyle: 'italic', fontSize: 14, color: c.inkMuted }}>{dy.tagline}</div>
         <div style={{ display: 'inline-block', marginTop: 9, fontFamily: font.mono, fontSize: 10, letterSpacing: '.04em', color: c.ink, border: `1.5px solid ${c.ink}`, borderRadius: 20, padding: '3px 10px', background: c.paper }}>{dy.miles}</div>
       </div>
@@ -137,7 +137,7 @@ export function DayDetail() {
             <SumCell label="Max w/ maybes" value={`${Math.round(sum.maxMi)} mi`} />
             <SumCell label="Est. day" value={fmtH(sum.dayMin)} strong />
           </div>
-          <div style={{ background: c.paperMuted, borderTop: `1px solid ${c.lineSoft}`, padding: '5px 12px', fontFamily: font.mono, fontSize: 8.5, color: c.inkFaint, letterSpacing: '.04em' }}>
+          <div style={{ background: c.paperMuted, borderTop: `1px solid ${c.lineSoft}`, padding: '5px 12px', fontFamily: font.mono, fontSize: 8.5, color: c.inkOnMuted, letterSpacing: '.04em' }}>
             riding {fmtH(sum.rideMin)} · stops {fmtH(sum.stopMin)} · with maybes {fmtH(sum.maxDayMin)}
           </div>
         </div>
@@ -185,7 +185,7 @@ export function DayDetail() {
                 {canMark && (
                   <div style={{ display: 'flex', gap: 5, marginTop: 9 }}>
                     <MarkButton label="Keep" color={c.green} bg={mk === 'keep' ? c.green : c.greenPanel} fg={mk === 'keep' ? c.paper : c.green} active={mk === 'keep'} onClick={() => setStopMark(di, si, 'keep')} />
-                    <MarkButton label="Maybe" color={c.amber} bg={mk === 'maybe' ? c.amber : c.amberPanel} fg={mk === 'maybe' ? c.ink : c.amber} active={mk === 'maybe'} onClick={() => setStopMark(di, si, 'maybe')} />
+                    <MarkButton label="Maybe" color={c.amber} bg={mk === 'maybe' ? c.amber : c.amberPanel} fg={mk === 'maybe' ? c.ink : c.amberGold} active={mk === 'maybe'} onClick={() => setStopMark(di, si, 'maybe')} />
                     <MarkButton label="Cut" color={c.rust} bg={mk === 'cut' ? c.rust : c.amberPanelDeep} fg={mk === 'cut' ? c.paper : c.rust} active={mk === 'cut'} onClick={() => setStopMark(di, si, 'cut')} />
                   </div>
                 )}

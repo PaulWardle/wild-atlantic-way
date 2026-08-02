@@ -29,8 +29,8 @@ export function Sights() {
       <ScreenTitle style={{ margin: '3px 0 12px' }}>Sights &amp; Roads</ScreenTitle>
 
       <div style={{ display: 'flex', gap: 4, border: `1.5px solid ${c.ink}`, borderRadius: 9, padding: 3, background: c.paperMuted, marginBottom: 16 }}>
-        <button onClick={() => setSightsTab('sig')} style={tabStyle(onSig)}>★ Signature 15</button>
-        <button onClick={() => setSightsTab('passes')} style={tabStyle(!onSig)}>» Passes</button>
+        <button onClick={() => setSightsTab('sig')} aria-pressed={onSig} style={tabStyle(onSig)}>★ Signature 15</button>
+        <button onClick={() => setSightsTab('passes')} aria-pressed={!onSig} style={tabStyle(!onSig)}>» Passes</button>
       </div>
 
       {onSig ? (

@@ -1,7 +1,7 @@
 # Wild Atlantic Way — Trip App
 
 A private, mobile-first web app for a motorcycle trip around Ireland's Wild
-Atlantic Way (Malin Head → Kinsale, Aug 2026), shared between the two riders
+Atlantic Way (Muff → Kinsale, Aug 2026), shared between the two riders
 ("brothers") and their friends & family ("guests").
 
 It has a live countdown, a hand-drawn interactive route map with live position and

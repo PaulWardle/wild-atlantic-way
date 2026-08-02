@@ -1,9 +1,9 @@
 /* Map projection + derived geometry for the accurate Ireland SVG.
  *
  * The coastline is real geographic data (src/data/irelandCoast.ts). The WAW route
- * TRACES the actual coastline arc from Malin Head down the whole Atlantic/SW coast
+ * TRACES the actual coastline arc from Muff down the whole Atlantic/SW coast
  * to Kinsale (so it hugs every peninsula, like the official map); the lead-in is
- * the short north-coast arc from Larne to Malin. The green "completed" line follows
+ * the short north-coast arc from Larne to Muff. The green "completed" line follows
  * that same coast arc up to the live position. To keep the small phone map legible
  * we drop only the two big east-coast cities the trip never visits.
  */

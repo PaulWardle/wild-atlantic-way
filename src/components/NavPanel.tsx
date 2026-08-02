@@ -29,6 +29,9 @@ export function NavPanel({ di, marks, pad = 18 }: { di: number; marks: StopMarks
   const [gps, setGps] = useState<'wait' | 'live' | 'stale' | 'off' | 'none'>('wait')
   const lastFixRef = useRef(0)
   const furthestRef = useRef<number>(-1)
+  // Highest checkpoint INDEX confirmed visited (at-branch) — chainage alone
+  // can't retire equal-km neighbours or re-order on spur ride-backs.
+  const furthestAtRef = useRef<number>(-1)
   const locate = (fresh = false) => {
     if (!('geolocation' in navigator)) {
       setGps('none')
@@ -84,11 +87,30 @@ export function NavPanel({ di, marks, pad = 18 }: { di: number; marks: StopMarks
     }
   })
   const [over, setOver] = useState<string | null>(null)
+  const overRef = useRef<string | null>(null)
+  overRef.current = over
   // Was the override BEHIND the rider when picked? A backwards choice ("riding
   // back for the photo") must only clear on arrival — the km check is already
   // true for anything behind, which made backwards overrides instant no-ops.
   const overBehindRef = useRef(false)
   const [pick, setPick] = useState(false)
+  // Commit the override-clear on arrival. Derived-only "reached" flipped back
+  // to false once the rider left the stop (pos.at null again) and the stale
+  // override resurfaced behind them mid-leg. Placed before the early return —
+  // hook order must not depend on the day's checkpoint count.
+  useEffect(() => {
+    const ov = overRef.current
+    if (!ov || pos == null || !(gps === 'live' || gps === 'stale')) return
+    const list = cpsRef.current
+    const oi2 = list.findIndex((cp) => cp.name === ov)
+    if (oi2 < 1) return
+    const reached = overBehindRef.current
+      ? pos.at != null && pos.at >= oi2
+      : pos.at != null
+        ? pos.at >= oi2
+        : (pos.km as number) >= list[oi2].km + 0.3
+    if (reached) setOver(null)
+  }, [pos, gps])
   if (cps.length < 2) return null
 
   const saveSkips = (s: string[]) => {
@@ -120,6 +142,7 @@ export function NavPanel({ di, marks, pad = 18 }: { di: number; marks: StopMarks
   if (live) {
     if (pos.at != null) {
       furthestRef.current = Math.max(furthestRef.current, cps[pos.at]?.km ?? -1)
+      furthestAtRef.current = Math.max(furthestAtRef.current, pos.at)
       gpsNext = pos.at + 1
     } else {
       furthestRef.current = Math.max(furthestRef.current, pos.km as number)
@@ -129,23 +152,29 @@ export function NavPanel({ di, marks, pad = 18 }: { di: number; marks: StopMarks
       // measurably past its km (or the at-checkpoint branch has fired).
       gpsNext = cps.findIndex((cp, i) => i >= 1 && cp.km >= furthestRef.current - 0.2)
       if (gpsNext < 0) gpsNext = cps.length
+      // Never re-offer a stop already visited by index: on a spur ride-back the
+      // projection wobbles onto the outbound lane and the shared chainage would
+      // otherwise resurrect Farren's Bar after Malin Head.
+      gpsNext = Math.max(gpsNext, furthestAtRef.current + 1)
     }
     while (gpsNext < cps.length && skipped.includes(cps[gpsNext].name)) gpsNext++
   }
   let ni: number
   const oi = over ? cps.findIndex((cp) => cp.name === over) : -1
+  const overReached =
+    oi >= 1 &&
+    live &&
+    (overBehindRef.current
+      ? pos!.at != null && pos!.at >= oi
+      : pos!.at != null
+        ? pos!.at >= oi
+        : (pos!.km as number) >= cps[oi].km + 0.3)
   if (oi >= 1) {
     // A manual choice stands — even behind you (riding back for the photo is
-    // legitimate) — until a live fix shows you AT it or past it. For a
-    // backwards choice "past it" is meaningless, so only arrival clears it.
-    const reached =
-      live &&
-      (overBehindRef.current
-        ? pos!.at != null && pos!.at >= oi
-        : pos!.at != null
-          ? pos!.at >= oi
-          : (pos!.km as number) >= cps[oi].km + 0.3)
-    ni = reached ? -1 : oi
+    // legitimate) — until a live fix shows you AT it or past it (committed via
+    // the effect above). For a backwards choice "past it" is meaningless, so
+    // only arrival clears it.
+    ni = overReached ? -1 : oi
   } else {
     ni = -1
   }
