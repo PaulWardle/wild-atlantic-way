@@ -119,8 +119,9 @@ export function DayDetail() {
 
       {isBrother && <NavPanel key={di} di={di} marks={marks} />}
 
-      {/* Live day maths — official locked, extras recalc as you Keep/Maybe/Cut */}
-      {sum.hasWaw && (
+      {/* Live day maths — official locked, extras recalc as you Keep/Maybe/Cut.
+          Brother-only: the kept/maybe columns aggregate the private marks. */}
+      {isBrother && sum.hasWaw && (
         <div style={{ margin: '14px 18px 0', border: `1.5px solid ${c.ink}`, borderRadius: 9, overflow: 'hidden' }}>
           <div style={{ background: c.ink, color: c.paper, padding: '6px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontFamily: font.mono, fontSize: 8.5, fontWeight: 700, letterSpacing: '.14em', textTransform: 'uppercase' }}>Day maths · 100% WAW mode</span>
@@ -154,13 +155,15 @@ export function DayDetail() {
           const mk = isMarkable(dy, st) ? marks[key] || null : null
           // Guests never see an extra the brothers have cut.
           if (!isBrother && mk === 'cut') return null
-          const dot = mk === 'keep' ? c.green : mk === 'maybe' ? c.amber : mk === 'cut' ? c.rust : c.paperDeep
+          // Mark colours are brother-only — guests get neutral dots so the
+          // Keep/Cut/Maybe deliberation stays private.
+          const dot = isBrother && mk === 'keep' ? c.green : isBrother && mk === 'maybe' ? c.amber : isBrother && mk === 'cut' ? c.rust : c.paperDeep
           const canMark = isMarkable(dy, st) && isBrother
           const isCut = mk === 'cut'
           return (
             <div key={si} style={{ display: 'flex', gap: 0, opacity: isCut ? 0.55 : 1 }}>
               <div style={{ flex: '0 0 26px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                <div style={{ width: 13, height: 13, borderRadius: '50%', border: `2px solid ${mk ? dot : c.ink}`, background: dot, marginTop: 4, flex: '0 0 auto' }} />
+                <div style={{ width: 13, height: 13, borderRadius: '50%', border: `2px solid ${isBrother && mk ? dot : c.ink}`, background: dot, marginTop: 4, flex: '0 0 auto' }} />
                 <div style={{ flex: 1, width: 2, background: '#c9ba94', margin: '2px 0' }} />
               </div>
               <div style={{ flex: 1, minWidth: 0, padding: '0 0 18px 8px' }}>

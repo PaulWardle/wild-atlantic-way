@@ -165,7 +165,9 @@ export function Today() {
     // (and stale position-keyed marks from older itineraries stay inert).
     .map((st, si) => ({ st, mk: isMarkable(tdy, st) ? marks[markKey(todayIdx, si)] || null : null }))
     .filter((x) => x.mk !== 'cut')
-    .map((x) => ({ n: x.st.n, maybe: x.mk === 'maybe', skip: !!x.st.skip }))
+    // Keep/Cut/Maybe is the brothers' private deliberation — guests see a
+    // plain plan (cut stops are already gone; maybes render unmarked).
+    .map((x) => ({ n: x.st.n, maybe: isBrother && x.mk === 'maybe', skip: !!x.st.skip }))
   const highlights = (tdy.stops || [])
     .filter((st, si) => (st.tags || []).indexOf('s') >= 0 && !(isMarkable(tdy, st) && marks[markKey(todayIdx, si)] === 'cut'))
     .map((st) => st.n)

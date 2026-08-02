@@ -221,7 +221,7 @@ export function Info() {
           <div style={{ marginTop: 18, border: `1.5px solid ${c.ink}`, borderRadius: 10, background: c.greenPanel, padding: '13px 14px' }}>
             <div style={{ fontFamily: font.mono, fontSize: 8, fontWeight: 700, letterSpacing: '.14em', color: c.green, textTransform: 'uppercase', marginBottom: 6 }}>What guests see</div>
             <div style={{ fontFamily: font.serif, fontSize: 13, color: c.inkSoft, lineHeight: 1.55 }}>
-              Friends &amp; family get a lighter, view-only version. They follow along — the countdown, the map and your live location, the weather, the photo gallery, the postbox and the journal feed — and can leave you messages (with photos) in the postbox. They can’t post locations, mark stops Keep/Maybe/Cut, see Kit &amp; Admin or edit the record, and any stop you’ve <b>Cut</b> disappears from their day view. Signature 15 &amp; Passes show as a read-only “Sights &amp; Roads” list.
+              Friends &amp; family get a lighter, view-only version. They follow along — the countdown, the map and your live location, the weather, the photo gallery, the postbox and the journal feed — and can leave you messages (with photos) in the postbox. They can’t post locations, mark stops Keep/Maybe/Cut, see Kit &amp; Admin or edit the record. Your marks stay private: a stop you’ve <b>Cut</b> disappears from their day view entirely, and Keep/Maybe deliberations never show. Signature 15 &amp; Passes show as a read-only “Sights &amp; Roads” list.
             </div>
           </div>
           <div style={{ marginTop: 12, border: `1.5px dashed ${c.rust}`, borderRadius: 9, background: '#f7ecdd', padding: '11px 13px' }}>
