@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { c, font } from '../theme'
 import { useStore } from '../store/StoreProvider'
 
@@ -8,6 +9,15 @@ import { useStore } from '../store/StoreProvider'
  */
 export function LinkPromptModal() {
   const { linkPrompt, confirmLink, dismissLink } = useStore()
+  // Escape dismisses, like every other overlay in the app.
+  useEffect(() => {
+    if (!linkPrompt) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') dismissLink()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [linkPrompt, dismissLink])
   if (!linkPrompt) return null
   const offerPost = linkPrompt.kind === 'offerPost'
 

@@ -49,10 +49,11 @@ function SumCell({ label, value, strong, wide }: { label: string; value: string;
   )
 }
 
-function MarkButton({ label, color, bg, fg, onClick }: { label: string; color: string; bg: string; fg: string; onClick: () => void }) {
+function MarkButton({ label, color, bg, fg, active, onClick }: { label: string; color: string; bg: string; fg: string; active?: boolean; onClick: () => void }) {
   return (
     <button
       onClick={onClick}
+      aria-pressed={!!active}
       style={{
         border: `1.5px solid ${color}`,
         borderRadius: 6,
@@ -180,9 +181,9 @@ export function DayDetail() {
                 )}
                 {canMark && (
                   <div style={{ display: 'flex', gap: 5, marginTop: 9 }}>
-                    <MarkButton label="Keep" color={c.green} bg={mk === 'keep' ? c.green : c.greenPanel} fg={mk === 'keep' ? c.paper : c.green} onClick={() => setStopMark(di, si, 'keep')} />
-                    <MarkButton label="Maybe" color={c.amber} bg={mk === 'maybe' ? c.amber : c.amberPanel} fg={mk === 'maybe' ? c.ink : c.amber} onClick={() => setStopMark(di, si, 'maybe')} />
-                    <MarkButton label="Cut" color={c.rust} bg={mk === 'cut' ? c.rust : c.amberPanelDeep} fg={mk === 'cut' ? c.paper : c.rust} onClick={() => setStopMark(di, si, 'cut')} />
+                    <MarkButton label="Keep" color={c.green} bg={mk === 'keep' ? c.green : c.greenPanel} fg={mk === 'keep' ? c.paper : c.green} active={mk === 'keep'} onClick={() => setStopMark(di, si, 'keep')} />
+                    <MarkButton label="Maybe" color={c.amber} bg={mk === 'maybe' ? c.amber : c.amberPanel} fg={mk === 'maybe' ? c.ink : c.amber} active={mk === 'maybe'} onClick={() => setStopMark(di, si, 'maybe')} />
+                    <MarkButton label="Cut" color={c.rust} bg={mk === 'cut' ? c.rust : c.amberPanelDeep} fg={mk === 'cut' ? c.paper : c.rust} active={mk === 'cut'} onClick={() => setStopMark(di, si, 'cut')} />
                   </div>
                 )}
               </div>

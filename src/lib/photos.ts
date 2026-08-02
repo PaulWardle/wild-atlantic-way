@@ -41,18 +41,23 @@ export function photoField(list: string[]): string | undefined {
  * EXIF rotation into something every browser can display. Falls back to the raw
  * file if anything about the canvas path fails.
  */
-export async function processImage(file: File, maxDim = 1600, quality = 0.82): Promise<Blob> {
+export async function processImage(file: File, maxDim = 1600, quality = 0.82): Promise<Blob | null> {
   try {
     let bmp: ImageBitmap | HTMLImageElement
     try {
       bmp = await createImageBitmap(file, { imageOrientation: 'from-image' })
     } catch {
-      bmp = await new Promise<HTMLImageElement>((res, rej) => {
-        const img = new Image()
-        img.onload = () => res(img)
-        img.onerror = rej
-        img.src = URL.createObjectURL(file)
-      })
+      const objUrl = URL.createObjectURL(file)
+      try {
+        bmp = await new Promise<HTMLImageElement>((res, rej) => {
+          const img = new Image()
+          img.onload = () => res(img)
+          img.onerror = rej
+          img.src = objUrl
+        })
+      } finally {
+        URL.revokeObjectURL(objUrl)
+      }
     }
     const w = (bmp as ImageBitmap).width || (bmp as HTMLImageElement).naturalWidth
     const h = (bmp as ImageBitmap).height || (bmp as HTMLImageElement).naturalHeight
@@ -63,13 +68,21 @@ export async function processImage(file: File, maxDim = 1600, quality = 0.82): P
     canvas.width = cw
     canvas.height = ch
     const ctx = canvas.getContext('2d')
-    if (!ctx) return file
+    if (!ctx) return rawFallback(file)
     ctx.drawImage(bmp as CanvasImageSource, 0, 0, cw, ch)
     const blob = await new Promise<Blob | null>((res) => canvas.toBlob(res, 'image/jpeg', quality))
-    return blob || file
+    return blob || rawFallback(file)
   } catch {
-    return file
+    return rawFallback(file)
   }
+}
+
+/** When re-encoding fails, only pass the ORIGINAL file through if every
+ * browser can already display it — an undecodable HEIC uploaded as ".jpg"
+ * renders broken on every other device. null = drop with the normal
+ * couldn't-process handling. */
+function rawFallback(file: File): Blob | null {
+  return /^image\/(jpeg|png|webp|gif)$/i.test(file.type) ? file : null
 }
 
 /** Upload an already-processed blob to the public `photos` bucket; returns its
@@ -78,6 +91,7 @@ export async function uploadBlob(blob: Blob): Promise<string | null> {
   try {
     const sb = getSupabase()
     const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.jpg`
+    if (blob.size > 8_000_000) return null // never burn 8MB+ of mobile data on one frame
     // A hung lie-fi upload must fail fast into the offline photo queue rather
     // than pin "Posting…" for minutes. null = the caller queues it locally.
     const up = sb.storage.from('photos').upload(path, blob, { contentType: 'image/jpeg', upsert: false })
@@ -98,12 +112,13 @@ export async function uploadBlob(blob: Blob): Promise<string | null> {
  * Returns undefined only if the image couldn't even be processed.
  */
 export async function attachPhoto(file: File): Promise<string | undefined> {
-  let blob: Blob
+  let blob: Blob | null
   try {
     blob = await processImage(file)
   } catch {
     return undefined
   }
+  if (!blob) return undefined // undecodable format — dropping beats a broken upload
   if (!isOffline()) {
     const url = await uploadBlob(blob)
     if (url) return url

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { c, font } from '../theme'
 
 /** Attach-photos control: opens the OS picker (camera or library on mobile),
@@ -20,6 +20,13 @@ export function PhotoInput({
   const inputRef = useRef<HTMLInputElement>(null)
   const previews = useMemo(() => files.map((f) => URL.createObjectURL(f)), [files])
   useEffect(() => () => previews.forEach((u) => URL.revokeObjectURL(u)), [previews])
+  // Silently dropping the 5th+ picked photo read as a broken picker.
+  const [overMsg, setOverMsg] = useState('')
+  useEffect(() => {
+    if (!overMsg) return
+    const t = window.setTimeout(() => setOverMsg(''), 3000)
+    return () => window.clearTimeout(t)
+  }, [overMsg])
 
   const full = files.length >= max
 
@@ -34,7 +41,7 @@ export function PhotoInput({
                 onClick={() => onRemove(i)}
                 disabled={disabled}
                 aria-label={`Remove photo ${i + 1}`}
-                style={{ position: 'absolute', top: 3, right: 3, width: 22, height: 22, borderRadius: '50%', background: c.ink, color: c.paper, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: font.display, fontSize: 13, lineHeight: 1, border: `1.5px solid ${c.paper}` }}
+                style={{ position: 'absolute', top: 2, right: 2, width: 30, height: 30, borderRadius: '50%', background: c.ink, color: c.paper, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: font.display, fontSize: 15, lineHeight: 1, border: `1.5px solid ${c.paper}` }}
               >
                 ×
               </button>
@@ -52,6 +59,7 @@ export function PhotoInput({
             </button>
           )}
         </div>
+        {overMsg && <div role="status" style={{ fontFamily: font.mono, fontSize: 9, color: c.rust, marginTop: 5 }}>{overMsg}</div>}
         <input
           ref={inputRef}
           type="file"
@@ -60,7 +68,9 @@ export function PhotoInput({
           style={{ display: 'none' }}
           onChange={(e) => {
             const picked = Array.from(e.target.files || [])
-            if (picked.length) onAdd(picked.slice(0, max - files.length))
+            const room = max - files.length
+            if (picked.length > room) setOverMsg(`Max ${max} photos per post — kept the first ${room}.`)
+            if (picked.length) onAdd(picked.slice(0, room))
             e.target.value = ''
           }}
         />
@@ -78,6 +88,7 @@ export function PhotoInput({
         style={{ display: 'none' }}
         onChange={(e) => {
           const picked = Array.from(e.target.files || [])
+          if (picked.length > max) setOverMsg(`Max ${max} photos per post — kept the first ${max}.`)
           if (picked.length) onAdd(picked.slice(0, max))
           e.target.value = ''
         }}
@@ -94,6 +105,7 @@ export function PhotoInput({
         </svg>
         Add photos
       </button>
+      {overMsg && <div role="status" style={{ fontFamily: font.mono, fontSize: 9, color: c.rust, marginTop: 5 }}>{overMsg}</div>}
     </>
   )
 }

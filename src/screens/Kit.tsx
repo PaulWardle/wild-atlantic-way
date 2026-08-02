@@ -103,7 +103,7 @@ function EditControls({ current, onMove, onRemove, dests }: { current: Sec; onMo
 function ItemRow({ ticked, label, onToggle, extra }: { ticked: boolean; label: string; onToggle: () => void; extra?: ReactNode }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '6px 2px' }}>
-      <button onClick={onToggle} style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 10, textAlign: 'left', background: 'none', border: 'none', padding: 0 }}>
+      <button onClick={onToggle} aria-pressed={ticked} style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 10, textAlign: 'left', background: 'none', border: 'none', padding: 0 }}>
         <div style={{ flex: '0 0 19px', height: 19, borderRadius: 4, border: `1.5px solid ${ticked ? c.green : c.ink}`, background: ticked ? c.green : c.paper, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           {ticked && (
             <svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="#eef0e0" strokeWidth={4} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -126,6 +126,7 @@ function AllocChips({ who, onPick }: { who: Who | null; onPick: (w: Who) => void
       <button
         key={w}
         onClick={() => onPick(w)}
+        aria-pressed={on}
         style={{ fontFamily: font.mono, fontSize: 8.5, fontWeight: 700, letterSpacing: '.06em', textTransform: 'uppercase', color: on ? c.paper : c.inkFaint, background: on ? c.teal : c.paperMuted, border: `1.5px solid ${on ? c.teal : c.inkFainter}`, borderRadius: 4, padding: '6px 10px' }}
       >
         {WHO_NAME[w]}
@@ -155,7 +156,7 @@ function GroupHead({ label, done, total }: { label: string; done: number; total:
 function TodoCard({ label, ticked, onToggle, onRemove }: { label: string; ticked: boolean; onToggle: () => void; onRemove?: () => void }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 11, border: `1.5px solid ${c.ink}`, borderRadius: 8, background: c.paper, padding: '11px 12px', marginBottom: 7 }}>
-      <button onClick={onToggle} style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 11, textAlign: 'left', background: 'none', border: 'none', padding: 0 }}>
+      <button onClick={onToggle} aria-pressed={ticked} style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 11, textAlign: 'left', background: 'none', border: 'none', padding: 0 }}>
         <div style={{ flex: '0 0 21px', height: 21, borderRadius: 5, border: `1.5px solid ${ticked ? c.green : c.ink}`, background: ticked ? c.green : c.paper, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           {ticked && (
             <svg width={11} height={11} viewBox="0 0 24 24" fill="none" stroke="#eef0e0" strokeWidth={4} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -255,7 +256,7 @@ export function Kit() {
       if (!quiet) setDupMsg(`“${label}” is already on the list`)
       return
     }
-    setKit(`add:${sec}:a${Date.now()}`, label)
+    setKit(`add:${sec}:a${Date.now()}${Math.random().toString(36).slice(2, 5)}`, label)
   }
 
   /** Delete a custom item and everything hanging off it. */
@@ -271,15 +272,30 @@ export function Kit() {
   const resetView = () => {
     const name = packView === 'S' ? 'the SHARED list' : `${WHO_NAME[packView as Who]}’s list`
     if (!window.confirm(`Reset ${name}?\n\nUnticks everything and restores any removed items. Your added items (and who-carries-what) are kept.`)) return
+    // Labels that live on another list as custom adds = items MOVED away.
+    // Restoring their tombstone would duplicate them across lists.
+    const stock = packView === 'S' ? T.sharedKit : T.packing
+    const movedAway = new Set<string>()
+    ;(['P', 'C', 'S'] as Sec[]).filter((s2) => s2 !== packView).forEach((s2) =>
+      addedItems(kit, s2).forEach((a) => movedAway.add(a.label.toLowerCase())),
+    )
     Object.keys(kit).forEach((k) => {
-      if (k.startsWith(`pk:${packView}:`) || k.startsWith(`rm:${packView}:`)) setKit(k, null)
+      if (k.startsWith(`pk:${packView}:`)) setKit(k, null)
+      else if (k.startsWith(`rm:${packView}:`)) {
+        const m = /^rm:.:(\d+)_(\d+)$/.exec(k)
+        const label = m ? stock[Number(m[1])]?.items[Number(m[2])] : undefined
+        if (!label || !movedAway.has(label.toLowerCase())) setKit(k, null)
+      }
     })
   }
 
-  /** Shuffle a stock item to another list: off here, added there (deduped). */
+  /** Shuffle a stock item to another list: off here, added there (deduped).
+   * Ticks and allocations don't travel — a restored item must come back clean. */
   const moveStock = (sec: Sec, gi: number, ii: number, label: string, dest: Sec) => {
     addItem(dest, label, true)
     setKit(`rm:${sec}:${gi}_${ii}`, '1')
+    if (kit[`pk:${sec}:${gi}_${ii}`]) setKit(`pk:${sec}:${gi}_${ii}`, null)
+    if (sec === 'S' && kit[`al:${gi}_${ii}`]) setKit(`al:${gi}_${ii}`, null)
   }
   const moveAdded = (sec: Sec, id: string, label: string, dest: Sec) => {
     addItem(dest, label, true)
@@ -401,6 +417,7 @@ export function Kit() {
                 ticked={!!kit[k]}
                 onToggle={() => setKit(k, kit[k] ? null : '1')}
                 onRemove={editing ? () => {
+                  if (!window.confirm(`Remove \u201c${a.label}\u201d from the list on both phones?`)) return
                   setKit(`add:T:${a.id}`, null)
                   setKit(k, null)
                 } : undefined}
@@ -409,8 +426,10 @@ export function Kit() {
           })}
           <AddRow boxed placeholder="Add a to-do…" onAdd={(label) => {
             const have = new Set([...todoAdds.map((a) => a.label.toLowerCase()), ...visibleBookings.map((b) => b.label.toLowerCase())])
-            if (!have.has(label.toLowerCase())) setKit(`add:T:a${Date.now()}`, label)
+            if (have.has(label.toLowerCase())) setDupMsg(`“${label}” is already on the list`)
+            else setKit(`add:T:a${Date.now()}${Math.random().toString(36).slice(2, 5)}`, label)
           }} />
+          {dupMsg && <div role="status" style={{ fontFamily: font.mono, fontSize: 9, letterSpacing: '.04em', color: c.rust, padding: '2px 2px 0' }}>{dupMsg}</div>}
           {editing && T.bookings.some((b) => kit[`rm:B:${b.id}`]) && (
             <button
               onClick={() => T.bookings.forEach((b) => { if (kit[`rm:B:${b.id}`]) setKit(`rm:B:${b.id}`, null) })}

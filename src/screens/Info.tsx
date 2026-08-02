@@ -3,6 +3,7 @@ import { c, font } from '../theme'
 import { useStore } from '../store/StoreProvider'
 import { tripData } from '../data/tripData'
 import { Kicker, ScreenTitle, Lede } from '../components/ui'
+import { reasonMeta, jKindMeta } from '../lib/tags'
 
 const meta = tripData.meta
 
@@ -127,11 +128,9 @@ export function Info() {
             title="The postbox"
             chips={
               <>
-                <Chip label="Recommendation" ink={c.rust} bg={c.amberPanelDeep} />
-                <Chip label="Comment" ink={c.green} bg={c.greenPanel} />
-                <Chip label="Question" ink={c.teal} bg={c.tealPanel} />
-                <Chip label="Feedback" ink={c.amberGold} bg="#f4edd8" />
-                <Chip label="Hello" ink="#7a5230" bg="#efe6d6" />
+                {Object.entries(reasonMeta).map(([label, m]) => (
+                  <Chip key={label} label={label} ink={m.ink} bg={m.bg} />
+                ))}
               </>
             }
           >
@@ -141,10 +140,9 @@ export function Info() {
             title="The journal"
             chips={
               <>
-                <Chip label="⚑ Milestone" ink={c.rust} bg={c.amberPanelDeep} />
-                <Chip label="Road" ink={c.teal} bg={c.tealPanel} />
-                <Chip label="Signature" ink={c.amberGold} bg="#f4edd8" />
-                <Chip label="Here" ink={c.rust} bg={c.amberPanelDeep} />
+                {Object.values(jKindMeta).map((m) => (
+                  <Chip key={m.label} label={m.label} ink={m.ink} bg={m.bg} />
+                ))}
               </>
             }
           >
@@ -202,9 +200,9 @@ export function Info() {
             title="The journal"
             chips={
               <>
-                <Chip label="Milestone" ink={c.teal} bg={c.tealPanel} />
-                <Chip label="Oh Fuck! Moment" ink={c.teal} bg={c.tealPanel} />
-                <Chip label="Key Event" ink={c.teal} bg={c.tealPanel} />
+                <Chip label="Milestone" ink={jKindMeta.note.ink} bg={jKindMeta.note.bg} />
+                <Chip label="Oh Fuck! Moment" ink={jKindMeta.note.ink} bg={jKindMeta.note.bg} />
+                <Chip label="Key Event" ink={jKindMeta.note.ink} bg={jKindMeta.note.bg} />
                 <Chip label="Paul" ink={c.inkMuted} bg={c.paperDeep} />
                 <Chip label="CJ" ink={c.inkMuted} bg={c.paperDeep} />
               </>

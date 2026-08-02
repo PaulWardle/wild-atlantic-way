@@ -210,7 +210,8 @@ export function NavPanel({ di, marks, pad = 18 }: { di: number; marks: StopMarks
   const shell: React.CSSProperties = { margin: `14px ${pad}px 0`, border: `1.5px solid ${c.ink}`, borderRadius: 9, overflow: 'hidden' }
   const head: React.CSSProperties = { background: c.teal, color: c.cream, padding: '6px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }
   const headL: React.CSSProperties = { fontFamily: font.mono, fontSize: 8.5, fontWeight: 700, letterSpacing: '.14em', textTransform: 'uppercase' }
-  const linkBtn: React.CSSProperties = { fontFamily: font.mono, fontSize: 9, fontWeight: 700, letterSpacing: '.08em', textTransform: 'uppercase', background: 'none', border: 'none', textDecoration: 'underline' }
+  // Padding + negative margin = a ~40px touch target (gloves!) with the same visual footprint.
+  const linkBtn: React.CSSProperties = { fontFamily: font.mono, fontSize: 9, fontWeight: 700, letterSpacing: '.08em', textTransform: 'uppercase', background: 'none', border: 'none', textDecoration: 'underline', padding: '12px 10px', margin: '-12px -10px' }
 
   if (done) {
     return (

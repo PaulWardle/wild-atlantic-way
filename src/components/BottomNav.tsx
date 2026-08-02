@@ -106,7 +106,7 @@ export function BottomNav() {
           </svg>
         </Tab>
       )}
-      <Tab label="Info" ink={infoInk} active={infoInk === ACTIVE} onClick={() => nav({ screen: 'info' })}>
+      <Tab label="Guide" ink={infoInk} active={infoInk === ACTIVE} onClick={() => nav({ screen: 'info' })}>
         <svg width={19} height={19} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.7} aria-hidden="true" focusable="false">
           <circle cx={12} cy={12} r={9} />
           <line x1={12} y1={11} x2={12} y2={16.5} strokeLinecap="round" />

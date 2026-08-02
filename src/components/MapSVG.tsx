@@ -152,6 +152,14 @@ export function MapLegend({ style }: { style?: React.CSSProperties }) {
         <span style={{ width: 9, height: 9, borderRadius: '50%', background: c.townDot, display: 'inline-block' }} />
         Town
       </span>
+      <span style={item}>
+        <span style={{ width: 15, height: 2.6, background: c.greenLine, display: 'inline-block', borderRadius: 2 }} />
+        Ridden
+      </span>
+      <span style={item}>
+        <span style={{ width: 9, height: 9, borderRadius: '50%', background: c.rust, border: `1.5px solid ${c.cream}`, boxSizing: 'border-box', display: 'inline-block' }} />
+        Live spot
+      </span>
     </div>
   )
 }

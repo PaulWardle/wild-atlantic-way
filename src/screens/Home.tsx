@@ -242,7 +242,10 @@ export function Home() {
     const now = new Date()
     const todayMs = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime()
     const dayIdx = Math.floor((todayMs - departMs) / 86400000) // 0-based
-    if (dayIdx < 0) return { big: String(daysToGo(meta.depart)), label: 'Days to go', sub: 'until the Wild Atlantic Way' }
+    if (dayIdx < 0) {
+      const dtg = daysToGo(meta.depart)
+      return { big: String(dtg), label: dtg === 1 ? 'Day to go' : 'Days to go', sub: 'until the Wild Atlantic Way' }
+    }
     if (dayIdx >= total) return { big: '✓', label: 'Trip complete', sub: 'The Wild Atlantic Way — done' }
     return { big: String(dayIdx + 1), label: 'On the road', sub: `Day ${dayIdx + 1} of ${total} · Wild Atlantic Way` }
   })()
@@ -412,6 +415,7 @@ export function Home() {
             {updates.length > 1 && (
               <div style={{ margin: '11px 14px 0', borderTop: `1px dashed ${c.line}`, paddingTop: 9 }}>
                 <div style={{ fontFamily: font.mono, fontSize: 8, letterSpacing: '.14em', color: c.inkFaintest, textTransform: 'uppercase', marginBottom: 6 }}>Earlier pings</div>
+                <div style={liveFeed.length > 4 ? { maxHeight: 300, overflowY: 'auto', margin: '0 -4px', padding: '0 4px' } : undefined}>
                 {liveFeed.map((u, i) => (
                   <div key={i} style={{ display: 'flex', gap: 9, padding: '4px 0' }}>
                     <span style={{ fontFamily: font.display, fontWeight: 700, fontSize: 12, color: c.rust, flex: '0 0 auto', lineHeight: 1.3 }}>•</span>
@@ -422,6 +426,7 @@ export function Home() {
                     </div>
                   </div>
                 ))}
+                </div>
               </div>
             )}
           </>
@@ -431,7 +436,7 @@ export function Home() {
         {liveActive && isGuest && (
           <div style={{ padding: '13px 14px 13px' }}>
             <div style={{ fontFamily: font.mono, fontSize: 8, letterSpacing: '.14em', color: c.inkFaintest, textTransform: 'uppercase', marginBottom: 8 }}>
-              Today the brothers have been
+              Where the brothers have been
             </div>
             <div style={allPings.length > 3 ? { maxHeight: 276, overflowY: 'auto', margin: '0 -4px', padding: '0 4px' } : undefined}>
             {allPings.map((u, i) => (
@@ -454,7 +459,7 @@ export function Home() {
 
         {!liveActive && isBrother && (
           <div style={{ padding: '12px 14px 2px', fontFamily: font.serif, fontSize: 13, color: '#5a5140', lineHeight: 1.55 }}>
-            No location posted yet. Tap <b style={{ color: c.rust }}>We are here</b> so friends &amp; family can follow along.
+            No location posted yet. Tap <b style={{ color: c.rust }}>Use my location</b> (or set the spot by hand) so friends &amp; family can follow along.
           </div>
         )}
         {!liveActive && isGuest && (

@@ -104,7 +104,9 @@ export function Today() {
           <br />
           Atlantic Way
         </div>
-        <div style={{ fontFamily: font.serif, fontStyle: 'italic', fontSize: 14, color: c.inkMuted, marginBottom: 28 }}>Douglas → Larne · 10 Aug 2026</div>
+        <div style={{ fontFamily: font.serif, fontStyle: 'italic', fontSize: 14, color: c.inkMuted, marginBottom: 28 }}>
+          Douglas → Larne · {new Date(meta.depart + 'T00:00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+        </div>
         <div style={{ display: 'flex', gap: 7 }}>
           <CdCell n={cd.days} label="Days" />
           <CdCell n={cd.hrs} label="Hrs" />
@@ -135,7 +137,7 @@ export function Today() {
         <div style={{ fontFamily: font.serif, fontStyle: 'italic', fontSize: 14, color: c.inkMuted }}>The Wild Atlantic Way, ridden.</div>
         <div style={{ display: 'flex', gap: 7, marginTop: 26 }}>
           {[
-            { n: '10', l: 'Days', accent: false },
+            { n: String(meta.dayCount), l: 'Days', accent: false },
             { n: String(meta.sigCount), l: 'Signature', accent: true },
             { n: meta.totalMiles, l: 'Miles', accent: false },
           ].map((st, i) => (

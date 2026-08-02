@@ -80,7 +80,12 @@ export function Slider({
           ))}
         </div>
       </div>
-      {n > 1 && <Dots n={n} active={active} onDot={onDot} />}
+      {n > 1 && n <= 12 && <Dots n={n} active={active} onDot={onDot} />}
+      {n > 12 && (
+        <div style={{ textAlign: 'center', padding: '3px 12px 11px', fontFamily: "'Space Mono',monospace", fontSize: 9, letterSpacing: '.08em', color: '#8a7c55' }}>
+          {active + 1} / {n}
+        </div>
+      )}
       {n === 1 && <div style={{ height: 11 }} />}
     </>
   )

@@ -47,7 +47,15 @@ export function useWeather(): WeatherState {
   const tomorrowRoute = route[Math.min(route.length - 1, dayIdx + 1)] || todayRoute
 
   // Today: the live ping if it carries coords, otherwise the itinerary area.
-  const liveHere = u && u.lat != null && u.lon != null
+  // Before departure a test ping from home would show Isle of Man weather
+  // under a "first stop" label — live positions only count once riding.
+  let started = false
+  try {
+    started = Date.now() >= new Date(tripData.meta.depart + 'T00:00:00').getTime()
+  } catch {
+    started = false
+  }
+  const liveHere = started && u && u.lat != null && u.lon != null
   const todayLat = liveHere ? (u.lat as number) : todayRoute.lat
   const todayLon = liveHere ? (u.lon as number) : todayRoute.lon
   const todayPlace = liveHere ? u.place || todayRoute.area : todayRoute.area

@@ -159,7 +159,13 @@ function parseHash(): Update | null {
     return {
       si: Math.max(0, Math.min(i, journey.length - 1)),
       note: (q.get('n') || '').slice(0, 200),
-      ts: q.get('t') ? parseInt(q.get('t') as string, 10) : Date.now(),
+      // Untrusted input: NaN never dedupes (NaN !== NaN, so every open of a
+      // bad link stacks another entry) and a far-future value pins itself as
+      // the permanent "latest" ping.
+      ts: (() => {
+        const t = parseInt(q.get('t') || '', 10)
+        return Number.isFinite(t) && t > 1577836800000 && t < Date.now() + 60000 ? t : Date.now()
+      })(),
     }
   } catch {
     return null
@@ -818,8 +824,12 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     // and — even when everything LOOKS fine — pull at least every 5 minutes,
     // because a dead channel plus a live network is otherwise silent staleness.
     const flushInt = window.setInterval(() => {
+      if (document.visibilityState === 'hidden') return // asleep in a pocket
       flush()
-      if (serverOkRef.current === false || Date.now() - lastPullRef.current > 300000) pullAll()
+      // Unreachable: retry the pull at 60s, not 20s — a day of no-signal riding
+      // shouldn't spin the radio three times a minute. 5-min failsafe unchanged.
+      const downRetry = serverOkRef.current === false && Date.now() - lastPullRef.current > 60000
+      if (downRetry || Date.now() - lastPullRef.current > 300000) pullAll()
     }, 20000)
     const onResize = () => {
       const w = window.innerWidth
@@ -868,9 +878,18 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   // auto-advancing carousels on Home — one timer drives the postbox, journal
   // and gallery together so they all turn on the same beat (never drifting).
+  // A manual dot-tap/swipe pauses the beat (mid-read content must not be
+  // yanked away), and reduced-motion users get no auto-advance at all.
+  const carouselTouchRef = useRef(0)
   useEffect(() => {
     const car = window.setInterval(() => {
       if (screenRef.current !== 'home') return
+      try {
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+      } catch {
+        /* noop */
+      }
+      if (Date.now() - carouselTouchRef.current < 15000) return
       const s = storeRef.current
       const n = Math.min(10, (s.posts || []).length)
       if (n > 1) setPostIdxState((i) => (i + 1) % n)
@@ -1062,8 +1081,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   const submitPost = useCallback(
     async (files?: File[] | null): Promise<boolean> => {
-      const name = (postName || '').trim()
-      const msg = (postMsg || '').trim()
+      const name = (postName || '').trim().slice(0, 60)
+      const msg = (postMsg || '').trim().slice(0, 500)
       if (!name || !msg) {
         setPostErr(true)
         return false // caller keeps the attached photos — validation failed
@@ -1109,7 +1128,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
 
   const addNote = useCallback(
     async (files?: File[] | null) => {
-      const text = (jNote || '').trim()
+      const text = (jNote || '').trim().slice(0, 2000)
       if (!text && !(files && files.length)) return
       const jd = jDay ?? 'today'
       // Day the entry belongs to (midnight), used for grouping.
@@ -1143,7 +1162,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   // Save a brother's own tag (from "Other → +") so it's reusable in the list.
   const addCustomTag = useCallback(
     (tag: string) => {
-      const t = (tag || '').trim()
+      const t = (tag || '').trim().slice(0, 40)
       if (!t) return
       const cur: Store = { ...storeRef.current }
       const existing = cur.customTags || []
@@ -1242,15 +1261,29 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     }
   }, [commit, deleteAll, requireOnline])
 
-  const clearGallery = useCallback(() => {
+  const clearGallery = useCallback(async () => {
     if (typeof window !== 'undefined' && !window.confirm('Clear every photo from the trip? The notes and messages stay — only the pictures go. This can’t be undone.')) return
     if (!requireOnline()) return
     const sb = sbRef.current
-    if (sb) {
-      sb.from('posts').update({ photo: null }).not('photo', 'is', null).then(() => {}, () => {})
-      sb.from('notes').update({ photo: null }).not('photo', 'is', null).then(() => {}, () => {})
-      sb.from('locations').update({ photo: null }).not('photo', 'is', null).then(() => {}, () => {})
-    }
+    if (!sb) return
+    // The confirm promises deletion, so DELIVER deletion: collect every stored
+    // object path first, null the columns, then remove the objects themselves —
+    // otherwise anyone holding a URL could fetch "cleared" photos forever.
+    const paths: string[] = []
+    const collect = (rows: Array<{ photo?: string }>) =>
+      rows.forEach((r) =>
+        photoList(r.photo).forEach((u) => {
+          const m = /\/photos\/([^/?]+)(?:\?|$)/.exec(u)
+          if (m) paths.push(m[1])
+        }),
+      )
+    collect(storeRef.current.posts || [])
+    collect(storeRef.current.notes || [])
+    collect(storeRef.current.updates || [])
+    sb.from('posts').update({ photo: null }).not('photo', 'is', null).then(() => {}, () => {})
+    sb.from('notes').update({ photo: null }).not('photo', 'is', null).then(() => {}, () => {})
+    sb.from('locations').update({ photo: null }).not('photo', 'is', null).then(() => {}, () => {})
+    if (paths.length) sb.storage.from('photos').remove(paths).then(() => {}, () => {})
     const cur: Store = { ...storeRef.current }
     cur.posts = (cur.posts || []).map((p) => ({ ...p, photo: undefined }))
     cur.notes = (cur.notes || []).map((n) => ({ ...n, photo: undefined }))
@@ -1299,11 +1332,26 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     }
   }, [commit, deleteAll, wipe, requireOnline])
 
-  const savePDF = useCallback(() => {
+  const savePDF = useCallback(async () => {
     try {
+      // Print engines don't reliably force lazy images below the fold — a Trip
+      // Book with empty frames is a ruined keepsake. Eager-load and decode
+      // everything first (bounded, so a dead image can't block the print).
+      const imgs = Array.from(document.images)
+      imgs.forEach((im) => {
+        im.loading = 'eager'
+      })
+      await Promise.race([
+        Promise.allSettled(imgs.map((im) => (im.decode ? im.decode().catch(() => {}) : Promise.resolve()))),
+        new Promise((r) => setTimeout(r, 6000)),
+      ])
       window.print()
     } catch {
-      /* noop */
+      try {
+        window.print()
+      } catch {
+        /* noop */
+      }
     }
   }, [])
 
@@ -1485,11 +1533,20 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     submitPost,
     removePost,
     clearPosts,
-    setPostIdx: setPostIdxState,
+    setPostIdx: (i: number) => {
+      carouselTouchRef.current = Date.now()
+      setPostIdxState(i)
+    },
     galIdx,
-    setGalIdx: setGalIdxState,
+    setGalIdx: (i: number) => {
+      carouselTouchRef.current = Date.now()
+      setGalIdxState(i)
+    },
     jFeedIdx,
-    setJFeedIdx: setJFeedIdxState,
+    setJFeedIdx: (i: number) => {
+      carouselTouchRef.current = Date.now()
+      setJFeedIdxState(i)
+    },
     jFeedSwipeStart,
     jFeedSwipeEnd,
     jNote,

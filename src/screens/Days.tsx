@@ -91,10 +91,10 @@ export function Days() {
       })}
 
       <div style={{ display: 'flex', gap: 8, marginTop: 14 }}>
-        <button onClick={() => nav({ screen: 'signature' })} style={{ flex: 1, border: `1.5px solid ${c.ink}`, borderRadius: 8, background: c.paperMuted, padding: 11, textAlign: 'center', fontFamily: font.display, fontWeight: 600, fontSize: 12, textTransform: 'uppercase', letterSpacing: '.04em', color: c.ink }}>
+        <button onClick={() => nav({ screen: isBrother ? 'signature' : 'sights' })} style={{ flex: 1, border: `1.5px solid ${c.ink}`, borderRadius: 8, background: c.paperMuted, padding: 11, textAlign: 'center', fontFamily: font.display, fontWeight: 600, fontSize: 12, textTransform: 'uppercase', letterSpacing: '.04em', color: c.ink }}>
           ★ Signature 15
         </button>
-        <button onClick={() => nav({ screen: 'passes' })} style={{ flex: 1, border: `1.5px solid ${c.ink}`, borderRadius: 8, background: c.paperMuted, padding: 11, textAlign: 'center', fontFamily: font.display, fontWeight: 600, fontSize: 12, textTransform: 'uppercase', letterSpacing: '.04em', color: c.ink }}>
+        <button onClick={() => nav({ screen: isBrother ? 'passes' : 'sights' })} style={{ flex: 1, border: `1.5px solid ${c.ink}`, borderRadius: 8, background: c.paperMuted, padding: 11, textAlign: 'center', fontFamily: font.display, fontWeight: 600, fontSize: 12, textTransform: 'uppercase', letterSpacing: '.04em', color: c.ink }}>
           » Passes
         </button>
       </div>

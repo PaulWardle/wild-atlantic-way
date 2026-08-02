@@ -30,6 +30,7 @@ export function SigRows({ interactive }: { interactive: boolean }) {
             <button
               key={x.id}
               onClick={() => toggleSig(x.id)}
+              aria-pressed={ticked}
               style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 11, border: `1.5px solid ${c.ink}`, borderRadius: 8, background: c.paper, padding: '10px 12px', marginBottom: 7, textAlign: 'left' }}
             >
               <div style={{ flex: '0 0 22px', height: 22, borderRadius: 5, border: `1.5px solid ${ticked ? c.rust : c.ink}`, background: ticked ? c.rust : c.paper, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

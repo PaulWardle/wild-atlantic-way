@@ -35,7 +35,7 @@ export const tripData: Trip = {
       "miles": "~150mi (~75 transfer)",
       "phase": "lead",
       "wawStart": true,
-      "warnBanner": "Locked day: Larne → Derry → Muff, then the official line up Lough Foyle — Greencastle/Warren Point, Stroove — round to Culdaff, past Farren's to Malin Head, and the tent at Binion. Late boat? Muff → R238 direct to camp, Malin as a 25-mile dawn spur.",
+      "warnBanner": "Locked day: Larne → Derry → Muff, then the official line up Lough Foyle — Greencastle/Warren Point, Stroove — round to Culdaff, past Farren’s to Malin Head, and the tent at Binion. Late boat? Muff → R238 direct to camp, Malin as a 25-mile dawn spur.",
       "stops": [
         {
           "n": "Douglas → Larne",
@@ -116,8 +116,8 @@ export const tripData: Trip = {
           "sid": "d1-culdaff"
         },
         {
-          "n": "Farren's Bar",
-          "d": "Ireland's most northerly pub, on the approach road to the head — you pass it BEFORE Banba's Crown. Sticker and photo on the way up; the pint on the way back down if the light allows.",
+          "n": "Farren’s Bar",
+          "d": "Ireland’s most northerly pub, on the approach road to the head — you pass it BEFORE Banba’s Crown. Sticker and photo on the way up; the pint on the way back down if the light allows.",
           "tags": [
             "pub"
           ],
@@ -129,7 +129,7 @@ export const tripData: Trip = {
         },
         {
           "n": "MALIN HEAD",
-          "d": "Ireland's most northerly point. Banba's Crown Napoleonic tower, the “EIRE 80” WW2 sign, a Star Wars: The Last Jedi filming site — Signature Point number one, bagged on day one.",
+          "d": "Ireland’s most northerly point. Banba’s Crown Napoleonic tower, the “EIRE 80” WW2 sign, a Star Wars: The Last Jedi filming site — Signature Point number one, bagged on day one.",
           "tags": [
             "s",
             "w",
@@ -320,7 +320,7 @@ export const tripData: Trip = {
       "dow": "WED",
       "date": "12 AUG",
       "title": "Horn Head → Slieve League → Sligo",
-      "tagline": "The long one — Donegal's whole west face in a day",
+      "tagline": "The long one — Donegal’s whole west face in a day",
       "miles": "~235mi",
       "phase": "waw",
       "warnBanner": "Longest riding day. The official line is locked — the levers are stop time, not road: shorten Slieve League / Killybegs / Malin Beg visits if behind. Nothing official gets skipped.",
@@ -938,7 +938,7 @@ export const tripData: Trip = {
         "area": "Doolin",
         "primary": "Aille River Tourist Hostel & Campsite",
         "note": "Riverside in the village on the Aille — the Cliffs are still 10 minutes south at 08:00, and the trad session still happens.",
-        "backup": "Nagle's — ❌ full",
+        "backup": "Nagle’s — ❌ full",
         "sellout": false,
         "deviationMi": 0.2,
         "retraceMi": 0
@@ -1088,7 +1088,7 @@ export const tripData: Trip = {
             "w",
             "view"
           ],
-          "d": "The loop at golden hour, buses gone, sun over the water: Ventry, the beehive huts, Slea Head itself — then DUNMORE HEAD, mainland Ireland's westernmost point and the Blasket Islands view. Signature Point eleven, in the best light of the day.",
+          "d": "The loop at golden hour, buses gone, sun over the water: Ventry, the beehive huts, Slea Head itself — then DUNMORE HEAD, mainland Ireland’s westernmost point and the Blasket Islands view. Signature Point eleven, in the best light of the day.",
           "lat": 52.097,
           "lon": -10.45,
           "warn": "Ride it CLOCKWISE (Ventry → Slea Head → Dunquin) — the coaches’ one-way convention; going the other way means meeting them head-on on the cliff sections. The NEXT STOP button already routes it the right way round.",
@@ -1102,7 +1102,7 @@ export const tripData: Trip = {
             "view",
             "history"
           ],
-          "d": "Round the loop's west side — Kruger's (Ireland's westernmost pub) at Dunquin — to the tent beside the 1,200-year-old Gallarus Oratory. The official line continues FORWARD from here through Dingle tomorrow: zero repeated road.",
+          "d": "Round the loop’s west side — Kruger’s (Ireland’s westernmost pub) at Dunquin — to the tent beside the 1,200-year-old Gallarus Oratory. The official line continues FORWARD from here through Dingle tomorrow: zero repeated road.",
           "lat": 52.173,
           "lon": -10.348,
           "sid": "d7-dunquin-ballyferriter-gallarus"
@@ -1111,7 +1111,7 @@ export const tripData: Trip = {
       "night": {
         "area": "West Dingle",
         "primary": "Campáil Teach an Aragail",
-        "note": "Beside the Gallarus Oratory, at the END of today's window — the Way exits forward through Dingle tomorrow. Zero repeated road.",
+        "note": "Beside the Gallarus Oratory, at the END of today’s window — the Way exits forward through Dingle tomorrow. Zero repeated road.",
         "backup": "Dingle town campsite",
         "sellout": false,
         "deviationMi": 0.4
@@ -1146,7 +1146,7 @@ export const tripData: Trip = {
         },
         {
           "n": "South Pole Inn, Annascaul",
-          "d": "Tom Crean's own pub, directly on the exit road east — the Antarctic legend's statue outside. Shut at this hour (the pint was last night in Dingle), but the photo is free and costs zero miles.",
+          "d": "Tom Crean’s own pub, directly on the exit road east — the Antarctic legend’s statue outside. Shut at this hour (the pint was last night in Dingle), but the photo is free and costs zero miles.",
           "tags": [
             "pub",
             "history"
@@ -1264,7 +1264,7 @@ export const tripData: Trip = {
           "sid": "d8-dursey-sound"
         },
         {
-          "n": "Castletownbere & McCarthy's Bar",
+          "n": "Castletownbere & McCarthy’s Bar",
           "d": "The pint at McCarthy’s — of the book cover — in Ireland’s biggest whitefish port. Twenty easy minutes to the tent after.",
           "tags": [
             "town",
@@ -1335,7 +1335,7 @@ export const tripData: Trip = {
           "sid": "d9-glengarriff-bantry"
         },
         {
-          "n": "SHEEP'S HEAD loop",
+          "n": "SHEEP’S HEAD loop",
           "kind": "waw",
           "stopMin": 10,
           "tags": [
@@ -1474,7 +1474,7 @@ export const tripData: Trip = {
         "area": "Tagoat (for the boat)",
         "primary": "IOAC",
         "note": "Minutes from Rosslare Harbour. Sets up the 08:15 sailing.",
-        "backup": "St Margaret's Beach (superseded)",
+        "backup": "St Margaret’s Beach (superseded)",
         "sellout": false,
         "deviationMi": 0,
         "retraceMi": 0
@@ -1531,7 +1531,7 @@ export const tripData: Trip = {
       }
     ],
     "home": {
-      "intro": "No boat to Liverpool — it's Wales or nothing. You're on the MORNING Rosslare→Fishguard, because Fishguard→Preston is ~250mi / 5h and an evening boat would land you home in the small hours.",
+      "intro": "No boat to Liverpool — it’s Wales or nothing. You’re on the MORNING Rosslare→Fishguard, because Fishguard→Preston is ~250mi / 5h and an evening boat would land you home in the small hours.",
       "options": [
         {
           "id": "A",
@@ -1541,7 +1541,7 @@ export const tripData: Trip = {
             "Wed 19 Aug — 08:15 → 11:45, Stena Nordica (3h30)",
             "Be at the port by 07:15"
           ],
-          "hack": "Camp Tue 18 within 30 min of Rosslare (St Margaret's Beach) so the 08:15 is a short hop, not a panic.",
+          "hack": "Camp Tue 18 within 30 min of Rosslare (St Margaret’s Beach) so the 08:15 is a short hop, not a panic.",
           "transit": "Kinsale → Rosslare done Tuesday evening via the Copper Coast, so Wednesday is just the boat and the run home.",
           "ukLeg": "Fishguard → Preston: ~250mi / ~5h on the M4 → M5 → M6.",
           "pros": [
@@ -1729,7 +1729,7 @@ export const tripData: Trip = {
     {
       "name": "Conor Pass",
       "area": "Dingle",
-      "d": "Ireland's highest; narrow; ride early or at golden hour."
+      "d": "Ireland’s highest; narrow; ride early or at golden hour."
     },
     {
       "name": "Slea Head Drive",
@@ -1759,7 +1759,7 @@ export const tripData: Trip = {
     {
       "name": "Coomanaspig Pass",
       "area": "Skellig Ring",
-      "d": "One of Ireland's highest paved roads, very steep."
+      "d": "One of Ireland’s highest paved roads, very steep."
     },
     {
       "name": "Healy Pass",
@@ -1773,7 +1773,7 @@ export const tripData: Trip = {
       "d": "Rock tunnels blasted through the mountain."
     },
     {
-      "name": "Priest's Leap",
+      "name": "Priest’s Leap",
       "area": "Kenmare–Bantry",
       "d": "Hardcore optional: extremely narrow, remote, grass up the middle."
     }
@@ -1849,7 +1849,7 @@ export const tripData: Trip = {
       "base": "Doolin, Co. Clare",
       "primary": "Aille River Tourist Hostel & Campsite",
       "primaryNote": "Riverside in Doolin village — Cliffs still 10 min south at 08:00, session still walkable",
-      "backup": "Nagle's — ❌ full · O'Connors Riverside — not needed",
+      "backup": "Nagle’s — ❌ full · O’Connors Riverside — not needed",
       "sellout": false,
       "deviationMi": 0.2,
       "retraceMi": 0,
@@ -1861,7 +1861,7 @@ export const tripData: Trip = {
       "night": "Sun 16",
       "base": "Gallarus, Ballydavid, Dingle Peninsula",
       "primary": "Campáil Teach an Aragail",
-      "primaryNote": "Beside the Gallarus Oratory — at the end of the day's window, line exits forward",
+      "primaryNote": "Beside the Gallarus Oratory — at the end of the day’s window, line exits forward",
       "backup": "Dingle town campsite",
       "sellout": false,
       "deviationMi": 0.4,
@@ -1887,7 +1887,7 @@ export const tripData: Trip = {
       "base": "Tagoat, near Rosslare",
       "primary": "IOAC",
       "primaryNote": "Minutes from Rosslare Harbour — sets up the 08:15 sailing",
-      "backup": "St Margaret's Beach, Rosslare (previous plan, superseded)",
+      "backup": "St Margaret’s Beach, Rosslare (previous plan, superseded)",
       "sellout": false,
       "deviationMi": 0,
       "retraceMi": 0,
@@ -1897,9 +1897,9 @@ export const tripData: Trip = {
     }
   ],
   "campNotes": {
-    "intro": "Every night is an established, pre-booked campsite — zero wild camping, no turning up hoping. Each one's the confirmed spot for that night.",
+    "intro": "Every night is an established, pre-booked campsite — zero wild camping, no turning up hoping. Each one’s the confirmed spot for that night.",
     "weather": "Weather insurance: Wild Atlantic Camp (Creeslough) and several others have pods / glamping from ~€60/night. If a named Atlantic storm appears on the forecast, one phone call upgrades you out of canvas without changing the plan.",
-    "late": "Small Irish sites often have short reception hours. If you'll arrive after ~19:00, phone ahead with an ETA so your pitch is held."
+    "late": "Small Irish sites often have short reception hours. If you’ll arrive after ~19:00, phone ahead with an ETA so your pitch is held."
   },
   "packing": [
     {
@@ -2033,7 +2033,7 @@ export const tripData: Trip = {
   "intel": [
     {
       "title": "August reality check",
-      "body": "Peak season. Coaches and campervans at maximum. Hotels / B&Bs in Dingle & Killarney book out ~a year ahead — camping is genuinely your superpower here. Your weather flex isn't location, it's the pod upgrades."
+      "body": "Peak season. Coaches and campervans at maximum. Hotels / B&Bs in Dingle & Killarney book out ~a year ahead — camping is genuinely your superpower here. Your weather flex isn’t location, it’s the pod upgrades."
     },
     {
       "title": "Real speeds",
@@ -2045,7 +2045,7 @@ export const tripData: Trip = {
     },
     {
       "title": "Coach warfare",
-      "body": "Slea Head and the Ring of Kerry — ride clockwise so you meet coaches instead of following them. Foreign-registered coaches / RVs on narrow roads are the #1 hazard: assume they're on your side of the road at every blind bend."
+      "body": "Slea Head and the Ring of Kerry — ride clockwise so you meet coaches instead of following them. Foreign-registered coaches / RVs on narrow roads are the #1 hazard: assume they’re on your side of the road at every blind bend."
     },
     {
       "title": "Fuel",
@@ -2053,15 +2053,15 @@ export const tripData: Trip = {
     },
     {
       "title": "Weather",
-      "body": "Pack for four seasons daily. If an Atlantic blow comes overnight, park the bikes behind a wall — gusts knock loaded bikes over and salt spray gets in the electrics. Storm = don't walk exposed cliff paths."
+      "body": "Pack for four seasons daily. If an Atlantic blow comes overnight, park the bikes behind a wall — gusts knock loaded bikes over and salt spray gets in the electrics. Storm = don’t walk exposed cliff paths."
     },
     {
       "title": "Money & border",
-      "body": "You cross the UK↔Ireland border once at Muff — currency (£ / €), speed units and phone roaming all flip. Check your network's EU roaming policy."
+      "body": "You cross the UK↔Ireland border once at Muff — currency (£ / €), speed units and phone roaming all flip. Check your network’s EU roaming policy."
     },
     {
       "title": "Pub protocol",
-      "body": "Sit at the BAR for chat, at a table to be left alone. Don't sit in the musicians' corner. Trad sessions most nights in Doolin, Dingle, Westport and Ardara. Budget for the craic — a “quiet pint” has a known failure mode."
+      "body": "Sit at the BAR for chat, at a table to be left alone. Don’t sit in the musicians' corner. Trad sessions most nights in Doolin, Dingle, Westport and Ardara. Budget for the craic — a “quiet pint” has a known failure mode."
     }
   ],
   "resources": [

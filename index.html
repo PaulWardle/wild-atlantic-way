@@ -24,11 +24,22 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Non-blocking: on a first-ever load over lie-fi, a hung fonts fetch must
+         not hold up first paint (system fonts show, then swap in). -->
     <link
       href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=Spectral:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Space+Mono:wght@400;700&display=swap"
       rel="stylesheet"
       crossorigin="anonymous"
+      media="print"
+      onload="this.media='all'"
     />
+    <noscript>
+      <link
+        href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=Spectral:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Space+Mono:wght@400;700&display=swap"
+        rel="stylesheet"
+        crossorigin="anonymous"
+      />
+    </noscript>
   </head>
   <body>
     <div id="root"></div>

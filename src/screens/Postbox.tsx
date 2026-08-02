@@ -65,6 +65,7 @@ export function Postbox() {
             value={postName}
             onChange={(e) => setPostName(e.target.value)}
             placeholder="Full Name"
+            aria-label="Your name"
             style={{ width: '100%', border: `1.5px solid ${c.ink}`, borderRadius: 7, background: c.inputBg, padding: '10px 12px', fontFamily: font.display, fontWeight: 600, fontSize: 14, color: c.ink }}
           />
 
@@ -84,6 +85,7 @@ export function Postbox() {
             onChange={(e) => setPostMsg(e.target.value)}
             rows={3}
             placeholder="Say your piece…"
+            aria-label="Your message"
             style={{ width: '100%', border: `1.5px solid ${c.ink}`, borderRadius: 7, background: c.inputBg, padding: '10px 12px', fontFamily: font.serif, fontSize: 13.5, color: c.inkSoft, resize: 'none', lineHeight: 1.5 }}
           />
 

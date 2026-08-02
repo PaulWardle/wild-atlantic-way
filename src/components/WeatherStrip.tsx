@@ -160,8 +160,8 @@ export function WeatherStrip() {
         <div style={{ flex: 1, height: 1, background: c.lineSoft }} />
       </div>
       <div style={{ display: 'flex', gap: 9 }}>
-        {today && <Card kicker={preTrip ? 'Day 1 · first stop' : 'Today · here'} spot={today} day={today.forecast?.days[0]} current={today.forecast?.current} heading={headToday} />}
-        {tomorrow && <Card kicker="Tomorrow" spot={tomorrow} day={tomorrow.forecast?.days[1]} heading={headTomorrow} />}
+        {today && <Card kicker={preTrip ? 'First stop · right now' : 'Today · here'} spot={today} day={today.forecast?.days[0]} current={today.forecast?.current} heading={headToday} />}
+        {!preTrip && tomorrow && <Card kicker="Tomorrow" spot={tomorrow} day={tomorrow.forecast?.days[1]} heading={headTomorrow} />}
       </div>
     </div>
   )

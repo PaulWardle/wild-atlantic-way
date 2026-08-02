@@ -248,10 +248,14 @@ export function navStretch(
   const dy = T.days[di]
   const dest: [number, number] = [to.lat, to.lon]
   const startKm = riderKm != null ? riderKm : from.km
-  // Never show "~0 mi" for a real leg: the crow-flies floor applies even with
-  // a live fix (off-line extras have clamped chainage that can zero the diff).
   const line = Math.max(0, to.km - startKm)
-  const mi = Math.round(Math.max(line, hav(from.lat, from.lon, to.lat, to.lon)) * 0.6214) || 1
+  // The crow-flies floor guards checkpoint-to-checkpoint estimates (off-line
+  // extras have clamped chainage that can zero the diff) — but it must use the
+  // PREVIOUS CHECKPOINT only when no live fix exists. With a rider 2 km short
+  // of the stop, flooring at the full leg's crow distance read "~13 mi".
+  const mi = riderKm != null
+    ? Math.round(line * 0.6214) || 1
+    : Math.round(Math.max(line, hav(from.lat, from.lon, to.lat, to.lon)) * 0.6214) || 1
   const w = dy?.wawKm
   if (!w) return { url: gmapsUrl(dest, []), mi, via: [] }
 

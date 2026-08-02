@@ -112,7 +112,7 @@ function Lightbox({ photos, index, onClose, onNav }: { photos: GalleryPhoto[]; i
       {src && <img src={src} alt={photo.alt} style={{ maxWidth: '100%', maxHeight: '78%', borderRadius: 6, objectFit: 'contain' }} />}
       <div style={{ marginTop: 12, textAlign: 'center', color: '#f0e6cf' }}>
         <div style={{ fontFamily: font.display, fontWeight: 600, fontSize: 14, textTransform: 'uppercase', letterSpacing: '.02em' }}>{photo.alt}</div>
-        <div style={{ fontFamily: font.mono, fontSize: 8.5, letterSpacing: '.1em', color: '#c9b98f', marginTop: 3 }}>{photo.when} · {index + 1} / {photos.length}</div>
+        <div style={{ fontFamily: font.mono, fontSize: 8.5, letterSpacing: '.1em', color: '#c9b98f', marginTop: 3 }}>{photo.when ? `${photo.when} · ` : ''}{index + 1} / {photos.length}</div>
       </div>
       {photos.length > 1 && (
         <>
