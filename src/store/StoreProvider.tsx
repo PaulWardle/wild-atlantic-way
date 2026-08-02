@@ -476,9 +476,11 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     const epoch = ++pullEpochRef.current
     lastPullRef.current = Date.now()
     Promise.all([
-      sb.from('posts').select('*'),
-      sb.from('locations').select('*'),
-      sb.from('notes').select('*'),
+      // Content tables newest-first with a generous cap — 2 riders + guests
+      // over 10 days stay far below it, but a runaway can't bloat every phone.
+      sb.from('posts').select('*').order('ts', { ascending: false }).limit(300),
+      sb.from('locations').select('*').order('ts', { ascending: false }).limit(300),
+      sb.from('notes').select('*').order('ts', { ascending: false }).limit(300),
       sb.from('marks').select('*'),
       sb.from('sig').select('*'),
       sb.from('kit').select('*'),
@@ -576,6 +578,14 @@ export function StoreProvider({ children }: { children: ReactNode }) {
           }
           if (x.op && x.op !== 'insert') return
           const row = x.row || {}
+          // Already on the server (its realtime echo can land while the op is
+          // still queued mid-flush) — showing both reads as duplication.
+          const dupTs = row.ts as number | undefined
+          if (dupTs != null) {
+            if (x.t === 'posts' && next.posts.some((r) => r.ts === dupTs)) return
+            if (x.t === 'locations' && next.updates.some((r) => r.ts === dupTs)) return
+            if (x.t === 'notes' && next.notes.some((r) => r.ts === dupTs)) return
+          }
           if (x.t === 'posts') {
             const p: Post = { ...(row as unknown as Post), pending: true }
             next.posts = [p, ...next.posts]
