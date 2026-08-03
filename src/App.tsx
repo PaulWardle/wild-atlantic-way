@@ -1,4 +1,4 @@
-import type { CSSProperties } from 'react'
+import { useEffect, type CSSProperties } from 'react'
 import { useStore, type Screen } from './store/StoreProvider'
 import { tripData } from './data/tripData'
 import { AppBar } from './components/AppBar'
@@ -101,6 +101,21 @@ export function App() {
   const { screen, role, vw, scrollRef, day, store, goBack } = s
 
   const phoneMode = vw <= 640
+
+  // iOS scrolls the WINDOW to reveal a focused input under the keyboard, and
+  // can leave that offset behind after the keyboard closes — the whole app
+  // (bottom bar included) sits dragged up the screen. Snap back once focus
+  // leaves a field and the keyboard is actually gone.
+  useEffect(() => {
+    const snap = () => {
+      window.setTimeout(() => {
+        const vv = window.visualViewport
+        if (!vv || vv.height > window.innerHeight - 60) window.scrollTo(0, 0)
+      }, 60)
+    }
+    window.addEventListener('focusout', snap)
+    return () => window.removeEventListener('focusout', snap)
+  }, [])
   const deskStyle: CSSProperties = phoneMode
     ? { minHeight: '100dvh', background: '#e8dcbf', display: 'block', fontFamily: "'Spectral',Georgia,serif" }
     : {
@@ -115,9 +130,12 @@ export function App() {
       }
   const phoneStyle: CSSProperties = phoneMode
     ? {
-        position: 'relative',
-        width: '100%',
-        height: '100dvh',
+        // Fixed to the viewport, not sized by the document: the page then has
+        // no scroll extent of its own, so nothing — edge-drags on short
+        // screens, keyboard scroll residue — can drag the shell (and the
+        // bottom bar with it) up the screen. Only .waw-scroll scrolls.
+        position: 'fixed',
+        inset: 0,
         background: '#e8dcbf',
         overflow: 'hidden',
         display: 'flex',

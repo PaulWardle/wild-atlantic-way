@@ -17,12 +17,23 @@ body {
 /* Phones get a paper background: iOS paints the regions outside the layout
    viewport — behind Safari's collapsed bottom bar, the home-indicator strip,
    rubber-band overscroll — with THIS colour, and the desktop desk's
-   near-black read as a dead band under the beige app. */
+   near-black read as a dead band under the beige app. overscroll-behavior
+   stops an edge-drag on a SHORT screen (Journal pre-trip, etc.) being handed
+   to the document and dragging the whole app — bottom bar included — up the
+   screen. */
 @media (max-width: 640px) {
   html,
   body {
     background: #e8dcbf;
+    height: 100%;
+    overscroll-behavior: none;
   }
+}
+
+/* The inner scroller keeps its scrolling to itself: reaching its end must
+   never chain the gesture up to the page. */
+.waw-scroll {
+  overscroll-behavior: contain;
 }
 
 #root {
