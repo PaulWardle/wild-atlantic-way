@@ -1,3 +1,4 @@
+import { useLayoutEffect, useRef, useState } from 'react'
 import type { MapGeometry } from '../lib/geo'
 import { c } from '../theme'
 
@@ -7,11 +8,36 @@ import { c } from '../theme'
  * green completed-route line. Shared by the home card, the landing gate and the
  * full-screen map.
  */
-export function MapSVG({ geo, maxWidth }: { geo: MapGeometry; maxWidth?: number }) {
+export function MapSVG({ geo, maxWidth, fill }: { geo: MapGeometry; maxWidth?: number; fill?: boolean }) {
+  // `fill` (full-screen overlay): labels render smaller relative to the island
+  // and the viewBox tightens to the actual drawn bounds, so the geography —
+  // not the label overhang and authoring margins — sets the rendered size.
+  const t = fill ? 0.78 : 1
+  const ref = useRef<SVGSVGElement>(null)
+  const [vb, setVb] = useState<string | null>(null)
+  useLayoutEffect(() => {
+    if (!fill) return
+    const measure = () => {
+      try {
+        const b = ref.current?.getBBox()
+        if (b && b.width > 0) setVb(`${(b.x - 6).toFixed(1)} ${(b.y - 6).toFixed(1)} ${(b.width + 12).toFixed(1)} ${(b.height + 12).toFixed(1)}`)
+      } catch {
+        /* not laid out yet — keep the authored viewBox */
+      }
+    }
+    measure()
+    // Re-measure once web fonts land: label widths (the widest content) change.
+    try {
+      document.fonts?.ready?.then(measure)
+    } catch {
+      /* noop */
+    }
+  }, [fill, geo])
   return (
     <svg aria-hidden="true"
-      viewBox={`0 0 ${geo.eMapW} ${geo.eMapH}`}
-      style={{ width: '100%', height: 'auto', display: 'block', maxWidth: maxWidth ? maxWidth : undefined }}
+      ref={ref}
+      viewBox={fill && vb ? vb : `0 0 ${geo.eMapW} ${geo.eMapH}`}
+      style={{ width: '100%', height: 'auto', display: 'block', maxWidth: !fill && maxWidth ? maxWidth : undefined }}
     >
       <path d={geo.eIreland} fill={c.paperMapFill} stroke={c.ink} strokeWidth={1.4} strokeLinejoin="round" />
 
@@ -21,8 +47,8 @@ export function MapSVG({ geo, maxWidth }: { geo: MapGeometry; maxWidth?: number 
         textAnchor="middle"
         fontFamily="'Oswald',sans-serif"
         fontWeight={500}
-        fontSize={9}
-        letterSpacing={4}
+        fontSize={9 * t}
+        letterSpacing={4 * t}
         fill={c.rust}
       >
         THE
@@ -33,7 +59,7 @@ export function MapSVG({ geo, maxWidth }: { geo: MapGeometry; maxWidth?: number 
         textAnchor="middle"
         fontFamily="'Oswald',sans-serif"
         fontWeight={700}
-        fontSize={19}
+        fontSize={19 * t}
         letterSpacing={0.5}
         fill="#5a4f3b"
       >
@@ -69,10 +95,10 @@ export function MapSVG({ geo, maxWidth }: { geo: MapGeometry; maxWidth?: number 
           textAnchor={l.a}
           fontFamily="'Oswald',sans-serif"
           fontWeight={l.w}
-          fontSize={10.5}
+          fontSize={10.5 * t}
           fill={l.f}
           stroke="#e9ddbd"
-          strokeWidth={3}
+          strokeWidth={3 * t}
           strokeLinejoin="round"
           opacity={1}
           style={{ paintOrder: 'stroke' }}
@@ -90,10 +116,10 @@ export function MapSVG({ geo, maxWidth }: { geo: MapGeometry; maxWidth?: number 
         <circle cx={geo.eHomeX} cy={geo.eHomeY} r={2} fill={c.ink} />
       </g>
 
-      <text x={geo.eEdgeX} y={geo.eFerryInLabelY} textAnchor="end" fontFamily="'Space Mono',monospace" fontSize={8.5} fill={c.inkFainter}>
+      <text x={geo.eEdgeX} y={geo.eFerryInLabelY} textAnchor="end" fontFamily="'Space Mono',monospace" fontSize={8.5 * t} fill={c.inkFainter}>
         ← FERRY IN
       </text>
-      <text x={geo.eEdgeX} y={geo.eFerryHomeLabelY} textAnchor="end" fontFamily="'Space Mono',monospace" fontSize={8.5} fill={c.inkFainter}>
+      <text x={geo.eEdgeX} y={geo.eFerryHomeLabelY} textAnchor="end" fontFamily="'Space Mono',monospace" fontSize={8.5 * t} fill={c.inkFainter}>
         FERRY HOME →
       </text>
 
