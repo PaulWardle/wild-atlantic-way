@@ -270,6 +270,7 @@ export interface StoreContextValue {
   selectReason: (r: string) => void
   setPostMsg: (v: string) => void
   submitPost: (files?: File[] | null) => Promise<boolean>
+  submitReply: (parentTs: number, by: string, msg: string, files?: File[] | null) => Promise<boolean>
   removePost: (ts: number) => void
   removeLocation: (ts: number) => void
   clearPosts: () => void
@@ -557,8 +558,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         }
         const next: Store = { ...storeRef.current }
         if (!p.error)
-          next.posts = ((p.data || []) as Post[])
-            .map((r) => ({ name: r.name, reason: r.reason, msg: r.msg, ts: r.ts, photo: r.photo }))
+          next.posts = ((p.data || []) as Array<Post & { parent_ts?: number | null }>)
+            .map((r) => ({ name: r.name, reason: r.reason, msg: r.msg, ts: r.ts, photo: r.photo, ...(r.parent_ts != null ? { parentTs: r.parent_ts } : {}) }))
             .sort((a, b) => b.ts - a.ts)
         if (!l.error)
           next.updates = ((l.data || []) as Update[])
@@ -654,7 +655,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
             if (x.t === 'notes' && next.notes.some((r) => r.ts === dupTs)) return
           }
           if (x.t === 'posts') {
-            const p: Post = { ...(row as unknown as Post), pending: true }
+            const raw = row as unknown as Post & { parent_ts?: number | null }
+            const p: Post = { ...raw, ...(raw.parent_ts != null ? { parentTs: raw.parent_ts } : {}), pending: true }
             next.posts = [p, ...next.posts]
           } else if (x.t === 'locations') {
             const u: Update = { ...(row as unknown as Update), pending: true }
@@ -1104,12 +1106,14 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       if (Date.now() < nextBeatRef.current) return
       nextBeatRef.current = Date.now() + CAROUSEL_BEAT
       const s = storeRef.current
-      const n = Math.min(10, (s.posts || []).length)
+      // Replies nest under their parent card — they are not slides of their own.
+      const standalone = (s.posts || []).filter((p) => p.parentTs == null).length
+      const n = Math.min(10, standalone)
       if (n > 1) setPostIdxState((i) => (i + 1) % n)
       const jn = Math.min(
         10,
         (s.updates || []).length +
-          (s.posts || []).length +
+          standalone +
           (s.notes || []).length +
           Object.keys(s.sig || {}).filter((k) => typeof s.sig[k] === 'number').length,
       )
@@ -1314,6 +1318,22 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     [postName, postMsg, postReason, set, insertRow],
   )
 
+  /** A brother's reply to a postbox message: rides the same posts pipeline
+   * (offline queue, photo tokens, realtime) as a row keyed to its parent. */
+  const submitReply = useCallback(
+    async (parentTs: number, by: string, msgRaw: string, files?: File[] | null): Promise<boolean> => {
+      const msg = (msgRaw || '').trim().slice(0, 500)
+      if (!msg) return false
+      const photo = files && files.length ? await attachPhotos(files) : undefined
+      const row: Post = { name: by === 'CJ' ? 'CJ' : 'Paul', reason: 'Reply', msg, ts: Date.now(), parentTs, ...(photo ? { photo } : {}) }
+      const posts = [row, ...(storeRef.current.posts || [])].slice(0, 40)
+      set({ posts })
+      insertRow('posts', { name: row.name, reason: row.reason, msg: row.msg, ts: row.ts, parent_ts: parentTs, ...(photo ? { photo } : {}) })
+      return true
+    },
+    [set, insertRow],
+  )
+
   /** Bucket paths referenced by a row's photo field (own-storage URLs only). */
   const storagePathsOf = useCallback((photo?: string): string[] => {
     const out: string[] = []
@@ -1331,11 +1351,16 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const removePost = useCallback(
     (ts: number) => {
       if (typeof window !== 'undefined' && !window.confirm('Remove this message?')) return
-      const gone = (storeRef.current.posts || []).find((p) => p.ts === ts)
-      const posts = (storeRef.current.posts || []).filter((p) => p.ts !== ts)
+      const all = storeRef.current.posts || []
+      const gone = all.find((p) => p.ts === ts)
+      // Deleting a message takes its replies with it — an orphaned reply would
+      // never display again anyway, just haunt the table.
+      const replies = all.filter((p) => p.parentTs === ts)
+      const posts = all.filter((p) => p.ts !== ts && p.parentTs !== ts)
       set({ posts })
       deleteRow('posts', 'ts', ts)
-      removeStorage(storagePathsOf(gone?.photo))
+      replies.forEach((r) => deleteRow('posts', 'ts', r.ts))
+      removeStorage(storagePathsOf(gone?.photo).concat(replies.flatMap((r) => storagePathsOf(r.photo))))
     },
     [set, deleteRow, storagePathsOf, removeStorage],
   )
@@ -1815,6 +1840,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       setPostErr(false)
     },
     submitPost,
+    submitReply,
     removePost,
     removeLocation,
     clearPosts,

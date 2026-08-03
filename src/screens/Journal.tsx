@@ -6,6 +6,8 @@ import { isMarkable, jTagOptions, markKey } from '../lib/tags'
 import { buildEvents, buildFeed, buildGallery, buildGroups } from '../lib/journal'
 import { Kicker, ScreenTitle, Lede, Dropdown } from '../components/ui'
 import { PhotoInput } from '../components/PhotoInput'
+import { ReplyBox, ReplyRows } from '../components/ReplyBox'
+import { fmtTime } from '../lib/time'
 import { PhotoGallery, Photos } from '../components/PhotoGallery'
 
 const meta = tripData.meta
@@ -328,6 +330,8 @@ export function Journal() {
                         {e.hasTitle && <div style={{ fontFamily: font.display, fontWeight: 600, fontSize: 14.5, textTransform: 'uppercase', color: c.ink, lineHeight: 1.15, letterSpacing: '.01em', marginTop: 5 }}>{e.title}</div>}
                         {e.hasBody && <div style={{ fontFamily: font.serif, fontSize: 13, color: c.inkBody2, lineHeight: 1.5, marginTop: 3 }}>{e.body}</div>}
                         <Photos photo={e.photo} alt={e.title ? `Photo — ${e.title}` : 'Trip photo'} maxHeight={220} />
+                        <ReplyRows replies={e.replies} fmt={fmtTime} photos={(photo, alt) => <Photos photo={photo} alt={alt} maxHeight={160} />} />
+                        {e.kind === 'post' && <ReplyBox parentTs={e.ts} />}
                       </>
                     )}
                   </div>

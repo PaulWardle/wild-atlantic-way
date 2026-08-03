@@ -6,6 +6,7 @@ import { relTime } from '../lib/time'
 import { Kicker, ScreenTitle, Lede, Dropdown } from '../components/ui'
 import { PhotoInput } from '../components/PhotoInput'
 import { Photos } from '../components/PhotoGallery'
+import { ReplyBox, ReplyRows } from '../components/ReplyBox'
 
 export function Postbox() {
   const s = useStore()
@@ -43,10 +44,23 @@ export function Postbox() {
   }
 
   const posts = store.posts || []
-  const postList = posts.map((p) => {
-    const m = reasonMeta[p.reason] || reasonMeta.Comment
-    return { ...p, verb: m.verb, tagInk: m.ink, tagBg: m.bg, when: relTime(p.ts) }
-  })
+  // Replies nest under the message they answer; only originals get a card.
+  const postList = posts
+    .filter((p) => p.parentTs == null)
+    .map((p) => {
+      const m = reasonMeta[p.reason] || reasonMeta.Comment
+      return {
+        ...p,
+        verb: m.verb,
+        tagInk: m.ink,
+        tagBg: m.bg,
+        when: relTime(p.ts),
+        replies: posts
+          .filter((x) => x.parentTs === p.ts)
+          .sort((a, b) => a.ts - b.ts)
+          .map((x) => ({ by: x.name, msg: x.msg, ts: x.ts, photo: x.photo })),
+      }
+    })
 
   return (
     <div style={{ animation: 'waw-fade .35s ease both', padding: '18px 16px 28px' }}>
@@ -140,6 +154,8 @@ export function Postbox() {
                 {p.msg}
               </div>
               <Photos photo={p.photo} alt={p.name ? `Photo from ${p.name}` : 'Trip photo'} maxHeight={240} />
+              <ReplyRows replies={p.replies} fmt={relTime} photos={(photo, alt) => <Photos photo={photo} alt={alt} maxHeight={180} />} />
+              <ReplyBox parentTs={p.ts} />
             </div>
           ))}
         </>

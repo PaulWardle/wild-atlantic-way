@@ -8,6 +8,13 @@ import { jKindMeta, reasonMeta } from './tags'
 import { photoList } from './photos'
 import { dayKey, fmtDate, fmtTime } from './time'
 
+export interface JReply {
+  by: string
+  msg: string
+  ts: number
+  photo?: string
+}
+
 export interface JEvent {
   kind: 'loc' | 'post' | 'bag' | 'note'
   ts: number
@@ -23,6 +30,7 @@ export interface JEvent {
   tag?: string
   noteTs?: number
   photo?: string
+  replies?: JReply[]
 }
 
 export interface FeedItem {
@@ -37,6 +45,7 @@ export interface FeedItem {
   author: string
   hasAuthor: boolean
   photo?: string
+  replies?: JReply[]
 }
 
 export interface GroupEntry {
@@ -56,6 +65,7 @@ export interface GroupEntry {
   noteTs?: number
   text: string
   photo?: string
+  replies?: JReply[]
 }
 
 export interface JGroup {
@@ -75,9 +85,18 @@ export function buildEvents(store: Store, trip: Trip): JEvent[] {
     const st = trackStops[u.si] || { label: '' }
     events.push({ kind: 'loc', ts: u.ts || 0, gms: u.ts || 0, label: u.place || st.label || '', note: u.note || '', photo: u.photo })
   })
+  // Brother replies (parentTs set) nest under the message they answer instead
+  // of standing alone; a reply whose parent is gone stays hidden entirely.
+  const replyByParent: Record<number, JReply[]> = {}
   ;(store.posts || []).forEach((p) => {
+    if (p.parentTs == null) return
+    ;(replyByParent[p.parentTs] = replyByParent[p.parentTs] || []).push({ by: p.name, msg: p.msg, ts: p.ts || 0, photo: p.photo })
+  })
+  Object.values(replyByParent).forEach((arr) => arr.sort((a, b) => a.ts - b.ts))
+  ;(store.posts || []).forEach((p) => {
+    if (p.parentTs != null) return
     const m = reasonMeta[p.reason] || reasonMeta.Comment
-    events.push({ kind: 'post', ts: p.ts || 0, gms: p.ts || 0, name: p.name, verb: m.verb, msg: p.msg, reason: p.reason, photo: p.photo })
+    events.push({ kind: 'post', ts: p.ts || 0, gms: p.ts || 0, name: p.name, verb: m.verb, msg: p.msg, reason: p.reason, photo: p.photo, replies: replyByParent[p.ts || 0] })
   })
   Object.keys(sig).forEach((id) => {
     const t = sig[id]
@@ -130,6 +149,7 @@ export function buildFeed(events: JEvent[], limit = 12): FeedItem[] {
         author: isNote ? e.author || '' : '',
         hasAuthor: isNote && !!e.author,
         photo: e.photo,
+        replies: e.replies,
       }
     })
 }
@@ -144,7 +164,11 @@ export function buildGallery(events: JEvent[]): { url: string; alt: string; when
     .flatMap((e) => {
       const { title } = titleBody(e)
       const when = fmtDate(e.gms)
-      return photoList(e.photo).map((url) => ({ url, alt: title || 'Trip photo', when }))
+      const own = photoList(e.photo).map((url) => ({ url, alt: title || 'Trip photo', when }))
+      const fromReplies = (e.replies || []).flatMap((r) =>
+        photoList(r.photo).map((url) => ({ url, alt: `Reply from ${r.by}`, when: fmtDate(r.ts) })),
+      )
+      return own.concat(fromReplies)
     })
 }
 
@@ -197,6 +221,7 @@ export function buildGroups(events: JEvent[], trip: Trip): JGroup[] {
           noteTs: e.noteTs,
           text: e.text || '',
           photo: e.photo,
+          replies: e.replies,
         }
       })
       return { key: k, gms, dayLabel: td ? 'Day ' + td.n : '', hasDay: !!td, dateLabel: fmtDate(gms), entries }

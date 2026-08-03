@@ -280,6 +280,8 @@ export interface Post {
   ts: number
   photo?: string // public URL of an attached photo
   pending?: boolean
+  /** Set on brother replies: the ts of the postbox message being answered. */
+  parentTs?: number
 }
 
 /** "We are here" location ping. `si` = nearest trip-order journey stop (for progress

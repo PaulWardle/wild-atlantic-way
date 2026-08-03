@@ -14,6 +14,7 @@ import { Slider } from '../components/Slider'
 import { Dropdown } from '../components/ui'
 import { PhotoInput } from '../components/PhotoInput'
 import { ConnCheck } from '../components/ConnCheck'
+import { ReplyBox, ReplyRows } from '../components/ReplyBox'
 import { Photos } from '../components/PhotoGallery'
 import { WeatherStrip } from '../components/WeatherStrip'
 
@@ -214,11 +215,26 @@ export function Home() {
     }
   }
 
-  const postList = posts.slice(0, 10).map((p) => {
+  // Replies (parentTs set) nest under the message they answer — never slides.
+  const standalonePosts = posts.filter((p) => p.parentTs == null)
+  const postList = standalonePosts.slice(0, 10).map((p) => {
     const m = reasonMeta[p.reason] || reasonMeta.Comment
-    return { name: p.name, verb: m.verb, reason: p.reason, msg: p.msg, when: relTime(p.ts), tagInk: m.ink, tagBg: m.bg }
+    return {
+      ts: p.ts,
+      name: p.name,
+      verb: m.verb,
+      reason: p.reason,
+      msg: p.msg,
+      when: relTime(p.ts),
+      tagInk: m.ink,
+      tagBg: m.bg,
+      replies: posts
+        .filter((x) => x.parentTs === p.ts)
+        .sort((a, b) => a.ts - b.ts)
+        .map((x) => ({ by: x.name, msg: x.msg, ts: x.ts, photo: x.photo })),
+    }
   })
-  const postCount = posts.length
+  const postCount = standalonePosts.length
   // Past ten, be honest that the carousel shows only the newest ten — the full
   // set lives on the Postbox / Journal tabs.
   const postCountLabel = postCount > 10 ? `latest 10 of ${postCount}` : postCount + (postCount === 1 ? ' message' : ' messages')
@@ -681,6 +697,8 @@ export function Home() {
                   {p.name} {p.verb}
                 </div>
                 <div style={{ fontFamily: font.serif, fontSize: 14, color: c.inkBody2, lineHeight: 1.5, marginTop: 5 }}>“{p.msg}”</div>
+                <ReplyRows replies={p.replies} fmt={relTime} />
+                <ReplyBox parentTs={p.ts} />
               </div>
             ))}
           />
@@ -719,6 +737,11 @@ export function Home() {
                 </div>
                 {e.hasTitle && <div style={{ fontFamily: font.display, fontWeight: 700, fontSize: 17, textTransform: 'uppercase', letterSpacing: '.01em', color: c.ink, lineHeight: 1.05 }}>{e.title}</div>}
                 {e.hasBody && <div style={{ fontFamily: font.serif, fontSize: 14, color: c.inkBody2, lineHeight: 1.5, marginTop: 5 }}>{e.body}</div>}
+                {e.replies && e.replies.length > 0 && (
+                  <div style={{ fontFamily: font.mono, fontSize: 8.5, letterSpacing: '.04em', color: c.rust, marginTop: 6 }}>
+                    ↩ {e.replies[e.replies.length - 1].by} replied{e.replies.length > 1 ? ` (+${e.replies.length - 1} more)` : ''} — full thread in the Journal
+                  </div>
+                )}
               </div>
             ))}
           />
