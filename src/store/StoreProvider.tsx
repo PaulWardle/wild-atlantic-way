@@ -474,6 +474,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   serverOkRef.current = serverOk
   const pullEpochRef = useRef(0)
   const lastPullRef = useRef(0)
+  const chDownRef = useRef(false)
+  const lastResubTryRef = useRef(0)
   const migratedMarksRef = useRef<Set<string>>(new Set())
   const upsertRowRef = useRef<((t: TableName, row: Record<string, unknown>) => void) | null>(null)
   const deleteRowRef = useRef<((t: TableName, col: string, val: unknown) => void) | null>(null)
@@ -880,9 +882,15 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       pullTimer = window.setTimeout(() => pullAll(), 750)
     }
     // The channel dying silently was invisible: subscribe's status callback is
-    // the only signal when a mid-session outage kills realtime.
+    // the only signal when a mid-session outage kills realtime. But a dead
+    // websocket must NOT mark the server unreachable — on one-bar 5G the
+    // socket flaps constantly while REST pulls still succeed, and flagging
+    // serverOk pinned the "can't reach the trip server" banner (and froze the
+    // outbox) on a phone whose data was actually in sync. serverOk is owned by
+    // the pull path alone; a dead channel just schedules its own rejoin below.
     const onChannelStatus = (status: string) => {
-      if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') setServerOk(false)
+      if (status === 'SUBSCRIBED') chDownRef.current = false
+      if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') chDownRef.current = true
     }
     // The status callback must be channel-aware: after a resubscribe, the
     // REMOVED channel's async CLOSED ack would otherwise re-mark the server
@@ -919,6 +927,13 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       // shouldn't spin the radio three times a minute. 5-min failsafe unchanged.
       const downRetry = serverOkRef.current === false && Date.now() - lastPullRef.current > 60000
       if (downRetry || Date.now() - lastPullRef.current > 300000) pullAll()
+      // Realtime dead but pulls fine (weak-signal riding): rejoin the channel
+      // once a minute with a catch-up pull for whatever the dead socket missed.
+      else if (chDownRef.current && serverOkRef.current !== false && Date.now() - lastResubTryRef.current > 60000) {
+        lastResubTryRef.current = Date.now()
+        resubFnRef.current?.()
+        pullAll()
+      }
     }, 20000)
     const onResize = () => {
       const w = window.innerWidth
