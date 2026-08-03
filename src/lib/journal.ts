@@ -40,6 +40,8 @@ export interface FeedItem {
 }
 
 export interface GroupEntry {
+  kind: JEvent['kind']
+  ts: number
   tag: string
   tagInk: string
   tagBg: string
@@ -179,6 +181,8 @@ export function buildGroups(events: JEvent[], trip: Trip): JGroup[] {
         const isNote = e.kind === 'note'
         const { title, body } = titleBody(e)
         return {
+          kind: e.kind,
+          ts: e.ts,
           tag: isNote ? e.tag || 'Note' : e.kind === 'post' ? e.reason || km.label : km.label,
           tagInk: km.ink,
           tagBg: km.bg,

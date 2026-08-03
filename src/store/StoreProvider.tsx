@@ -271,6 +271,7 @@ export interface StoreContextValue {
   setPostMsg: (v: string) => void
   submitPost: (files?: File[] | null) => Promise<boolean>
   removePost: (ts: number) => void
+  removeLocation: (ts: number) => void
   clearPosts: () => void
   setPostIdx: (i: number) => void
 
@@ -1096,7 +1097,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       } catch {
         /* noop */
       }
-      if (Date.now() - carouselTouchRef.current < 15000) return
+      // Short pause after a manual swipe — long enough to read the card you
+      // chose, short enough that the cycle visibly comes back to life.
+      if (Date.now() - carouselTouchRef.current < 8000) return
       const s = storeRef.current
       const n = Math.min(10, (s.posts || []).length)
       if (n > 1) setPostIdxState((i) => (i + 1) % n)
@@ -1329,6 +1332,18 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       const posts = (storeRef.current.posts || []).filter((p) => p.ts !== ts)
       set({ posts })
       deleteRow('posts', 'ts', ts)
+      removeStorage(storagePathsOf(gone?.photo))
+    },
+    [set, deleteRow, storagePathsOf, removeStorage],
+  )
+
+  const removeLocation = useCallback(
+    (ts: number) => {
+      if (typeof window !== 'undefined' && !window.confirm('Remove this location post?')) return
+      const gone = (storeRef.current.updates || []).find((u) => u.ts === ts)
+      const updates = (storeRef.current.updates || []).filter((u) => u.ts !== ts)
+      set({ updates })
+      deleteRow('locations', 'ts', ts)
       removeStorage(storagePathsOf(gone?.photo))
     },
     [set, deleteRow, storagePathsOf, removeStorage],
@@ -1798,6 +1813,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     },
     submitPost,
     removePost,
+    removeLocation,
     clearPosts,
     setPostIdx: (i: number) => {
       carouselTouchRef.current = Date.now()

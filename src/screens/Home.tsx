@@ -668,7 +668,14 @@ export function Home() {
         {postCount > 0 ? (
           <Slider
             idx={postIdx}
-            onDot={setPostIdx}
+            onDot={(i) => {
+              // Manual nav moves the journal card by the same step, so the two
+              // stay in lockstep instead of drifting apart after one swipe.
+              const pn = postList.length
+              const d = i - (pn > 0 ? ((postIdx % pn) + pn) % pn : 0)
+              setPostIdx(i)
+              if (feed.length > 1 && d !== 0) setJFeedIdx(jFeedIdx + d)
+            }}
             slides={postList.map((p, i) => (
               <div key={i} style={{ padding: '12px 15px 13px', minHeight: 94 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
@@ -707,7 +714,12 @@ export function Home() {
         {feed.length > 0 ? (
           <Slider
             idx={jFeedIdx}
-            onDot={setJFeedIdx}
+            onDot={(i) => {
+              const fn = feed.length
+              const d = i - (fn > 0 ? ((jFeedIdx % fn) + fn) % fn : 0)
+              setJFeedIdx(i)
+              if (postList.length > 1 && d !== 0) setPostIdx(postIdx + d)
+            }}
             slides={feed.map((e, i) => (
               <div key={i} style={{ padding: '12px 15px 13px', minHeight: 94 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>

@@ -39,6 +39,8 @@ export function Journal() {
     cancelEditNote,
     startEditNote,
     removeNote,
+    removePost,
+    removeLocation,
     openDD,
     toggleDD,
   } = s
@@ -219,14 +221,16 @@ export function Journal() {
               <div style={{ fontFamily: font.mono, fontSize: 8, letterSpacing: '.14em', color: c.inkFaintest, textTransform: 'uppercase', margin: '11px 0 6px' }}>File under</div>
               <Dropdown label={jDayLabel} open={openDD === 'jday'} onToggle={() => toggleDD('jday')} options={jDayOptions.map((o) => ({ label: o.label, pick: () => selectJDay(o.val) }))} />
             </div>
-            <div style={{ flex: '0 0 108px' }}>
+            <div style={{ flex: '0 0 118px', minWidth: 0 }}>
               <div style={{ fontFamily: font.mono, fontSize: 8, letterSpacing: '.14em', color: c.inkFaintest, textTransform: 'uppercase', margin: '11px 0 6px' }}>At time</div>
+              {/* appearance:none — iOS gives time inputs a stubborn intrinsic
+                  width that ignores the column and paints past the screen edge. */}
               <input
                 type="time"
                 value={jTime}
                 onChange={(e) => setJTime(e.target.value)}
                 aria-label="Time for this entry"
-                style={{ width: '100%', border: `1.5px solid ${c.ink}`, borderRadius: 7, background: c.inputBg, padding: '8px 9px', fontFamily: font.mono, fontSize: 13, color: c.ink }}
+                style={{ width: '100%', minWidth: 0, maxWidth: '100%', boxSizing: 'border-box', WebkitAppearance: 'none', appearance: 'none', border: `1.5px solid ${c.ink}`, borderRadius: 7, background: c.inputBg, padding: '9px 9px', fontFamily: font.mono, fontSize: 13, color: c.ink }}
               />
             </div>
           </div>
@@ -271,7 +275,7 @@ export function Journal() {
               const editing = e.isNote && jEditTs === e.noteTs
               return (
                 <div key={ei} style={{ display: 'flex', gap: 9, padding: '0 0 13px' }}>
-                  <div style={{ flex: '0 0 36px', fontFamily: font.mono, fontSize: 9, color: c.inkFaintest, textAlign: 'right', paddingTop: 1 }}>{e.time}</div>
+                  <div style={{ flex: '0 0 40px', fontFamily: font.mono, fontSize: 9, color: c.inkFaintest, textAlign: 'right', paddingTop: 1, whiteSpace: 'nowrap', fontVariantNumeric: 'tabular-nums' }}>{e.time}</div>
                   <div style={{ flex: '0 0 auto', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                     <div style={{ width: 9, height: 9, borderRadius: '50%', background: e.tagInk, marginTop: 2, flex: '0 0 auto' }} />
                     <div style={{ flex: 1, width: 1.5, background: c.lineSoft, marginTop: 2 }} />
@@ -282,10 +286,24 @@ export function Journal() {
                         <span style={{ fontFamily: font.mono, fontSize: 7.5, fontWeight: 700, letterSpacing: '.08em', textTransform: 'uppercase', color: e.tagInk, background: e.tagBg, border: `1px solid ${e.tagInk}`, borderRadius: 3, padding: '1px 5px', whiteSpace: 'nowrap' }}>{e.tag}</span>
                         {e.hasAuthor && <span style={{ fontFamily: font.mono, fontSize: 8, fontWeight: 700, letterSpacing: '.06em', textTransform: 'uppercase', color: c.inkMuted, whiteSpace: 'nowrap' }}>{e.author}</span>}
                       </div>
-                      {e.isNote && isBrother && (
+                      {isBrother && e.kind !== 'bag' && (
                         <div className="waw-noprint" style={{ display: 'flex', alignItems: 'center', gap: 10, flex: '0 0 auto' }}>
-                          <button onClick={() => startEditNote(e.noteTs as number, e.text)} aria-label="Edit" style={{ fontFamily: font.mono, fontSize: 9, letterSpacing: '.04em', color: c.teal, textDecoration: 'underline', padding: '10px 8px', margin: '-10px -4px' }}>Edit</button>
-                          <button onClick={() => removeNote(e.noteTs as number)} aria-label="Remove" style={{ fontFamily: font.mono, fontSize: 14, color: c.rust, lineHeight: 1, padding: '10px 10px', margin: '-10px -6px' }}>×</button>
+                          {e.isNote && (
+                            <button onClick={() => startEditNote(e.noteTs as number, e.text)} aria-label="Edit" style={{ fontFamily: font.mono, fontSize: 9, letterSpacing: '.04em', color: c.teal, textDecoration: 'underline', padding: '10px 8px', margin: '-10px -4px' }}>Edit</button>
+                          )}
+                          <button
+                            onClick={() =>
+                              e.isNote
+                                ? removeNote(e.noteTs as number)
+                                : e.kind === 'post'
+                                  ? removePost(e.ts)
+                                  : removeLocation(e.ts)
+                            }
+                            aria-label="Remove"
+                            style={{ fontFamily: font.mono, fontSize: 14, color: c.rust, lineHeight: 1, padding: '10px 10px', margin: '-10px -6px' }}
+                          >
+                            ×
+                          </button>
                         </div>
                       )}
                     </div>

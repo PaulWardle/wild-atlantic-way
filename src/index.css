@@ -14,6 +14,17 @@ body {
   background: #1c1813;
 }
 
+/* Phones get a paper background: iOS paints the regions outside the layout
+   viewport — behind Safari's collapsed bottom bar, the home-indicator strip,
+   rubber-band overscroll — with THIS colour, and the desktop desk's
+   near-black read as a dead band under the beige app. */
+@media (max-width: 640px) {
+  html,
+  body {
+    background: #e8dcbf;
+  }
+}
+
 #root {
   min-height: 100dvh;
 }
