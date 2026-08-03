@@ -4,6 +4,7 @@ import { useStore } from '../store/StoreProvider'
 import { tripData } from '../data/tripData'
 import { Kicker, ScreenTitle, Lede } from '../components/ui'
 import { reasonMeta, jKindMeta } from '../lib/tags'
+import { ConnCheck } from '../components/ConnCheck'
 
 const meta = tripData.meta
 
@@ -215,7 +216,10 @@ export function Info() {
           </GuideRow>
           <GuideRow title="The map">The whole route with the live pin — from the home card or full-screen. A fix that’s off the route or outside Ireland still posts, it just won’t sit on the route line.</GuideRow>
           <GuideRow title="Install &amp; offline">
-            Add it to your home screen (Share → <b>Add to Home Screen</b>) and it runs like a proper app. It works with <b>no signal</b> — the app itself loads offline, and anything you post (words and photos) is saved on the phone and syncs the moment you’re back on. Photos from the server need a connection to display the first time. A banner tells you when the trip server can’t be reached.
+            Add it to your home screen (Share → <b>Add to Home Screen</b>) and it runs like a proper app. It works with <b>no signal</b> — the app itself loads offline, and anything you post (words and photos) is saved on the phone and syncs the moment you’re back on. Photos from the server need a connection to display the first time. A banner tells you when the trip server can’t be reached — and you can force a sync and fault-find the connection yourself any time:
+            <div style={{ marginTop: 9 }}>
+              <ConnCheck />
+            </div>
           </GuideRow>
 
           <div style={{ marginTop: 18, border: `1.5px solid ${c.ink}`, borderRadius: 10, background: c.greenPanel, padding: '13px 14px' }}>

@@ -13,6 +13,7 @@ import { MapSVG, MapLegend } from '../components/MapSVG'
 import { Slider } from '../components/Slider'
 import { Dropdown } from '../components/ui'
 import { PhotoInput } from '../components/PhotoInput'
+import { ConnCheck } from '../components/ConnCheck'
 import { Photos } from '../components/PhotoGallery'
 import { WeatherStrip } from '../components/WeatherStrip'
 
@@ -274,6 +275,9 @@ export function Home() {
           <div>
             <div style={{ fontFamily: font.mono, fontSize: 8, fontWeight: 700, letterSpacing: '.12em', color: c.inkFaint, textTransform: 'uppercase', marginBottom: 3 }}>Can’t reach the trip server</div>
             <div style={{ fontFamily: font.serif, fontSize: 12.5, color: '#5a4f3b', lineHeight: 1.45 }}>Showing this phone’s saved copy. Anything you post is safe and will sync the moment it’s back.</div>
+            <div style={{ marginTop: 9 }}>
+              <ConnCheck />
+            </div>
           </div>
         </div>
       )}

@@ -191,6 +191,29 @@ interface HistEntry {
   scrollTop: number
 }
 
+/** Race a thenable against a deadline. Used instead of .abortSignal(): in this
+ * supabase-js version a query carrying an abort signal never settles at all
+ * when the network rejects the request — the exact hang a deadline exists to
+ * prevent. The race always settles: real result, or the fallback at the bell. */
+function withDeadline<T>(p: PromiseLike<T>, ms: number, fallback: T): Promise<T> {
+  return Promise.race([Promise.resolve(p), new Promise<T>((res) => window.setTimeout(() => res(fallback), ms))])
+}
+
+/** Result of the connection fault-finder — one verdict per link in the chain. */
+export interface ConnDiag {
+  /** What the OS believes about connectivity (can be wrong in both directions). */
+  online: boolean
+  /** Reached a third-party endpoint — the phone's internet works. */
+  internet: boolean
+  /** The trip server answered a tiny query. */
+  server: boolean
+  serverErr: string | null
+  /** The realtime channel is currently joined (instant updates flowing). */
+  live: boolean
+  lastSyncAt: number | null
+  queued: number
+}
+
 export interface StoreContextValue {
   store: Store
   role: Role
@@ -200,6 +223,10 @@ export interface StoreContextValue {
   /** null = unknown yet, true = reached the backend, false = unreachable (paused/offline). */
   serverOk: boolean | null
   persistFailed: boolean
+  /** When the last pull that reached the server completed (null = not yet). */
+  lastSyncAt: number | null
+  syncNow: () => Promise<boolean>
+  diagnose: () => Promise<ConnDiag>
 
   // navigation
   screen: Screen
@@ -472,6 +499,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [serverOk, setServerOk] = useState<boolean | null>(null)
   const serverOkRef = useRef<boolean | null>(null)
   serverOkRef.current = serverOk
+  const [lastSyncAt, setLastSyncAt] = useState<number | null>(null)
+  const lastSyncAtRef = useRef<number | null>(null)
   const pullEpochRef = useRef(0)
   const lastPullRef = useRef(0)
   const chDownRef = useRef(false)
@@ -492,14 +521,14 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const subRef = useRef<RealtimeChannel | null>(null)
   const flushingRef = useRef(false)
 
-  const pullAll = useCallback(() => {
+  const pullAll = useCallback((): Promise<boolean> => {
     const sb = sbRef.current
-    if (!sb) return
+    if (!sb) return Promise.resolve(false)
     // Epoch guard: realtime fires a pull per event, so pulls overlap; a slow
     // STALE response must never commit over a newer one.
     const epoch = ++pullEpochRef.current
     lastPullRef.current = Date.now()
-    Promise.all([
+    return Promise.all([
       // Content tables newest-first with a generous cap — 2 riders + guests
       // over 10 days stay far below it, but a runaway can't bloat every phone.
       sb.from('posts').select('*').order('ts', { ascending: false }).limit(300),
@@ -510,14 +539,21 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       sb.from('kit').select('*'),
     ])
       .then((res) => {
-        if (epoch !== pullEpochRef.current) return // superseded by a newer pull
+        if (epoch !== pullEpochRef.current) return false // superseded by a newer pull
         const [p, l, n, m, g, kt] = res
         // If every table errored (e.g. project paused / no connection), flag the
         // server as unreachable so the UI can say so.
         const okNow = !p.error || !l.error || !n.error || !m.error || !g.error || !kt.error
         // Recovered after downtime → the realtime channel may be dead; rejoin it.
         if (okNow && serverOkRef.current === false) resubFnRef.current?.()
+        // Eager ref writes so a caller acting straight after the pull (e.g.
+        // syncNow's follow-up flush) sees this verdict, not last render's.
+        serverOkRef.current = okNow
         setServerOk(okNow)
+        if (okNow) {
+          lastSyncAtRef.current = Date.now()
+          setLastSyncAt(lastSyncAtRef.current)
+        }
         const next: Store = { ...storeRef.current }
         if (!p.error)
           next.posts = ((p.data || []) as Post[])
@@ -639,9 +675,68 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         next.updates.sort((a, b) => b.ts - a.ts)
         next.notes.sort((a, b) => b.ts - a.ts)
         commit(next)
+        return okNow
       })
-      .catch(() => setServerOk(false))
+      .catch(() => {
+        serverOkRef.current = false
+        setServerOk(false)
+        return false
+      })
   }, [commit])
+
+  /** Manual "sync now": rejoin realtime, force a pull, and if the server
+   * answered, flush whatever's queued. Returns whether the server answered. */
+  const syncNow = useCallback(async (): Promise<boolean> => {
+    resubFnRef.current?.()
+    // Capped: on pathological networks a pull can hang far beyond its usual
+    // fast-fail — the button waiting on us must always get an answer.
+    const ok = await withDeadline(pullAll(), 12000, false)
+    if (ok) flushRef.current()
+    return ok
+  }, [pullAll])
+
+  /** Fault-finder: test each link separately so the UI can say WHICH bit is
+   * broken — phone internet, trip server, or just the live channel. */
+  const diagnose = useCallback(async (): Promise<ConnDiag> => {
+    const sb = sbRef.current
+    // Outer deadline too: if a probe's own timeout is defeated by a hung
+    // socket, the fault-finder still reports (honestly) instead of spinning.
+    const [internet, server] = await withDeadline(Promise.all([
+      // A third-party endpoint the app already relies on: proves the phone
+      // has working internet independent of the trip server.
+      fetch('https://api.open-meteo.com/v1/forecast?latitude=53.3&longitude=-8.2&current=temperature_2m', {
+        cache: 'no-store',
+        signal: AbortSignal.timeout(6000),
+      })
+        .then((r) => r.ok)
+        .catch(() => false),
+      (async () => {
+        if (!sb) return { ok: false, err: 'app still starting' }
+        try {
+          const { error } = await withDeadline<{ error: unknown }>(
+            sb.from('sig').select('*').limit(1),
+            8000,
+            { error: new Error('timed out') }
+          )
+          const raw = error ? String((error as { message?: string }).message || 'no response') : null
+          // Browser network failures surface as "TypeError: Failed to fetch" —
+          // riders get plain words, not a stack-trace fragment.
+          return { ok: !error, err: raw && /fetch|network|load/i.test(raw) ? 'no response' : raw }
+        } catch {
+          return { ok: false, err: 'no response' }
+        }
+      })(),
+    ]), 10000, [false, { ok: false, err: 'timed out' }])
+    return {
+      online: typeof navigator === 'undefined' ? true : navigator.onLine,
+      internet,
+      server: server.ok,
+      serverErr: server.ok ? null : server.err,
+      live: !chDownRef.current,
+      lastSyncAt: lastSyncAtRef.current,
+      queued: (storeRef.current.outbox || []).length,
+    }
+  }, [])
 
   const runOp = useCallback(async (o: OutboxOp): Promise<{ error: unknown } | { error: null }> => {
     const sb = sbRef.current as SupabaseClient
@@ -680,18 +775,26 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     }
     const q = sb.from(o.t)
     // Deadline on every table op — one lie-fi hang latched the whole engine
-    // for minutes while every new write silently queued behind it.
-    const signal = AbortSignal.timeout(30000)
+    // for minutes while every new write silently queued behind it. Raced, not
+    // .abortSignal(): with a signal attached this supabase-js version never
+    // settles a network-rejected query, which turned the deadline into the
+    // very hang it guards against (flushingRef stuck = outbox bricked).
+    const bell: { error: unknown } = { error: new Error('timed out') }
     if (o.op === 'insert') {
-      const res = await q.insert(row as Record<string, unknown>).abortSignal(signal)
+      const res = await withDeadline<{ error: unknown }>(q.insert(row as Record<string, unknown>), 30000, bell)
       // Blobs are deleted only AFTER the row lands — an upload followed by a
       // failed insert must keep the op (and its photos) replayable.
       if (!res.error) uploaded.forEach((id) => removePhoto(id))
       return res
     }
-    if (o.op === 'upsert') return q.upsert(row as Record<string, unknown>).abortSignal(signal)
-    if (o.op === 'update') return q.update(row as Record<string, unknown>).eq(o.col as string, o.val as string | number).abortSignal(signal)
-    return q.delete().eq(o.col as string, o.val as string | number).abortSignal(signal)
+    if (o.op === 'upsert') return withDeadline<{ error: unknown }>(q.upsert(row as Record<string, unknown>), 30000, bell)
+    if (o.op === 'update')
+      return withDeadline<{ error: unknown }>(
+        q.update(row as Record<string, unknown>).eq(o.col as string, o.val as string | number),
+        30000,
+        bell
+      )
+    return withDeadline<{ error: unknown }>(q.delete().eq(o.col as string, o.val as string | number), 30000, bell)
   }, [])
 
   /** One key per LOGICAL ROW (no op in it): a later op on the same row must
@@ -1652,6 +1755,9 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     ready: true,
     serverOk,
     persistFailed,
+    lastSyncAt,
+    syncNow,
+    diagnose,
     screen,
     day,
     kitTab,
