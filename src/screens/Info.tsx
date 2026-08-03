@@ -214,7 +214,7 @@ export function Info() {
           <GuideRow title="The gallery">
             Every photo from the trip in one place — a carousel on Home and a grid in the Journal. Tap any shot to open it full-screen and <b>swipe</b> through them all. Post up to four photos on a location, note or message.
           </GuideRow>
-          <GuideRow title="The map">The whole route with the live pin — from the home card or full-screen. A fix that’s off the route or outside Ireland still posts, it just won’t sit on the route line.</GuideRow>
+          <GuideRow title="The map">The whole route with the live pin, on the home card. A fix that’s off the route or outside Ireland still posts, it just won’t sit on the route line.</GuideRow>
           <GuideRow title="Install &amp; offline">
             Add it to your home screen (Share → <b>Add to Home Screen</b>) and it runs like a proper app. It works with <b>no signal</b> — the app itself loads offline, and anything you post (words and photos) is saved on the phone and syncs the moment you’re back on. Photos from the server need a connection to display the first time. A banner tells you when the trip server can’t be reached — and you can force a sync and fault-find the connection yourself any time:
             <div style={{ marginTop: 9 }}>

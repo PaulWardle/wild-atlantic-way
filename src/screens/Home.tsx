@@ -393,11 +393,11 @@ export function Home() {
       <div style={{ margin: '18px 16px 0', border: `1.5px solid ${c.ink}`, borderRadius: 10, background: c.paperMap, overflow: 'hidden' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 12px', borderBottom: `1.5px solid ${c.ink}`, background: c.paperMuted }}>
           <span style={{ fontFamily: font.mono, fontSize: 9, letterSpacing: '.16em', color: c.ink, textTransform: 'uppercase' }}>The shape of the journey</span>
-          <button onClick={() => nav({ screen: 'map' })} style={{ fontFamily: font.mono, fontSize: 9, color: c.inkOnMuted, letterSpacing: '.06em' }}>
+          <span style={{ fontFamily: font.mono, fontSize: 9, color: c.inkOnMuted, letterSpacing: '.06em' }}>
             Muff → Kinsale
-          </button>
+          </span>
         </div>
-        <div style={{ padding: '6px 6px 0' }} onClick={() => nav({ screen: 'map' })}>
+        <div style={{ padding: '6px 6px 0' }}>
           <MapSVG geo={geo} />
         </div>
         <MapLegend />
@@ -668,14 +668,7 @@ export function Home() {
         {postCount > 0 ? (
           <Slider
             idx={postIdx}
-            onDot={(i) => {
-              // Manual nav moves the journal card by the same step, so the two
-              // stay in lockstep instead of drifting apart after one swipe.
-              const pn = postList.length
-              const d = i - (pn > 0 ? ((postIdx % pn) + pn) % pn : 0)
-              setPostIdx(i)
-              if (feed.length > 1 && d !== 0) setJFeedIdx(jFeedIdx + d)
-            }}
+            onDot={setPostIdx}
             slides={postList.map((p, i) => (
               <div key={i} style={{ padding: '12px 15px 13px', minHeight: 94 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
@@ -714,12 +707,7 @@ export function Home() {
         {feed.length > 0 ? (
           <Slider
             idx={jFeedIdx}
-            onDot={(i) => {
-              const fn = feed.length
-              const d = i - (fn > 0 ? ((jFeedIdx % fn) + fn) % fn : 0)
-              setJFeedIdx(i)
-              if (postList.length > 1 && d !== 0) setPostIdx(postIdx + d)
-            }}
+            onDot={setJFeedIdx}
             slides={feed.map((e, i) => (
               <div key={i} style={{ padding: '12px 15px 13px', minHeight: 94 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>

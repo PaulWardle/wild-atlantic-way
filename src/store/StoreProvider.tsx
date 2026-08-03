@@ -1089,6 +1089,11 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   // A manual dot-tap/swipe pauses the beat (mid-read content must not be
   // yanked away), and reduced-motion users get no auto-advance at all.
   const carouselTouchRef = useRef(0)
+  // Set by a manual swipe/dot-tap: the slide number the rider navigated to.
+  // Only the touched card moves at the time; when the auto-cycle wakes after
+  // the pause, ALL cards snap to this number first, then advance together —
+  // independent swiping, with the others catching up rather than tagging along.
+  const carouselSnapRef = useRef<number | null>(null)
   useEffect(() => {
     const car = window.setInterval(() => {
       if (screenRef.current !== 'home') return
@@ -1100,6 +1105,16 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       // Short pause after a manual swipe — long enough to read the card you
       // chose, short enough that the cycle visibly comes back to life.
       if (Date.now() - carouselTouchRef.current < 8000) return
+      if (carouselSnapRef.current != null) {
+        const i = carouselSnapRef.current
+        carouselSnapRef.current = null
+        // Resync beat: the untouched cards glide to the touched card's slide
+        // number this tick; everyone advances together from the next one.
+        setPostIdxState(i)
+        setJFeedIdxState(i)
+        setGalIdxState(i)
+        return
+      }
       const s = storeRef.current
       const n = Math.min(10, (s.posts || []).length)
       if (n > 1) setPostIdxState((i) => (i + 1) % n)
@@ -1817,16 +1832,19 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     clearPosts,
     setPostIdx: (i: number) => {
       carouselTouchRef.current = Date.now()
+      carouselSnapRef.current = i
       setPostIdxState(i)
     },
     galIdx,
     setGalIdx: (i: number) => {
       carouselTouchRef.current = Date.now()
+      carouselSnapRef.current = i
       setGalIdxState(i)
     },
     jFeedIdx,
     setJFeedIdx: (i: number) => {
       carouselTouchRef.current = Date.now()
+      carouselSnapRef.current = i
       setJFeedIdxState(i)
     },
     jFeedSwipeStart,
