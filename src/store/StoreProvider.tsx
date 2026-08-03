@@ -1084,17 +1084,16 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     return () => window.clearInterval(tick)
   }, [])
 
-  // auto-advancing carousels on Home — one timer drives the postbox, journal
-  // and gallery together so they all turn on the same beat (never drifting).
-  // A manual dot-tap/swipe pauses the beat (mid-read content must not be
-  // yanked away), and reduced-motion users get no auto-advance at all.
-  const carouselTouchRef = useRef(0)
-  // Set by a manual swipe/dot-tap: the slide number the rider navigated to.
-  // Only the touched card moves at the time; when the auto-cycle wakes after
-  // the pause, ALL cards snap to this number first, then advance together —
-  // independent swiping, with the others catching up rather than tagging along.
-  const carouselSnapRef = useRef<number | null>(null)
+  // auto-advancing carousels on Home — one shared BEAT drives the postbox,
+  // journal and gallery, so they all turn at the same instants. Positions are
+  // independent (the lists differ, so "same slide number" means nothing); the
+  // sync is rhythm. A manual swipe moves only its own card and re-arms the
+  // beat, so the next collective turn lands exactly one interval after the
+  // swipe — never a long dead stretch. Reduced-motion users get no auto-advance.
+  const CAROUSEL_BEAT = 5500
+  const nextBeatRef = useRef(0)
   useEffect(() => {
+    nextBeatRef.current = Date.now() + CAROUSEL_BEAT
     const car = window.setInterval(() => {
       if (screenRef.current !== 'home') return
       try {
@@ -1102,19 +1101,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       } catch {
         /* noop */
       }
-      // Short pause after a manual swipe — long enough to read the card you
-      // chose, short enough that the cycle visibly comes back to life.
-      if (Date.now() - carouselTouchRef.current < 8000) return
-      if (carouselSnapRef.current != null) {
-        const i = carouselSnapRef.current
-        carouselSnapRef.current = null
-        // Resync beat: the untouched cards glide to the touched card's slide
-        // number this tick; everyone advances together from the next one.
-        setPostIdxState(i)
-        setJFeedIdxState(i)
-        setGalIdxState(i)
-        return
-      }
+      if (Date.now() < nextBeatRef.current) return
+      nextBeatRef.current = Date.now() + CAROUSEL_BEAT
       const s = storeRef.current
       const n = Math.min(10, (s.posts || []).length)
       if (n > 1) setPostIdxState((i) => (i + 1) % n)
@@ -1131,7 +1119,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         (s.notes || []).reduce((t, x) => t + photoList(x.photo).length, 0) +
         (s.posts || []).reduce((t, p) => t + photoList(p.photo).length, 0)
       if (photoCount > 1) setGalIdxState((i) => i + 1)
-    }, 4500)
+    }, 500) // fast scheduler tick; the BEAT above decides when cards actually turn
     return () => window.clearInterval(car)
   }, [])
 
@@ -1831,20 +1819,17 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     removeLocation,
     clearPosts,
     setPostIdx: (i: number) => {
-      carouselTouchRef.current = Date.now()
-      carouselSnapRef.current = i
+      nextBeatRef.current = Date.now() + CAROUSEL_BEAT
       setPostIdxState(i)
     },
     galIdx,
     setGalIdx: (i: number) => {
-      carouselTouchRef.current = Date.now()
-      carouselSnapRef.current = i
+      nextBeatRef.current = Date.now() + CAROUSEL_BEAT
       setGalIdxState(i)
     },
     jFeedIdx,
     setJFeedIdx: (i: number) => {
-      carouselTouchRef.current = Date.now()
-      carouselSnapRef.current = i
+      nextBeatRef.current = Date.now() + CAROUSEL_BEAT
       setJFeedIdxState(i)
     },
     jFeedSwipeStart,
