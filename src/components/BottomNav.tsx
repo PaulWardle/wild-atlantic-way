@@ -67,7 +67,10 @@ export function BottomNav() {
         background: '#ded0ab',
         borderTop: `1.5px solid ${c.ink}`,
         display: 'flex',
-        padding: '6px 2px calc(8px + env(safe-area-inset-bottom))',
+        // Overlap the home-indicator inset rather than fully clearing it —
+        // 8px + the whole inset left a thumb-width of dead beige under the
+        // labels. The max() keeps a small floor where there's no inset at all.
+        padding: '6px 2px max(4px, calc(env(safe-area-inset-bottom) - 14px))',
       }}
     >
       <Tab label="Home" ink={homeInk} active={homeInk === ACTIVE} onClick={() => nav({ screen: 'home' })}>
