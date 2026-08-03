@@ -221,16 +221,19 @@ export function Journal() {
               <div style={{ fontFamily: font.mono, fontSize: 8, letterSpacing: '.14em', color: c.inkFaintest, textTransform: 'uppercase', margin: '11px 0 6px' }}>File under</div>
               <Dropdown label={jDayLabel} open={openDD === 'jday'} onToggle={() => toggleDD('jday')} options={jDayOptions.map((o) => ({ label: o.label, pick: () => selectJDay(o.val) }))} />
             </div>
-            <div style={{ flex: '0 0 118px', minWidth: 0 }}>
+            <div style={{ flex: '0 0 118px', minWidth: 0, display: 'flex', flexDirection: 'column' }}>
               <div style={{ fontFamily: font.mono, fontSize: 8, letterSpacing: '.14em', color: c.inkFaintest, textTransform: 'uppercase', margin: '11px 0 6px' }}>At time</div>
               {/* appearance:none — iOS gives time inputs a stubborn intrinsic
-                  width that ignores the column and paints past the screen edge. */}
+                  width that ignores the column and paints past the screen edge.
+                  The flex stretch matters too: with the chrome stripped, an
+                  EMPTY time input has no inner content and collapses shorter
+                  than the dropdown beside it until a value fills it. */}
               <input
                 type="time"
                 value={jTime}
                 onChange={(e) => setJTime(e.target.value)}
                 aria-label="Time for this entry"
-                style={{ width: '100%', minWidth: 0, maxWidth: '100%', boxSizing: 'border-box', WebkitAppearance: 'none', appearance: 'none', border: `1.5px solid ${c.ink}`, borderRadius: 7, background: c.inputBg, padding: '9px 9px', fontFamily: font.mono, fontSize: 13, color: c.ink }}
+                style={{ flex: 1, width: '100%', minWidth: 0, maxWidth: '100%', boxSizing: 'border-box', WebkitAppearance: 'none', appearance: 'none', border: `1.5px solid ${c.ink}`, borderRadius: 7, background: c.inputBg, padding: '0 9px', fontFamily: font.mono, fontSize: 13, color: c.ink }}
               />
             </div>
           </div>
