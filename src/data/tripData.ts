@@ -660,9 +660,9 @@ export const tripData: Trip = {
       "n": "05",
       "dow": "FRI",
       "date": "14 AUG",
-      "title": "Keem → Westport → Doolough → Killary",
-      "tagline": "The recovery day — and somehow still the prettiest",
-      "miles": "~95mi",
+      "title": "Keem → Killary → Sky Road → Spiddal",
+      "tagline": "The big Connemara day — Sky Road, the shore road, camp by Galway Bay",
+      "miles": "~195mi",
       "phase": "waw",
       "stops": [
         {
@@ -783,31 +783,7 @@ export const tripData: Trip = {
           "lat": 53.545,
           "lon": -10.12,
           "sid": "d5-cleggan-omey-island"
-        }
-      ],
-      "night": {
-        "area": "Connemara",
-        "primary": "Clifden Camping & Caravan Park",
-        "note": "Sheltered park on the Westport Road, 2 km from Clifden town.",
-        "backup": "",
-        "sellout": false,
-        "deviationMi": 1,
-        "retraceMi": 0
-      },
-      "wawKm": [
-        1045,
-        1197
-      ]
-    },
-    {
-      "n": "06",
-      "dow": "SAT",
-      "date": "15 AUG",
-      "title": "Sky Road → Connemara shore → Burren → Doolin",
-      "tagline": "Bog, granite and limestone — three worlds in one day",
-      "miles": "~180mi",
-      "phase": "waw",
-      "stops": [
+        },
         {
           "n": "Sky Road",
           "d": "The loop above Clifden bay — take the upper fork, obviously. Coffee in Clifden after.",
@@ -860,7 +836,31 @@ export const tripData: Trip = {
           "lat": 53.32,
           "lon": -9.84,
           "sid": "d6-south-connemara-shore"
-        },
+        }
+      ],
+      "night": {
+        "area": "Spiddal (An Spidéal)",
+        "primary": "Spiddal Mobile Home Park (Páirc Saoire)",
+        "note": "Caravan & camping on River Road, a few minutes from An Spidéal village — right on the coast road, Galway Bay over the wall. 087 760 7698.",
+        "backup": "",
+        "sellout": false,
+        "deviationMi": 0.3,
+        "retraceMi": 0
+      },
+      "wawKm": [
+        1045,
+        1361
+      ]
+    },
+    {
+      "n": "06",
+      "dow": "SAT",
+      "date": "15 AUG",
+      "title": "Galway Bay → Burren → Doolin",
+      "tagline": "The short limestone day — Black Head, Fanore and a Doolin session earned early",
+      "miles": "~85mi",
+      "phase": "waw",
+      "stops": [
         {
           "n": "Spiddal → Galway",
           "d": "Into the city with the Burren rising across the bay. Ride through — coffee at most; Saturday Galway will eat the afternoon whole.",
@@ -944,7 +944,7 @@ export const tripData: Trip = {
         "retraceMi": 0
       },
       "wawKm": [
-        1197,
+        1361,
         1483
       ]
     },
@@ -1833,16 +1833,16 @@ export const tripData: Trip = {
     },
     {
       "night": "Fri 14",
-      "base": "Clifden, Co. Galway",
-      "primary": "Clifden Camping & Caravan Park",
-      "primaryNote": "Sheltered park on the Westport Road, 2 km from Clifden town",
+      "base": "An Spidéal (Spiddal), Co. Galway",
+      "primary": "Spiddal Mobile Home Park (Páirc Saoire)",
+      "primaryNote": "Caravan & camping park on River Road, a short walk from Spiddal village — 087 7607698 · spiddalmobilehomes.ie",
       "backup": "",
       "sellout": false,
-      "deviationMi": 1,
+      "deviationMi": 0.3,
       "retraceMi": 0,
       "bookingStatus": "booked",
-      "lat": 53.5011,
-      "lon": -10.0183
+      "lat": 53.247,
+      "lon": -9.306
     },
     {
       "night": "Sat 15",
