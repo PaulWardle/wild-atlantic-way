@@ -857,7 +857,7 @@ export const tripData: Trip = {
       "dow": "SAT",
       "date": "15 AUG",
       "title": "Galway Bay → Burren → Doolin",
-      "tagline": "The short limestone day — Black Head, Fanore and a Doolin session earned early",
+      "tagline": "The recovery day — short miles, hostel comforts at the Aille, a pint found somewhere",
       "miles": "~85mi",
       "phase": "waw",
       "stops": [
@@ -937,7 +937,7 @@ export const tripData: Trip = {
       "night": {
         "area": "Doolin",
         "primary": "Aille River Tourist Hostel & Campsite",
-        "note": "Riverside in the village on the Aille — the Cliffs are still 10 minutes south at 08:00, and the trad session still happens.",
+        "note": "Riverside in the village on the Aille, with hostel facilities on tap — showers, kitchen, somewhere dry to sit. Not much around, which is the point. The Cliffs are still 10 minutes south at 08:00, and the trad session still happens.",
         "backup": "Nagle’s — ❌ full",
         "sellout": false,
         "deviationMi": 0.2,
@@ -1848,7 +1848,7 @@ export const tripData: Trip = {
       "night": "Sat 15",
       "base": "Doolin, Co. Clare",
       "primary": "Aille River Tourist Hostel & Campsite",
-      "primaryNote": "Riverside in Doolin village — Cliffs still 10 min south at 08:00, session still walkable",
+      "primaryNote": "Riverside in Doolin village with full hostel facilities for campers — showers, kitchen, common room. Recovery night: a pint nearby, feet up by the river.",
       "backup": "Nagle’s — ❌ full · O’Connors Riverside — not needed",
       "sellout": false,
       "deviationMi": 0.2,
