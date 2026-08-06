@@ -642,6 +642,7 @@ export function Home() {
             right={<span style={{ fontFamily: font.mono, fontSize: 9, letterSpacing: '.06em', color: c.gold, whiteSpace: 'nowrap' }}>{gallery.length + (gallery.length === 1 ? ' photo' : ' photos')}</span>}
           />
           <Slider
+            flush
             idx={galIdx}
             onDot={setGalIdx}
             slides={gallery.map((g, i) => {

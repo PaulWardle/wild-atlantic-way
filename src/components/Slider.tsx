@@ -34,12 +34,15 @@ export function Slider({
   onDot,
   onSwipeStart,
   onSwipeEnd,
+  flush,
 }: {
   slides: ReactNode[]
   idx: number
   onDot?: (i: number) => void
   onSwipeStart?: (e: React.TouchEvent | React.MouseEvent) => void
   onSwipeEnd?: (e: React.TouchEvent | React.MouseEvent) => void
+  /** Full-bleed slides (photos): no single-slide spacer strip under them. */
+  flush?: boolean
 }) {
   const n = slides.length
   const step = n > 0 ? 100 / n : 100
@@ -86,7 +89,7 @@ export function Slider({
           {active + 1} / {n}
         </div>
       )}
-      {n === 1 && <div style={{ height: 11 }} />}
+      {n === 1 && !flush && <div style={{ height: 11 }} />}
     </>
   )
 }
