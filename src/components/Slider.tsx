@@ -1,9 +1,17 @@
 import { useRef, type ReactNode } from 'react'
 import { c } from '../theme'
 
-function Dots({ n, active, onDot }: { n: number; active: number; onDot?: (i: number) => void }) {
+function Dots({ n, active, onDot, overlay }: { n: number; active: number; onDot?: (i: number) => void; overlay?: boolean }) {
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 6, padding: '2px 12px 11px' }}>
+    <div
+      style={
+        overlay
+          ? // Floating on the photo: a soft dark pill keeps the dots readable
+            // over any image (or the paper block while one loads).
+            { display: 'inline-flex', alignItems: 'center', gap: 6, padding: '5px 9px', background: 'rgba(20,16,10,.32)', borderRadius: 999 }
+          : { display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 6, padding: '2px 12px 11px' }
+      }
+    >
       {Array.from({ length: n }).map((_, i) => (
         <button
           key={i}
@@ -13,7 +21,7 @@ function Dots({ n, active, onDot }: { n: number; active: number; onDot?: (i: num
             width: i === active ? 16 : 6,
             height: 6,
             borderRadius: 3,
-            background: i === active ? c.rust : '#8a7c55',
+            background: i === active ? c.rust : overlay ? '#d8cba4' : '#8a7c55',
             border: 0,
             padding: 0,
             transition: 'width .3s ease, background .3s ease',
@@ -51,7 +59,7 @@ export function Slider({
   // (gallery, postbox). The journal passes its own onSwipeStart/End instead.
   const startX = useRef<number | null>(null)
   return (
-    <>
+    <div style={flush ? { position: 'relative' } : undefined}>
       <div
         style={{ overflow: 'hidden', touchAction: 'pan-y', cursor: onSwipeStart ? 'grab' : undefined }}
         onTouchStart={(e) => {
@@ -83,13 +91,27 @@ export function Slider({
           ))}
         </div>
       </div>
-      {n > 1 && n <= 12 && <Dots n={n} active={active} onDot={onDot} />}
-      {n > 12 && (
+      {/* flush (photo) mode floats the dots ON the image so the picture runs
+          border to border — no paper strip beneath it. */}
+      {flush && n > 1 && n <= 12 && (
+        <div style={{ position: 'absolute', left: 0, right: 0, bottom: 42, display: 'flex', justifyContent: 'center', pointerEvents: 'none' }}>
+          <div style={{ pointerEvents: 'auto' }}>
+            <Dots n={n} active={active} onDot={onDot} overlay />
+          </div>
+        </div>
+      )}
+      {flush && n > 12 && (
+        <div style={{ position: 'absolute', right: 10, bottom: 44, padding: '3px 8px', background: 'rgba(20,16,10,.32)', borderRadius: 999, fontFamily: "'Space Mono',monospace", fontSize: 9, letterSpacing: '.08em', color: '#e8dcbf' }}>
+          {active + 1} / {n}
+        </div>
+      )}
+      {!flush && n > 1 && n <= 12 && <Dots n={n} active={active} onDot={onDot} />}
+      {!flush && n > 12 && (
         <div style={{ textAlign: 'center', padding: '3px 12px 11px', fontFamily: "'Space Mono',monospace", fontSize: 9, letterSpacing: '.08em', color: '#645940' }}>
           {active + 1} / {n}
         </div>
       )}
       {n === 1 && !flush && <div style={{ height: 11 }} />}
-    </>
+    </div>
   )
 }
