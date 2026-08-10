@@ -115,6 +115,10 @@ export function Home() {
   // stuck, or when the server comes back with nothing queued — so it's visible
   // that reconnecting worked AND the saved stuff actually went.
   const [syncFlash, setSyncFlash] = useState<string | null>(null)
+  // Gallery images that failed to load (url → when). A failure on flaky
+  // signal must not be terminal: the image retries once its slide comes
+  // round again, so photos self-heal as coverage returns.
+  const [galFailed, setGalFailed] = useState<Record<string, number>>({})
   const prevOutRef = useRef(outbox.length)
   const prevSrvRef = useRef(serverOk)
   const drainedRef = useRef(0) // queue emptied while the server still looked down
@@ -660,12 +664,21 @@ export function Home() {
                 // while an image loads (or dies on a weak signal) instead of
                 // collapsing to header-and-dots.
                 <div key={i} style={{ position: 'relative', height: 300, background: c.paperMuted }}>
-                  {near ? (
+                  {near && (!galFailed[g.url] || Date.now() - galFailed[g.url] > 8000) ? (
                     <img
+                      key={galFailed[g.url] || 0}
                       src={g.url}
                       alt={g.caption}
                       loading="lazy"
-                      onError={(e) => { e.currentTarget.style.display = 'none' }}
+                      onError={() => setGalFailed((f) => ({ ...f, [g.url]: Date.now() }))}
+                      onLoad={() =>
+                        setGalFailed((f) => {
+                          if (!f[g.url]) return f
+                          const n = { ...f }
+                          delete n[g.url]
+                          return n
+                        })
+                      }
                       style={{ width: '100%', height: '100%', display: 'block', objectFit: 'cover' }}
                     />
                   ) : (
