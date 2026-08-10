@@ -124,7 +124,9 @@ function titleBody(e: JEvent): { title: string; body: string } {
   if (e.kind === 'loc') return { title: e.label || '', body: e.note || '' }
   if (e.kind === 'post') return { title: ((e.name || '') + ' ' + (e.verb || '')).trim(), body: e.msg || '' }
   if (e.kind === 'bag') return { title: e.label || '', body: '' }
-  return { title: '', body: e.text || '' }
+  // Brother notes get the same bold-name headline guests get ("PAUL SAYS"),
+  // not a small author label beside the tag.
+  return { title: e.author ? `${e.author} says` : '', body: e.text || '' }
 }
 
 /** The latest-first carousel/list feed (default up to 12 items). */
@@ -146,8 +148,10 @@ export function buildFeed(events: JEvent[], limit = 12): FeedItem[] {
         body,
         hasTitle: !!title,
         hasBody: !!body,
-        author: isNote ? e.author || '' : '',
-        hasAuthor: isNote && !!e.author,
+        // The author now lives in the bold title ("PAUL SAYS") — the small
+        // side label would duplicate it.
+        author: '',
+        hasAuthor: false,
         photo: e.photo,
         replies: e.replies,
       }
@@ -216,8 +220,8 @@ export function buildGroups(events: JEvent[], trip: Trip): JGroup[] {
           hasTitle: !!title,
           hasBody: !!body,
           isNote,
-          author: isNote ? e.author || '' : '',
-          hasAuthor: isNote && !!e.author,
+          author: '',
+          hasAuthor: false,
           noteTs: e.noteTs,
           text: e.text || '',
           photo: e.photo,
