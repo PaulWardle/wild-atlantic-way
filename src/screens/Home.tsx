@@ -653,9 +653,18 @@ export function Home() {
               const active = n > 0 ? ((galIdx % n) + n) % n : 0
               const near = n <= 3 || Math.min(Math.abs(i - active), n - Math.abs(i - active)) <= 1
               return (
-                <div key={i} style={{ position: 'relative' }}>
+                // minHeight + muted ground: an image that is still loading (or
+                // failed on a weak signal) has zero intrinsic height, and the
+                // whole card collapsed to header-and-dots until it arrived.
+                <div key={i} style={{ position: 'relative', minHeight: 200, background: c.paperMuted }}>
                   {near ? (
-                    <img src={g.url} alt={g.caption} loading="lazy" style={{ width: '100%', display: 'block', maxHeight: 320, objectFit: 'cover' }} />
+                    <img
+                      src={g.url}
+                      alt={g.caption}
+                      loading="lazy"
+                      onError={(e) => { e.currentTarget.style.display = 'none' }}
+                      style={{ width: '100%', display: 'block', minHeight: 200, maxHeight: 320, objectFit: 'cover' }}
+                    />
                   ) : (
                     <div style={{ width: '100%', height: 220, background: c.paperMuted }} />
                   )}
