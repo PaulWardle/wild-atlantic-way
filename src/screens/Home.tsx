@@ -653,20 +653,23 @@ export function Home() {
               const active = n > 0 ? ((galIdx % n) + n) % n : 0
               const near = n <= 3 || Math.min(Math.abs(i - active), n - Math.abs(i - active)) <= 1
               return (
-                // minHeight + muted ground: an image that is still loading (or
-                // failed on a weak signal) has zero intrinsic height, and the
-                // whole card collapsed to header-and-dots until it arrived.
-                <div key={i} style={{ position: 'relative', minHeight: 200, background: c.paperMuted }}>
+                // ONE fixed height for every slide, photos cover-fill it: the
+                // row is sized by its tallest slide, so mixed portrait and
+                // landscape shots otherwise leave beige strips under the
+                // shorter ones. The muted ground also holds the card's shape
+                // while an image loads (or dies on a weak signal) instead of
+                // collapsing to header-and-dots.
+                <div key={i} style={{ position: 'relative', height: 300, background: c.paperMuted }}>
                   {near ? (
                     <img
                       src={g.url}
                       alt={g.caption}
                       loading="lazy"
                       onError={(e) => { e.currentTarget.style.display = 'none' }}
-                      style={{ width: '100%', display: 'block', minHeight: 200, maxHeight: 320, objectFit: 'cover' }}
+                      style={{ width: '100%', height: '100%', display: 'block', objectFit: 'cover' }}
                     />
                   ) : (
-                    <div style={{ width: '100%', height: 220, background: c.paperMuted }} />
+                    <div style={{ width: '100%', height: '100%', background: c.paperMuted }} />
                   )}
                   <div style={{ position: 'absolute', left: 0, right: 0, bottom: 0, background: 'linear-gradient(transparent, rgba(20,16,10,.78))', padding: '26px 14px 10px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', gap: 8 }}>
                     <span style={{ fontFamily: font.display, fontWeight: 700, fontSize: 15, color: c.cream, textTransform: 'uppercase', letterSpacing: '.01em', lineHeight: 1.1 }}>{g.caption}</span>
