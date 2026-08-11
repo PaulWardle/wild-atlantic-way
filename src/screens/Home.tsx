@@ -171,6 +171,9 @@ export function Home() {
   const [locBusy, setLocBusy] = useState(false)
   const [locErr, setLocErr] = useState('')
   const [pendingPos, setPendingPos] = useState<CurrentPlace | null>(null)
+  // The reverse-geocoder's name is a SUGGESTION — "Buncrana, Ulster" when you
+  // were actually stood at the Gap of Mamore. Editable before posting.
+  const [placeName, setPlaceName] = useState('')
   const doPostHere = async () => {
     if (locBusy) return
     setLocBusy(true)
@@ -198,6 +201,7 @@ export function Home() {
     }
     if (typeof res !== 'string') {
       setPendingPos(res)
+      setPlaceName(res.place)
     } else if (res === 'denied') {
       setLocErr('Location permission is off — turn it on for this site, or set the spot by hand below.')
     } else if (res === 'nogeo') {
@@ -210,8 +214,10 @@ export function Home() {
     if (!pendingPos || locBusy) return
     setLocBusy(true)
     try {
-      await postResolvedPlace(pendingPos, draftNote, locFiles)
+      const name = placeName.trim().slice(0, 60) || pendingPos.place
+      await postResolvedPlace({ ...pendingPos, place: name }, draftNote, locFiles)
       setPendingPos(null)
+      setPlaceName('')
       setLocFiles([])
       setDraftNote('')
     } finally {
@@ -564,7 +570,16 @@ export function Home() {
             {pendingPos && (
               <div style={{ marginTop: 9, border: `1.5px solid ${c.ink}`, background: c.paperMuted, borderRadius: 9, padding: '11px 13px' }}>
                 <div style={{ fontFamily: font.mono, fontSize: 8, fontWeight: 700, letterSpacing: '.12em', color: c.inkOnMuted, textTransform: 'uppercase', marginBottom: 4 }}>Post your location?</div>
-                <div style={{ fontFamily: font.display, fontWeight: 700, fontSize: 18, textTransform: 'uppercase', color: c.ink, lineHeight: 1.05, letterSpacing: '.01em' }}>{pendingPos.place}</div>
+                <input
+                  value={placeName}
+                  onChange={(e) => setPlaceName(e.target.value)}
+                  maxLength={60}
+                  aria-label="Place name — edit if the suggestion is off"
+                  style={{ width: '100%', minWidth: 0, boxSizing: 'border-box', border: `1.5px dashed ${c.inkFainter}`, borderRadius: 7, background: c.inputBg, padding: '7px 10px', fontFamily: font.display, fontWeight: 700, fontSize: 17, textTransform: 'uppercase', color: c.ink, letterSpacing: '.01em' }}
+                />
+                <div style={{ fontFamily: font.serif, fontStyle: 'italic', fontSize: 11.5, color: c.inkMuted, lineHeight: 1.4, marginTop: 4 }}>
+                  The map’s best guess — tap it to rename if you were somewhere better.
+                </div>
                 {!pendingPos.inIreland && (
                   <div style={{ fontFamily: font.serif, fontStyle: 'italic', fontSize: 12, color: c.rust, lineHeight: 1.4, marginTop: 4 }}>
                     This looks like it’s off the Wild Atlantic Way — it’ll still post, just won’t sit on the route line.
@@ -582,7 +597,7 @@ export function Home() {
                     {locBusy ? 'Posting…' : 'Post it'}
                   </button>
                   <button
-                    onClick={() => setPendingPos(null)}
+                    onClick={() => { setPendingPos(null); setPlaceName('') }}
                     disabled={locBusy}
                     style={{ flex: '0 0 auto', border: `1.5px solid ${c.ink}`, borderRadius: 7, background: 'transparent', color: c.ink, padding: '10px 16px', textAlign: 'center', fontFamily: font.display, fontWeight: 600, fontSize: 12.5, textTransform: 'uppercase', letterSpacing: '.05em' }}
                   >
