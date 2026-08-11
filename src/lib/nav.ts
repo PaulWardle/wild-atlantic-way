@@ -287,6 +287,15 @@ export function navStretch(
     if (st.n !== to.name) via.push(st.n) // "X via X" when the kept extra IS the destination
   })
 
+  // SHORT hops go direct — in/out, the way a rider would. Sampled line pins
+  // exist to stop Google shortcutting LONG stretches of the Way inland; over a
+  // few km they add nothing, and where the line's geometry is locally coarse
+  // (the Urris hills: pins landed on trackless hillside) Google "solves" the
+  // impossible pins with a long detour. Kept biker loops still pin regardless.
+  if (hi - lo <= 12 && kept.length === 0 && !isTransferDest) {
+    return { url: gmapsUrl(dest, []), mi, via: [] }
+  }
+
   let wps = [...sampleWaypoints(lo, hi, Math.max(4, 9 - kept.length) - 1), ...kept]
   if (isTransferDest) {
     // …but the last official miles before a transfer (the KINSALE FINISH on
