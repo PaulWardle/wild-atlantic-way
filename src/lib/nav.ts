@@ -123,19 +123,58 @@ function orderPins(start: { lat: number; lon: number; km: number }, wps: Wp[]): 
 
 /** Up to `n+1` waypoints spread evenly along a stretch (k=0 pins the start —
  * with no explicit origin, that's what pulls Google onto the line). */
-function sampleWaypoints(fromKm: number, toKm: number, n: number): Wp[] {
-  const out: Wp[] = []
-  const seen = new Set<string>()
-  for (let k = 0; k <= n; k++) {
-    const km = fromKm + ((toKm - fromKm) * k) / (n + 1)
-    const p = pointAtKm(km)
-    const key = ll(p[0], p[1])
-    if (!seen.has(key)) {
-      seen.add(key)
-      out.push({ km, lat: p[0], lon: p[1] })
+/** Perpendicular distance (km) from a point to the segment a→b (equirectangular). */
+function segDist(p: SpinePoint, a: SpinePoint, b: SpinePoint): number {
+  const rad = Math.PI / 180
+  const cos = Math.cos(((a[0] + b[0]) / 2) * rad)
+  const ax = a[1] * cos, ay = a[0]
+  const bx = b[1] * cos, by = b[0]
+  const px = p[1] * cos, py = p[0]
+  const dx = bx - ax, dy = by - ay
+  const L2 = dx * dx + dy * dy
+  let t = L2 ? ((px - ax) * dx + (py - ay) * dy) / L2 : 0
+  t = Math.max(0, Math.min(1, t))
+  const qx = ax + t * dx, qy = ay + t * dy
+  return Math.sqrt((px - qx) * (px - qx) + (py - qy) * (py - qy)) * 111.32
+}
+
+/** Pins only where the Way genuinely BENDS: Douglas-Peucker over the line
+ * between two chainages keeps the vertices that deviate from straight by more
+ * than the tolerance — a pin at every real corner (headland loops, big
+ * inland swings Google would shortcut) and none down a straight coast road.
+ * Uniform sampling put eight metronome pins on every leg, which both cluttered
+ * Google and, where the line's geometry is locally coarse, planted pins on
+ * roadless ground that dragged routes into absurd detours. */
+function cornerWaypoints(lo: number, hi: number, max: number): Wp[] {
+  const interior = cleanSpine.filter((p) => p[2] > lo + 0.3 && p[2] < hi - 0.3)
+  const full: SpinePoint[] = [pointAtKm(lo), ...interior, pointAtKm(hi)]
+  if (full.length < 3) return []
+  let keep: number[] = []
+  let tol = 1.8
+  for (let round = 0; round < 7; round++) {
+    keep = []
+    const stack: Array<[number, number]> = [[0, full.length - 1]]
+    while (stack.length) {
+      const seg = stack.pop() as [number, number]
+      const s = seg[0], e = seg[1]
+      if (e - s < 2) continue
+      let bi = -1
+      let bd = 0
+      for (let i = s + 1; i < e; i++) {
+        const d = segDist(full[i], full[s], full[e])
+        if (d > bd) { bd = d; bi = i }
+      }
+      if (bi >= 0 && bd > tol) {
+        keep.push(bi)
+        stack.push([s, bi], [bi, e])
+      }
     }
+    if (keep.length <= max) break
+    tol *= 1.5 // too many corners for one Google link — keep only the biggest
   }
-  return out
+  return keep
+    .sort((x, y) => x - y)
+    .map((i) => ({ km: full[i][2], lat: full[i][0], lon: full[i][1] }))
 }
 
 function campCoord(di: number): [number, number] | null {
@@ -296,7 +335,7 @@ export function navStretch(
     return { url: gmapsUrl(dest, []), mi, via: [] }
   }
 
-  let wps = [...sampleWaypoints(lo, hi, Math.max(4, 9 - kept.length) - 1), ...kept]
+  let wps = [...cornerWaypoints(lo, hi, Math.max(3, 8 - kept.length)), ...kept]
   if (isTransferDest) {
     // …but the last official miles before a transfer (the KINSALE FINISH on
     // day 9) must be pinned, or Google shortcuts the end of the Way on its
