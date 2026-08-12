@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { c, font } from '../theme'
 import { isLocalPhoto, localId, localObjectURL } from '../lib/photoQueue'
 import { photoList } from '../lib/photos'
@@ -52,7 +53,7 @@ function Tile({ photo, onOpen }: { photo: GalleryPhoto; onOpen: () => void }) {
   )
 }
 
-function Lightbox({ photos, index, onClose, onNav }: { photos: GalleryPhoto[]; index: number; onClose: () => void; onNav: (d: number) => void }) {
+export function Lightbox({ photos, index, onClose, onNav }: { photos: GalleryPhoto[]; index: number; onClose: () => void; onNav: (d: number) => void }) {
   // The list can shrink WHILE the lightbox is open (the other phone deletes a
   // post; realtime pull lands) — clamp, and bail out if nothing is left.
   const photo = photos.length ? photos[Math.max(0, Math.min(index, photos.length - 1))] : undefined
@@ -81,7 +82,10 @@ function Lightbox({ photos, index, onClose, onNav }: { photos: GalleryPhoto[]; i
 
   if (!photo) return null
 
-  return (
+  // Portal to <body>: screen wrappers animate transform (waw-fade), which
+  // hijacks position:fixed — un-portaled, the lightbox pins to the scroll
+  // content instead of the viewport and the X drifts off-screen.
+  return createPortal(
     <div
       ref={dlgRef}
       tabIndex={-1}
@@ -113,9 +117,10 @@ function Lightbox({ photos, index, onClose, onNav }: { photos: GalleryPhoto[]; i
       role="dialog"
       aria-modal="true"
       aria-label={photo.alt}
-      style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(12,10,7,.94)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 16, animation: 'waw-fade .2s ease both', touchAction: 'pan-y' }}
+      // Bottom padding keeps the centred image+caption clear of the Back pill.
+      style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(12,10,7,.94)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '16px 16px calc(env(safe-area-inset-bottom, 0px) + 84px)', animation: 'waw-fade .2s ease both', touchAction: 'pan-y' }}
     >
-      {src && <img src={src} alt={photo.alt} style={{ maxWidth: '100%', maxHeight: '78%', borderRadius: 6, objectFit: 'contain' }} />}
+      {src && <img src={src} alt={photo.alt} style={{ maxWidth: '100%', maxHeight: '74%', borderRadius: 6, objectFit: 'contain' }} />}
       <div style={{ marginTop: 12, textAlign: 'center', color: '#f0e6cf' }}>
         <div style={{ fontFamily: font.display, fontWeight: 600, fontSize: 14, textTransform: 'uppercase', letterSpacing: '.02em' }}>{photo.alt}</div>
         <div style={{ fontFamily: font.mono, fontSize: 8.5, letterSpacing: '.1em', color: '#c9b98f', marginTop: 3 }}>{photo.when ? `${photo.when} · ` : ''}{index + 1} / {photos.length}</div>
@@ -140,7 +145,23 @@ function Lightbox({ photos, index, onClose, onNav }: { photos: GalleryPhoto[]; i
           </button>
         </>
       )}
-    </div>
+      <button
+        type="button"
+        onClick={(e) => { e.stopPropagation(); onClose() }}
+        aria-label="Close photo"
+        style={{ position: 'absolute', top: 'calc(env(safe-area-inset-top, 0px) + 12px)', right: 14, width: 40, height: 40, borderRadius: '50%', border: '1.5px solid rgba(246,236,214,.7)', background: 'rgba(12,10,7,.55)', color: '#f6ecd6', fontFamily: font.display, fontSize: 19, lineHeight: 1 }}
+      >
+        ×
+      </button>
+      <button
+        type="button"
+        onClick={(e) => { e.stopPropagation(); onClose() }}
+        style={{ position: 'absolute', bottom: 'calc(env(safe-area-inset-bottom, 0px) + 18px)', left: '50%', transform: 'translateX(-50%)', border: '1.5px solid rgba(246,236,214,.7)', borderRadius: 999, background: 'rgba(12,10,7,.55)', color: '#f6ecd6', fontFamily: font.mono, fontSize: 11, fontWeight: 700, letterSpacing: '.12em', textTransform: 'uppercase', padding: '11px 26px' }}
+      >
+        ‹ Back
+      </button>
+    </div>,
+    document.body,
   )
 }
 

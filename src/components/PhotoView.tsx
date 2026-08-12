@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { c, font } from '../theme'
 import { isLocalPhoto, localId, localObjectURL } from '../lib/photoQueue'
 
@@ -12,7 +13,7 @@ import { isLocalPhoto, localId, localObjectURL } from '../lib/photoQueue'
 export function PhotoView({
   url,
   alt = 'Trip photo',
-  maxHeight = 280,
+  maxHeight = 360,
   rounded = 8,
 }: {
   url: string
@@ -71,7 +72,9 @@ export function PhotoView({
             src={resolved}
             alt={alt}
             loading="lazy"
-            style={{ width: '100%', borderRadius: rounded, border: `1.5px solid ${c.ink}`, display: 'block', marginTop: 8, maxHeight, objectFit: 'cover' }}
+            // Natural aspect, never cropped: a portrait shot shows WHOLE at the
+            // height cap, centred — cover-cropping beheaded every tall photo.
+            style={{ display: 'block', maxWidth: '100%', maxHeight, width: 'auto', height: 'auto', margin: '8px auto 0', borderRadius: rounded, border: `1.5px solid ${c.ink}` }}
           />
         </button>
         {pending && (
@@ -80,7 +83,10 @@ export function PhotoView({
           </span>
         )}
       </div>
-      {open && (
+      {/* Portal to <body>: screen wrappers animate transform (waw-fade), which
+          hijacks position:fixed — un-portaled, the lightbox pins to the scroll
+          content instead of the viewport and the X drifts off-screen. */}
+      {open && createPortal(
         <div
           onClick={() => setOpen(false)}
           className="waw-noprint"
@@ -92,17 +98,25 @@ export function PhotoView({
           onKeyDown={(e) => {
             if (e.key === 'Escape') setOpen(false)
           }}
-          style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(12,10,7,.92)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16, animation: 'waw-fade .2s ease both' }}
+          // Bottom padding keeps a tall portrait clear of the Back pill.
+          style={{ position: 'fixed', inset: 0, zIndex: 100, background: 'rgba(12,10,7,.92)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '16px 16px calc(env(safe-area-inset-bottom, 0px) + 76px)', animation: 'waw-fade .2s ease both' }}
         >
-          <img src={resolved} alt={alt} style={{ maxWidth: '100%', maxHeight: '100%', borderRadius: 6, objectFit: 'contain' }} />
+          <img src={resolved} alt={alt} style={{ maxWidth: '100%', maxHeight: '82%', borderRadius: 6, objectFit: 'contain' }} />
           <button
             onClick={() => setOpen(false)}
             aria-label="Close photo"
-            style={{ position: 'absolute', top: 14, right: 14, width: 38, height: 38, borderRadius: '50%', border: '1.5px solid rgba(246,236,214,.7)', background: 'rgba(12,10,7,.5)', color: '#f6ecd6', fontFamily: font.display, fontSize: 19, lineHeight: 1 }}
+            style={{ position: 'absolute', top: 'calc(env(safe-area-inset-top, 0px) + 12px)', right: 14, width: 40, height: 40, borderRadius: '50%', border: '1.5px solid rgba(246,236,214,.7)', background: 'rgba(12,10,7,.55)', color: '#f6ecd6', fontFamily: font.display, fontSize: 19, lineHeight: 1 }}
           >
             ×
           </button>
-        </div>
+          <button
+            onClick={() => setOpen(false)}
+            style={{ position: 'absolute', bottom: 'calc(env(safe-area-inset-bottom, 0px) + 18px)', left: '50%', transform: 'translateX(-50%)', border: '1.5px solid rgba(246,236,214,.7)', borderRadius: 999, background: 'rgba(12,10,7,.55)', color: '#f6ecd6', fontFamily: font.mono, fontSize: 11, fontWeight: 700, letterSpacing: '.12em', textTransform: 'uppercase', padding: '11px 26px' }}
+          >
+            ‹ Back
+          </button>
+        </div>,
+        document.body,
       )}
     </>
   )

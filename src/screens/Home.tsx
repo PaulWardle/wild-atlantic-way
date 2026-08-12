@@ -15,7 +15,7 @@ import { Dropdown } from '../components/ui'
 import { PhotoInput } from '../components/PhotoInput'
 import { ConnCheck } from '../components/ConnCheck'
 import { ReplyBox, ReplyRows } from '../components/ReplyBox'
-import { Photos } from '../components/PhotoGallery'
+import { Lightbox, Photos } from '../components/PhotoGallery'
 import { WeatherStrip } from '../components/WeatherStrip'
 
 const meta = tripData.meta
@@ -119,6 +119,9 @@ export function Home() {
   // signal must not be terminal: the image retries once its slide comes
   // round again, so photos self-heal as coverage returns.
   const [galFailed, setGalFailed] = useState<Record<string, number>>({})
+  // Tapping a gallery slide opens the full uncropped photo (slides cover-crop
+  // to keep the card uniform, so portraits need this to be seen whole).
+  const [galOpen, setGalOpen] = useState<number | null>(null)
   const prevOutRef = useRef(outbox.length)
   const prevSrvRef = useRef(serverOk)
   const drainedRef = useRef(0) // queue emptied while the server still looked down
@@ -678,7 +681,7 @@ export function Home() {
                 // shorter ones. The muted ground also holds the card's shape
                 // while an image loads (or dies on a weak signal) instead of
                 // collapsing to header-and-dots.
-                <div key={i} style={{ position: 'relative', height: 300, background: c.paperMuted }}>
+                <button key={i} type="button" onClick={() => setGalOpen(i)} aria-label={`${g.caption} — tap to enlarge`} style={{ position: 'relative', display: 'block', width: '100%', height: 300, padding: 0, textAlign: 'left', background: c.paperMuted, cursor: 'zoom-in' }}>
                   {near && (!galFailed[g.url] || Date.now() - galFailed[g.url] > 8000) ? (
                     <img
                       key={galFailed[g.url] || 0}
@@ -703,10 +706,18 @@ export function Home() {
                     <span style={{ fontFamily: font.display, fontWeight: 700, fontSize: 15, color: c.cream, textTransform: 'uppercase', letterSpacing: '.01em', lineHeight: 1.1 }}>{g.caption}</span>
                     <span style={{ fontFamily: font.mono, fontSize: 8.5, color: c.gold, whiteSpace: 'nowrap' }}>{g.when}</span>
                   </div>
-                </div>
+                </button>
               )
             })}
           />
+          {galOpen !== null && (
+            <Lightbox
+              photos={gallery.map((g) => ({ url: g.url, alt: g.caption, when: g.when }))}
+              index={galOpen}
+              onClose={() => setGalOpen(null)}
+              onNav={(d) => setGalOpen((i) => (i === null ? i : (i + d + gallery.length) % gallery.length))}
+            />
+          )}
         </div>
       )}
 
