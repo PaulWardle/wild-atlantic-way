@@ -150,7 +150,7 @@ function cornerWaypoints(lo: number, hi: number, max: number): Wp[] {
   const full: SpinePoint[] = [pointAtKm(lo), ...interior, pointAtKm(hi)]
   if (full.length < 3) return []
   let keep: number[] = []
-  let tol = 1.8
+  let tol = 1.0 // tight: catch every real bend the budget allows; the rising loop trims to fit
   for (let round = 0; round < 7; round++) {
     keep = []
     const stack: Array<[number, number]> = [[0, full.length - 1]]
@@ -322,12 +322,23 @@ export function navStretch(
   const via: string[] = []
   dy.stops.forEach((st, si) => {
     if (st.kind !== 'extra' || st.lat == null || st.lon == null) return
-    if (marks?.[markKey(di, si)] !== 'keep') return
+    // Keep AND Maybe (and unmarked) ride as pins — only an explicit Cut drops
+    // an extra from the route.
+    if (marks?.[markKey(di, si)] === 'cut') return
     const km = nearestOnStretch(st.lat, st.lon, w[0], w[1])[2]
     if (km < lo - 3 || km > hi + 3) return
     kept.push({ km, lat: st.lat, lon: st.lon })
     if (st.n !== to.name) via.push(st.n) // "X via X" when the kept extra IS the destination
   })
+
+  // Leaving an off-line stop: pin the EXACT point where the rider left the
+  // Way, so Google rejoins there — not further south. Skipped when the rider
+  // is mid-line (a pin at your own wheels is noise).
+  const loPt2 = pointAtKm(lo)
+  const exitPin: Wp | null =
+    (riderKm == null || Math.abs(riderKm - from.km) < 0.05) && hav(from.lat, from.lon, loPt2[0], loPt2[1]) > 1.2
+      ? { km: lo, lat: loPt2[0], lon: loPt2[1] }
+      : null
 
   // SHORT hops go direct — in/out, the way a rider would. Sampled line pins
   // exist to stop Google shortcutting LONG stretches of the Way inland; over a
@@ -335,7 +346,7 @@ export function navStretch(
   // (the Urris hills: pins landed on trackless hillside) Google "solves" the
   // impossible pins with a long detour. Kept biker loops still pin regardless.
   if (hi - lo <= 12 && kept.length === 0 && !isTransferDest) {
-    return { url: gmapsUrl(dest, []), mi, via: [] }
+    return { url: gmapsUrl(dest, exitPin ? [exitPin] : []), mi, via: [] }
   }
 
   // A cut or skipped stop must not haunt the route as a PIN either: the line's
@@ -349,7 +360,8 @@ export function navStretch(
   })
   const clear = (p: Wp) => avoid.every((a) => hav(p.lat, p.lon, a[0], a[1]) > 2.5)
 
-  let wps = [...cornerWaypoints(lo, hi, Math.max(3, 8 - kept.length)).filter(clear), ...kept]
+  const cornerBudget = Math.max(3, 9 - kept.length - (exitPin ? 1 : 0))
+  let wps = [...(exitPin ? [exitPin] : []), ...cornerWaypoints(lo, hi, cornerBudget).filter(clear), ...kept]
   if (isTransferDest) {
     // …but the last official miles before a transfer (the KINSALE FINISH on
     // day 9) must be pinned, or Google shortcuts the end of the Way on its
