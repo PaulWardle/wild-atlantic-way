@@ -78,7 +78,7 @@ export const tripData: Trip = {
         },
         {
           "n": "Stroove & Inishowen Head",
-          "kind": "onroute",
+          "kind": "extra",
           "stopMin": 5,
           "tags": [
             "view",
@@ -186,7 +186,7 @@ export const tripData: Trip = {
             "b",
             "view"
           ],
-          "kind": "onroute",
+          "kind": "extra",
           "stopMin": 10,
           "lat": 55.243,
           "lon": -7.457,
@@ -391,7 +391,7 @@ export const tripData: Trip = {
             "nature",
             "beach"
           ],
-          "kind": "onroute",
+          "kind": "extra",
           "stopMin": 15,
           "lat": 54.752,
           "lon": -8.56,
@@ -547,7 +547,7 @@ export const tripData: Trip = {
             "w",
             "view"
           ],
-          "kind": "onroute",
+          "kind": "extra",
           "stopMin": 25,
           "lat": 54.326,
           "lon": -9.349,
@@ -674,7 +674,7 @@ export const tripData: Trip = {
             "beach",
             "view"
           ],
-          "kind": "onroute",
+          "kind": "extra",
           "stopMin": 25,
           "lat": 53.968,
           "lon": -10.194,
@@ -753,7 +753,7 @@ export const tripData: Trip = {
             "w",
             "view"
           ],
-          "kind": "onroute",
+          "kind": "extra",
           "stopMin": 15,
           "lat": 53.61,
           "lon": -9.78,
@@ -1391,7 +1391,7 @@ export const tripData: Trip = {
         },
         {
           "n": "Toe Head → Galley Head coast",
-          "kind": "waw",
+          "kind": "extra",
           "stopMin": 5,
           "tags": [
             "view",
@@ -1429,7 +1429,7 @@ export const tripData: Trip = {
         },
         {
           "n": "OLD HEAD OF KINSALE",
-          "kind": "onroute",
+          "kind": "extra",
           "stopMin": 20,
           "tags": [
             "s",

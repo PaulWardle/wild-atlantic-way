@@ -321,14 +321,24 @@ export function navStretch(
   const kept: Wp[] = []
   const via: string[] = []
   dy.stops.forEach((st, si) => {
-    if (st.kind !== 'extra' || st.lat == null || st.lon == null) return
-    // Keep AND Maybe (and unmarked) ride as pins — only an explicit Cut drops
-    // an extra from the route.
+    if (st.kind === 'transfer' || !st.kind || st.lat == null || st.lon == null) return
+    // Keep AND Maybe (and unmarked) ride as pins — only an explicit Cut or a
+    // Skip drops a stop from the route.
     if (marks?.[markKey(di, si)] === 'cut') return
+    if (skippedNames?.includes(st.n)) return
     const km = nearestOnStretch(st.lat, st.lon, w[0], w[1])[2]
-    if (km < lo - 3 || km > hi + 3) return
-    kept.push({ km, lat: st.lat, lon: st.lon })
-    if (st.n !== to.name) via.push(st.n) // "X via X" when the kept extra IS the destination
+    if (st.kind === 'extra') {
+      // Extras may sit behind the rider (riding back for one is legitimate).
+      if (km < lo - 3 || km > hi + 3) return
+      kept.push({ km, lat: st.lat, lon: st.lon })
+      if (st.n !== to.name) via.push(st.n) // "X via X" when the kept extra IS the destination
+    } else {
+      // Regular stops between here and the destination pin their TRUE road
+      // coords — an intermediate stop on a jump-ahead leg is ground truth for
+      // where the Way runs, sharper than any sampled corner.
+      if (km < lo + 1 || km > hi - 1) return
+      kept.push({ km, lat: st.lat, lon: st.lon })
+    }
   })
 
   // Leaving an off-line stop: pin the EXACT point where the rider left the
@@ -360,7 +370,7 @@ export function navStretch(
   })
   const clear = (p: Wp) => avoid.every((a) => hav(p.lat, p.lon, a[0], a[1]) > 2.5)
 
-  const cornerBudget = Math.max(3, 9 - kept.length - (exitPin ? 1 : 0))
+  const cornerBudget = Math.max(0, 9 - kept.length - (exitPin ? 1 : 0))
   let wps = [...(exitPin ? [exitPin] : []), ...cornerWaypoints(lo, hi, cornerBudget).filter(clear), ...kept]
   if (isTransferDest) {
     // …but the last official miles before a transfer (the KINSALE FINISH on
@@ -378,5 +388,14 @@ export function navStretch(
   // from-checkpoint — a far-off transfer origin (Larne) must not disqualify
   // every on-line pin.
   const loPt = pointAtKm(lo)
-  return { url: gmapsUrl(dest, orderPins({ lat: loPt[0], lon: loPt[1], km: lo }, wps)), mi, via }
+  let ordered = orderPins({ lat: loPt[0], lon: loPt[1], km: lo }, wps)
+  // Google's dir links carry at most nine waypoints — a jump-ahead leg over
+  // many stops can exceed that. Thin evenly, always keeping the first (the
+  // exit/rejoin pin) and the last (closest to the destination approach).
+  if (ordered.length > 9) {
+    const thinned: typeof ordered = []
+    for (let k = 0; k < 9; k++) thinned.push(ordered[Math.round((k * (ordered.length - 1)) / 8)])
+    ordered = thinned.filter((p, i) => thinned.indexOf(p) === i)
+  }
+  return { url: gmapsUrl(dest, ordered), mi, via }
 }
