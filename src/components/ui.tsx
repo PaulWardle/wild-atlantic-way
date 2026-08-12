@@ -257,3 +257,14 @@ export function Card({ children, style }: { children: ReactNode; style?: CSSProp
   )
 }
 
+
+/** SVG cross for close/remove buttons — a text × sits on a font baseline, so
+ *  it renders small and drifts off-centre (worst on iOS). Put this inside a
+ *  flex-centred button instead. */
+export function Cross({ size = 12, stroke, strokeWidth = 2.8 }: { size?: number; stroke: string; strokeWidth?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={stroke} strokeWidth={strokeWidth} strokeLinecap="round" aria-hidden="true" style={{ display: 'block' }}>
+      <path d="M5 5 L19 19 M19 5 L5 19" />
+    </svg>
+  )
+}

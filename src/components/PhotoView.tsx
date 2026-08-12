@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { c, font } from '../theme'
+import { Cross } from './ui'
 import { isLocalPhoto, localId, localObjectURL } from '../lib/photoQueue'
 
 /** An inline trip photo. Tap (or Enter/Space) to open a full-screen lightbox;
@@ -105,9 +106,9 @@ export function PhotoView({
           <button
             onClick={() => setOpen(false)}
             aria-label="Close photo"
-            style={{ position: 'absolute', top: 'calc(env(safe-area-inset-top, 0px) + 12px)', right: 14, width: 40, height: 40, borderRadius: '50%', border: '1.5px solid rgba(246,236,214,.7)', background: 'rgba(12,10,7,.55)', color: '#f6ecd6', fontFamily: font.display, fontSize: 19, lineHeight: 1 }}
+            style={{ position: 'absolute', top: 'calc(env(safe-area-inset-top, 0px) + 12px)', right: 14, width: 40, height: 40, borderRadius: '50%', border: '1.5px solid rgba(246,236,214,.7)', background: 'rgba(12,10,7,.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0 }}
           >
-            ×
+            <Cross size={16} stroke="#f6ecd6" />
           </button>
           <button
             onClick={() => setOpen(false)}

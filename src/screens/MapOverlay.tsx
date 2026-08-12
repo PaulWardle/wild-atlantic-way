@@ -2,6 +2,7 @@ import { c, font } from '../theme'
 import { useStore } from '../store/StoreProvider'
 import { useMap } from '../hooks/useMap'
 import { MapSVG, MapLegend } from '../components/MapSVG'
+import { Cross } from '../components/ui'
 import { tripData } from '../data/tripData'
 
 const meta = tripData.meta
@@ -55,14 +56,11 @@ export function MapOverlay() {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: c.paper,
-            fontFamily: font.display,
-            fontSize: 20,
-            lineHeight: 1,
+            padding: 0,
             flex: '0 0 auto',
           }}
         >
-          ×
+          <Cross size={14} stroke={c.paper} />
         </button>
       </div>
       <div style={{ flex: 1, minHeight: 0, overflow: 'hidden', padding: '10px 10px 14px', background: c.paperMap, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 16 }}>

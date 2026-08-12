@@ -4,7 +4,7 @@ import { useStore } from '../store/StoreProvider'
 import { tripData } from '../data/tripData'
 import { isMarkable, jTagOptions, markKey } from '../lib/tags'
 import { buildEvents, buildFeed, buildGallery, buildGroups } from '../lib/journal'
-import { Kicker, ScreenTitle, Lede, Dropdown } from '../components/ui'
+import { Cross, Kicker, ScreenTitle, Lede, Dropdown } from '../components/ui'
 import { PhotoInput } from '../components/PhotoInput'
 import { ReplyBox, ReplyRows } from '../components/ReplyBox'
 import { fmtTime } from '../lib/time'
@@ -305,9 +305,9 @@ export function Journal() {
                                   : removeLocation(e.ts)
                             }
                             aria-label="Remove"
-                            style={{ fontFamily: font.mono, fontSize: 14, color: c.rust, lineHeight: 1, padding: '10px 10px', margin: '-10px -6px' }}
+                            style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', padding: '10px 10px', margin: '-10px -6px' }}
                           >
-                            ×
+                            <Cross size={11} stroke={c.rust} strokeWidth={3.2} />
                           </button>
                         </div>
                       )}

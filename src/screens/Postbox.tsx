@@ -3,7 +3,7 @@ import { c, font } from '../theme'
 import { useStore } from '../store/StoreProvider'
 import { reasonList, reasonMeta } from '../lib/tags'
 import { relTime } from '../lib/time'
-import { Kicker, ScreenTitle, Lede, Dropdown } from '../components/ui'
+import { Cross, Kicker, ScreenTitle, Lede, Dropdown } from '../components/ui'
 import { PhotoInput } from '../components/PhotoInput'
 import { Photos } from '../components/PhotoGallery'
 import { ReplyBox, ReplyRows } from '../components/ReplyBox'
@@ -141,8 +141,8 @@ export function Postbox() {
                   {p.pending && <span style={{ fontFamily: font.mono, fontSize: 7.5, fontWeight: 700, letterSpacing: '.06em', textTransform: 'uppercase', color: c.amberGold, border: `1px solid ${c.amber}`, borderRadius: 3, padding: '1px 5px' }}>not sent</span>}
                   <span style={{ fontFamily: font.mono, fontSize: 8.5, color: c.inkFaintest }}>{p.when}</span>
                   {isBrother && (
-                    <button onClick={() => removePost(p.ts)} aria-label="Remove" style={{ width: 30, height: 30, border: `1.5px solid ${c.rust}`, borderRadius: '50%', color: c.rust, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: font.display, fontSize: 13, lineHeight: 1, flex: '0 0 auto' }}>
-                      ×
+                    <button onClick={() => removePost(p.ts)} aria-label="Remove" style={{ width: 30, height: 30, border: `1.5px solid ${c.rust}`, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, flex: '0 0 auto' }}>
+                      <Cross size={11} stroke={c.rust} strokeWidth={3.2} />
                     </button>
                   )}
                 </div>

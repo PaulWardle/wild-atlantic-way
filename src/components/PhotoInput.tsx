@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { c, font } from '../theme'
+import { Cross } from './ui'
 
 /** Attach-photos control: opens the OS picker (camera or library on mobile),
  * shows a row of previews with per-photo remove buttons. Supports several
@@ -41,9 +42,9 @@ export function PhotoInput({
                 onClick={() => onRemove(i)}
                 disabled={disabled}
                 aria-label={`Remove photo ${i + 1}`}
-                style={{ position: 'absolute', top: 2, right: 2, width: 30, height: 30, borderRadius: '50%', background: c.ink, color: c.paper, display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: font.display, fontSize: 15, lineHeight: 1, border: `1.5px solid ${c.paper}` }}
+                style={{ position: 'absolute', top: 2, right: 2, width: 30, height: 30, borderRadius: '50%', background: c.ink, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 0, border: `1.5px solid ${c.paper}` }}
               >
-                ×
+                <Cross size={11} stroke={c.paper} strokeWidth={3.2} />
               </button>
             </div>
           ))}
