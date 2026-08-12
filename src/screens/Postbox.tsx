@@ -153,8 +153,8 @@ export function Postbox() {
                 </b>{' '}
                 {p.msg}
               </div>
-              <Photos photo={p.photo} alt={p.name ? `Photo from ${p.name}` : 'Trip photo'} maxHeight={240} />
-              <ReplyRows replies={p.replies} fmt={relTime} photos={(photo, alt) => <Photos photo={photo} alt={alt} maxHeight={180} />} />
+              <Photos photo={p.photo} alt={p.name ? `Photo from ${p.name}` : 'Trip photo'} />
+              <ReplyRows replies={p.replies} fmt={relTime} photos={(photo, alt) => <Photos photo={photo} alt={alt} />} />
               <ReplyBox parentTs={p.ts} />
             </div>
           ))}

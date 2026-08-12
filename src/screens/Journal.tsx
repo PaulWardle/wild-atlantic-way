@@ -144,7 +144,7 @@ export function Journal() {
             {latest.hasTitle && <div style={{ fontFamily: font.display, fontWeight: 600, fontSize: 16, textTransform: 'uppercase', color: c.ink, lineHeight: 1.15, letterSpacing: '.01em' }}>{latest.title}</div>}
             {latest.hasAuthor && <div style={{ fontFamily: font.mono, fontSize: 8, fontWeight: 700, letterSpacing: '.06em', textTransform: 'uppercase', color: c.inkMuted, marginTop: 3 }}>{latest.author}</div>}
             {latest.hasBody && <div style={{ fontFamily: font.serif, fontSize: 13.5, color: c.inkBody2, lineHeight: 1.5, marginTop: 6 }}>{latest.body}</div>}
-            <Photos photo={latest.photo} alt={latest.title ? `Photo — ${latest.title}` : 'Trip photo'} maxHeight={220} />
+            <Photos photo={latest.photo} alt={latest.title ? `Photo — ${latest.title}` : 'Trip photo'} />
           </div>
         </div>
       )}
@@ -329,8 +329,8 @@ export function Journal() {
                       <>
                         {e.hasTitle && <div style={{ fontFamily: font.display, fontWeight: 600, fontSize: 14.5, textTransform: 'uppercase', color: c.ink, lineHeight: 1.15, letterSpacing: '.01em', marginTop: 5 }}>{e.title}</div>}
                         {e.hasBody && <div style={{ fontFamily: font.serif, fontSize: 13, color: c.inkBody2, lineHeight: 1.5, marginTop: 3 }}>{e.body}</div>}
-                        <Photos photo={e.photo} alt={e.title ? `Photo — ${e.title}` : 'Trip photo'} maxHeight={220} />
-                        <ReplyRows replies={e.replies} fmt={fmtTime} photos={(photo, alt) => <Photos photo={photo} alt={alt} maxHeight={160} />} />
+                        <Photos photo={e.photo} alt={e.title ? `Photo — ${e.title}` : 'Trip photo'} />
+                        <ReplyRows replies={e.replies} fmt={fmtTime} photos={(photo, alt) => <Photos photo={photo} alt={alt} />} />
                         {e.kind === 'post' && <ReplyBox parentTs={e.ts} />}
                       </>
                     )}

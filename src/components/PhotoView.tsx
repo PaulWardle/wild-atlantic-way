@@ -14,7 +14,7 @@ import { isLocalPhoto, localId, localObjectURL } from '../lib/photoQueue'
 export function PhotoView({
   url,
   alt = 'Trip photo',
-  maxHeight = 280,
+  maxHeight = 420,
   rounded = 8,
 }: {
   url: string
@@ -73,9 +73,11 @@ export function PhotoView({
             src={resolved}
             alt={alt}
             loading="lazy"
-            // Full-width cover keeps every card edge-to-edge and uniform; the
-            // whole uncropped photo is one tap away in the lightbox.
-            style={{ width: '100%', borderRadius: rounded, border: `1.5px solid ${c.ink}`, display: 'block', marginTop: 8, maxHeight, objectFit: 'cover' }}
+            // Full-width, height follows the photo's own shape up to the cap,
+            // cover trims only the overflow: landscape shots show whole, a
+            // portrait loses a sliver top and bottom instead of half its
+            // height — and stays edge-to-edge like every other card element.
+            style={{ width: '100%', height: 'auto', borderRadius: rounded, border: `1.5px solid ${c.ink}`, display: 'block', marginTop: 8, maxHeight, objectFit: 'cover' }}
           />
         </button>
         {pending && (
