@@ -263,7 +263,7 @@ export function NavPanel({ di, marks, pad = 18 }: { di: number; marks: StopMarks
   const to = cps[ni]
   const from = cps[ni - 1]
   const liveKm = live ? (pos!.at != null ? cps[pos!.at].km : (pos!.km as number)) : null
-  const { url, mi, via } = navStretch(di, from, to, marks, liveKm)
+  const { url, mi, via } = navStretch(di, from, to, marks, liveKm, skipped)
   const after = ni + 1 < cps.length ? cps.slice(ni + 1).find((cp) => !skipped.includes(cp.name))?.name : null
 
   return (

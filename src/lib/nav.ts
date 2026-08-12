@@ -218,7 +218,9 @@ export function dayCheckpoints(di: number, marks?: StopMarks): Checkpoint[] {
   const camp = campCoord(di)
   dy.stops.forEach((st, si) => {
     if (st.kind === 'transfer' || !st.kind || st.lat == null || st.lon == null) return
-    if (st.kind === 'extra' && marks?.[markKey(di, si)] === 'cut') return
+    // Cut means CUT — any kind of stop. Cutting an on-route stop only used to
+    // drop extras, so a cut Malin Beg stayed a nav destination regardless.
+    if (marks?.[markKey(di, si)] === 'cut') return
     // Skip a stop that sits on top of the previous checkpoint or the camp —
     // the neighbour covers it. (0.9 km: Farren's Bar and Malin Head are
     // 1.1 km apart and both belong in the list.)
@@ -293,6 +295,7 @@ export function navStretch(
   to: Checkpoint,
   marks?: StopMarks,
   riderKm?: number | null,
+  skippedNames?: string[],
 ): { url: string; mi: number; via: string[] } {
   const dy = T.days[di]
   const dest: [number, number] = [to.lat, to.lon]
@@ -335,7 +338,18 @@ export function navStretch(
     return { url: gmapsUrl(dest, []), mi, via: [] }
   }
 
-  let wps = [...cornerWaypoints(lo, hi, Math.max(3, 8 - kept.length)), ...kept]
+  // A cut or skipped stop must not haunt the route as a PIN either: the line's
+  // geometry includes its spur (Malin Beg is a dead-end out-and-back whose tip
+  // the corner detector faithfully keeps), so pins near anything the rider has
+  // cut or skipped are dropped — ride past the turn, not out the spur.
+  const avoid: Array<[number, number]> = []
+  dy.stops.forEach((st, si) => {
+    if (st.lat == null || st.lon == null) return
+    if (marks?.[markKey(di, si)] === 'cut' || skippedNames?.includes(st.n)) avoid.push([st.lat, st.lon])
+  })
+  const clear = (p: Wp) => avoid.every((a) => hav(p.lat, p.lon, a[0], a[1]) > 2.5)
+
+  let wps = [...cornerWaypoints(lo, hi, Math.max(3, 8 - kept.length)).filter(clear), ...kept]
   if (isTransferDest) {
     // …but the last official miles before a transfer (the KINSALE FINISH on
     // day 9) must be pinned, or Google shortcuts the end of the Way on its
