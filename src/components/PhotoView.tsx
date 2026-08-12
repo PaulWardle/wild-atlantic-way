@@ -13,7 +13,7 @@ import { isLocalPhoto, localId, localObjectURL } from '../lib/photoQueue'
 export function PhotoView({
   url,
   alt = 'Trip photo',
-  maxHeight = 360,
+  maxHeight = 280,
   rounded = 8,
 }: {
   url: string
@@ -72,9 +72,9 @@ export function PhotoView({
             src={resolved}
             alt={alt}
             loading="lazy"
-            // Natural aspect, never cropped: a portrait shot shows WHOLE at the
-            // height cap, centred — cover-cropping beheaded every tall photo.
-            style={{ display: 'block', maxWidth: '100%', maxHeight, width: 'auto', height: 'auto', margin: '8px auto 0', borderRadius: rounded, border: `1.5px solid ${c.ink}` }}
+            // Full-width cover keeps every card edge-to-edge and uniform; the
+            // whole uncropped photo is one tap away in the lightbox.
+            style={{ width: '100%', borderRadius: rounded, border: `1.5px solid ${c.ink}`, display: 'block', marginTop: 8, maxHeight, objectFit: 'cover' }}
           />
         </button>
         {pending && (
