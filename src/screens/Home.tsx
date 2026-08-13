@@ -392,15 +392,22 @@ export function Home() {
         >
           <span style={{ width: 10, height: 10, borderRadius: '50%', background: '#f6ecd6', display: 'inline-block', flex: '0 0 auto', animation: 'waw-blink 1.4s ease-in-out infinite' }} />
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontFamily: font.mono, fontSize: 8.5, letterSpacing: '.16em', textTransform: 'uppercase', opacity: 0.85 }}>
+            {/* One line, always: the guest label ("The brothers are here") plus
+                the WAW figure overflowed to two lines on a phone, so the
+                percentage lives in the right column and this can never wrap. */}
+            <div style={{ fontFamily: font.mono, fontSize: 8, letterSpacing: '.1em', textTransform: 'uppercase', opacity: 0.85, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
               {liveHereLabel} · updated {liveWhen}
-              {wawPct !== null && <> · WAW {wawPct}%</>}
             </div>
             <div style={{ fontFamily: font.display, fontWeight: 700, fontSize: 19, textTransform: 'uppercase', letterSpacing: '.01em', lineHeight: 1.05, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
               {liveArea}
             </div>
           </div>
-          <span style={{ fontFamily: font.mono, fontSize: 8, letterSpacing: '.08em', opacity: 0.8, whiteSpace: 'nowrap' }}>On the map ↓</span>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 3, flex: '0 0 auto' }}>
+            {wawPct !== null && (
+              <span style={{ fontFamily: font.mono, fontSize: 8.5, fontWeight: 700, letterSpacing: '.08em', whiteSpace: 'nowrap' }}>WAW {wawPct}%</span>
+            )}
+            <span style={{ fontFamily: font.mono, fontSize: 8, letterSpacing: '.08em', opacity: 0.8, whiteSpace: 'nowrap' }}>On the map ↓</span>
+          </div>
         </div>
       )}
 
