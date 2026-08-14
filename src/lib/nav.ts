@@ -327,14 +327,12 @@ export function dayPosition(
  * official line pinned in between, kept extras as priority pins. When the
  * rider's live chainage is known, pins start from THERE, not from the
  * previous checkpoint. */
-/** A navigable leg. `url` follows the official Way (pinned); `directUrl` is
- *  the same destination with NO waypoints, for when you just want to get
- *  there. `wayMi` is how far the pinned route actually runs — the Way loops
- *  headlands, so it can be far longer than the direct road, and the rider
- *  deserves to see that BEFORE tapping. */
+/** A navigable leg following the official Way. `wayMi` is how far the pinned
+ *  route actually runs — the Way loops headlands and rides spurs, so it is
+ *  often longer than the direct road, and that longer figure is the honest
+ *  one: it is the road being ridden. */
 export interface NavLeg {
   url: string
-  directUrl: string
   mi: number
   wayMi: number
   pins: number
@@ -362,14 +360,14 @@ export function navStretch(
     : Math.round(Math.max(line, hav(from.lat, from.lon, to.lat, to.lon)) * 0.6214) || 1
   const w = dy?.wawKm
   const bare = gmapsUrl(dest, [])
-  if (!w) return { url: bare, directUrl: bare, mi, wayMi: mi, pins: 0, via: [] }
+  if (!w) return { url: bare, mi, wayMi: mi, pins: 0, via: [] }
 
   // Clamp the pinned stretch to the official window — transfer hops (Larne →
   // Muff, Kinsale → Rosslare camp) fall outside it and go pin-free…
   const lo = Math.min(Math.max(w[0], startKm), w[1])
   const hi = Math.min(Math.max(w[0], to.km), w[1])
   const isTransferDest = to.km > w[1]
-  if (hi - lo < 2 && !isTransferDest) return { url: bare, directUrl: bare, mi, wayMi: mi, pins: 0, via: [] }
+  if (hi - lo < 2 && !isTransferDest) return { url: bare, mi, wayMi: mi, pins: 0, via: [] }
 
   const kept: Wp[] = []
   const via: string[] = []
@@ -415,7 +413,7 @@ export function navStretch(
   // impossible pins with a long detour. Kept biker loops still pin regardless.
   if (hi - lo <= 12 && kept.length === 0 && !isTransferDest) {
     const hop = exitPin ? [exitPin] : []
-    return { url: gmapsUrl(dest, hop), directUrl: bare, mi, wayMi: mi, pins: hop.length, via: [] }
+    return { url: gmapsUrl(dest, hop), mi, wayMi: mi, pins: hop.length, via: [] }
   }
 
   // A cut or skipped stop must not haunt the route as a PIN either: the line's
@@ -483,7 +481,6 @@ export function navStretch(
   wayKm += hav(at.lat, at.lon, dest[0], dest[1])
   return {
     url: gmapsUrl(dest, ordered),
-    directUrl: bare,
     mi,
     wayMi: Math.max(mi, Math.round(wayKm * 0.6214)) || 1,
     pins: ordered.length,

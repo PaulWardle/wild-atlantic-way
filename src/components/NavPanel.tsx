@@ -263,11 +263,7 @@ export function NavPanel({ di, marks, pad = 18 }: { di: number; marks: StopMarks
   const to = cps[ni]
   const from = cps[ni - 1]
   const liveKm = live ? (pos!.at != null ? cps[pos!.at].km : (pos!.km as number)) : null
-  const { url, directUrl, mi, wayMi, pins, via } = navStretch(di, from, to, marks, liveKm, skipped)
-  // The Way is much longer than the direct road when it loops a headland or
-  // rides a dead-end spur. Offer the honest choice instead of ambushing the
-  // rider with a route they didn't ask for.
-  const detour = wayMi - mi >= 4
+  const { url, wayMi, pins, via } = navStretch(di, from, to, marks, liveKm, skipped)
   const after = ni + 1 < cps.length ? cps.slice(ni + 1).find((cp) => !skipped.includes(cp.name))?.name : null
 
   return (
@@ -295,22 +291,6 @@ export function NavPanel({ di, marks, pad = 18 }: { di: number; marks: StopMarks
           {via.length ? ` · via ${via.join(' + ')}` : ''}
           {after ? ` · then ${after}` : ' · last stop of the day'}
         </div>
-        {detour && (
-          <div style={{ marginTop: 8, borderTop: `1px dashed ${c.lineSoft}`, paddingTop: 8, textAlign: 'center' }}>
-            <div style={{ fontFamily: font.serif, fontSize: 11.5, color: c.inkMuted, lineHeight: 1.4, marginBottom: 5 }}>
-              The Way loops out and back here — {wayMi} mi against {mi} mi direct.
-            </div>
-            <a
-              href={directUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={advance}
-              style={{ display: 'inline-block', border: `1.5px solid ${c.ink}`, borderRadius: 7, background: c.paperMuted, color: c.ink, padding: '8px 14px', textDecoration: 'none', fontFamily: font.mono, fontSize: 9, fontWeight: 700, letterSpacing: '.1em', textTransform: 'uppercase' }}
-            >
-              Straight there · ~{mi} mi
-            </a>
-          </div>
-        )}
         <div style={{ fontFamily: font.mono, fontSize: 8, color: gps === 'live' ? c.green : c.inkFainter, marginTop: 4, textAlign: 'center' }}>
           {gpsLine}
           {gps !== 'wait' && (
