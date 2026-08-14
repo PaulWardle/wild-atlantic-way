@@ -183,5 +183,25 @@ for (const sg of data.signature) {
 }
 if (!sigBad) ok(`all ${data.signature.length} signature points labelled with the day they're ridden`)
 
+// 5. the mileage on each day card is what the riders plan their day around,
+// so it must track the official window it's derived from. Moving a day
+// boundary once left Saturday advertising Clifden-era miles.
+console.log('\n-- day mileage vs official window --')
+let milesBad = 0
+for (const [x, dy] of data.days.entries()) {
+  if (!dy.wawKm || !dy.miles) continue
+  const nums = String(dy.miles).match(/\d+/g)
+  if (!nums) continue
+  // "~150mi (~75 transfer)": the transfer leg is off-Way, so take it back off
+  const declared = +nums[0] - (/transfer/i.test(dy.miles) && nums[1] ? +nums[1] : 0)
+  const official = Math.round((dy.wawKm[1] - dy.wawKm[0]) * 0.621371)
+  const drift = Math.abs(declared - official) / official
+  if (drift > 0.12) {
+    bad(`day ${x + 1}: card says ${declared} official mi, window is ${official} mi (${Math.round(drift * 100)}% out)`)
+    milesBad++
+  }
+}
+if (!milesBad) ok('every day card’s mileage matches its official window')
+
 console.log(fail ? `\nFAILED: ${fail} problem(s)` : '\nALL CHECKS PASSED — every day flows forward, 100% of the official line is planned')
 process.exit(fail ? 1 : 0)

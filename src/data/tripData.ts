@@ -858,7 +858,7 @@ export const tripData: Trip = {
       "date": "15 AUG",
       "title": "Galway Bay → Burren → Doolin",
       "tagline": "The recovery day — short miles, hostel comforts at the Aille, a pint found somewhere",
-      "miles": "~85mi",
+      "miles": "~80mi",
       "phase": "waw",
       "stops": [
         {
