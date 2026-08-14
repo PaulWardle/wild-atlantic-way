@@ -177,6 +177,39 @@ function cornerWaypoints(lo: number, hi: number, max: number): Wp[] {
     .map((i) => ({ km: full[i][2], lat: full[i][0], lon: full[i][1] }))
 }
 
+/** Out-and-back sections of the official line: the road leaves a point, rides
+ *  5 km+ and returns within 2 km of where it left. Erris Head, Killadoon,
+ *  Slyne Head — 31 of them on the Way, and only some have a stop on the day
+ *  card. A CORNER pin inside one of these drags the rider down a dead-end spur
+ *  they never chose (a pier at Broad Haven, a right turn west of Leenane), so
+ *  corner pins in a spur are dropped unless a real stop sits there. Spurs are
+ *  ridden because a stop says so, never because a sampled corner said so. */
+interface Spur { a: number; b: number }
+let spurCache: Spur[] | null = null
+function spurs(): Spur[] {
+  if (spurCache) return spurCache
+  const out: Spur[] = []
+  for (let j = 0; j < cleanSpine.length; j++) {
+    for (let k = j + 2; k < cleanSpine.length; k++) {
+      const span = cleanSpine[k][2] - cleanSpine[j][2]
+      if (span > 45) break
+      if (span < 5) continue
+      if (hav(cleanSpine[j][0], cleanSpine[j][1], cleanSpine[k][0], cleanSpine[k][1]) > 2) continue
+      let far = 0
+      for (let m = j + 1; m < k; m++) {
+        const d = hav(cleanSpine[j][0], cleanSpine[j][1], cleanSpine[m][0], cleanSpine[m][1])
+        if (d > far) far = d
+      }
+      if (far < 2.5) continue
+      out.push({ a: cleanSpine[j][2], b: cleanSpine[k][2] })
+      j = k - 1
+      break
+    }
+  }
+  spurCache = out
+  return out
+}
+
 function campCoord(di: number): [number, number] | null {
   const cs = T.campsites[di]
   return cs && cs.lat != null && cs.lon != null ? [cs.lat, cs.lon] : null
@@ -392,7 +425,13 @@ export function navStretch(
   const clear = (p: Wp) => avoid.every((a) => hav(p.lat, p.lon, a[0], a[1]) > 2.5)
 
   const cornerBudget = Math.max(0, 9 - kept.length - (exitPin ? 1 : 0))
-  let wps = [...(exitPin ? [exitPin] : []), ...cornerWaypoints(lo, hi, cornerBudget).filter(clear), ...kept]
+  // A corner pin inside an out-and-back spur sends the rider down a dead end
+  // they never chose. Only a real stop earns a spur.
+  const inSpur = (p: Wp) =>
+    spurs().some((sp) => p.km > sp.a + 0.5 && p.km < sp.b - 0.5) &&
+    !kept.some((k) => hav(k.lat, k.lon, p.lat, p.lon) < 3) &&
+    hav(dest[0], dest[1], p.lat, p.lon) > 3
+  let wps = [...(exitPin ? [exitPin] : []), ...cornerWaypoints(lo, hi, cornerBudget).filter((p) => clear(p) && !inSpur(p)), ...kept]
   if (isTransferDest) {
     // …but the last official miles before a transfer (the KINSALE FINISH on
     // day 9) must be pinned, or Google shortcuts the end of the Way on its
