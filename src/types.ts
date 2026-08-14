@@ -123,6 +123,10 @@ export interface SignatureSpot {
   county: string
   day: string
   date: string
+  /** sid of the itinerary stop this point is bagged at. `day`/`date` are
+   *  derived from it and gated by the route validator — moving a day boundary
+   *  once left Derrigimlagh advertised as Saturday when it had become Friday. */
+  stop: string
 }
 
 export interface Pass {

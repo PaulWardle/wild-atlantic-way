@@ -1584,105 +1584,120 @@ export const tripData: Trip = {
       "name": "Malin Head",
       "county": "Donegal",
       "day": "01",
-      "date": "Mon 10"
+      "date": "Mon 10",
+      "stop": "d1-malin-head"
     },
     {
       "id": "s2",
       "name": "Fanad Head",
       "county": "Donegal",
       "day": "02",
-      "date": "Tue 11"
+      "date": "Tue 11",
+      "stop": "d2-fanad-head"
     },
     {
       "id": "s3",
       "name": "Sliabh Liag (Slieve League)",
       "county": "Donegal",
       "day": "03",
-      "date": "Wed 12"
+      "date": "Wed 12",
+      "stop": "d3-slieve-league-sliabh-liag"
     },
     {
       "id": "s4",
       "name": "Mullaghmore Head",
       "county": "Sligo",
       "day": "03",
-      "date": "Wed 12"
+      "date": "Wed 12",
+      "stop": "d3-mullaghmore-head"
     },
     {
       "id": "s5",
       "name": "Downpatrick Head",
       "county": "Mayo",
       "day": "04",
-      "date": "Thu 13"
+      "date": "Thu 13",
+      "stop": "d4-downpatrick-head"
     },
     {
       "id": "s6",
       "name": "Keem Bay (Achill)",
       "county": "Mayo",
       "day": "05",
-      "date": "Fri 14"
+      "date": "Fri 14",
+      "stop": "d5-keem-bay-at-dawn"
     },
     {
       "id": "s7",
       "name": "Killary Harbour",
       "county": "Galway",
       "day": "05",
-      "date": "Fri 14"
+      "date": "Fri 14",
+      "stop": "d5-killary-harbour"
     },
     {
       "id": "s8",
       "name": "Derrigimlagh",
       "county": "Galway",
-      "day": "06",
-      "date": "Sat 15"
+      "day": "05",
+      "date": "Fri 14",
+      "stop": "d6-derrigimlagh"
     },
     {
       "id": "s9",
       "name": "Cliffs of Moher",
       "county": "Clare",
       "day": "07",
-      "date": "Sun 16"
+      "date": "Sun 16",
+      "stop": "d7-cliffs-of-moher-08-00"
     },
     {
       "id": "s10",
       "name": "Loop Head",
       "county": "Clare",
       "day": "07",
-      "date": "Sun 16"
+      "date": "Sun 16",
+      "stop": "d7-loop-head"
     },
     {
       "id": "s11",
       "name": "Blasket Sound (Dingle)",
       "county": "Kerry",
       "day": "07",
-      "date": "Sun 16"
+      "date": "Sun 16",
+      "stop": "d7-slea-head-drive-evening"
     },
     {
       "id": "s12",
       "name": "Bray Head (Valentia)",
       "county": "Kerry",
       "day": "08",
-      "date": "Mon 17"
+      "date": "Mon 17",
+      "stop": "d8-coomanaspig-pass"
     },
     {
       "id": "s13",
       "name": "Dursey Sound",
       "county": "Cork",
       "day": "08",
-      "date": "Mon 17"
+      "date": "Mon 17",
+      "stop": "d8-dursey-sound"
     },
     {
       "id": "s14",
       "name": "Mizen Head",
       "county": "Cork",
       "day": "09",
-      "date": "Tue 18"
+      "date": "Tue 18",
+      "stop": "d9-mizen-head"
     },
     {
       "id": "s15",
       "name": "Old Head of Kinsale",
       "county": "Cork",
       "day": "09",
-      "date": "Tue 18"
+      "date": "Tue 18",
+      "stop": "d9-old-head-of-kinsale"
     }
   ],
   "passes": [

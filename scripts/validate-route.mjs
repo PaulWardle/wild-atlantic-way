@@ -159,5 +159,29 @@ const lastWaw = data.days.filter((d) => d.wawKm).slice(-1)[0]
 if (lastWaw.wawKm[1] >= TOTAL - 5) ok('final WAW day reaches the Kinsale terminus')
 else bad('final WAW day stops short of Kinsale')
 
+// 4. the Signature 15 must advertise the day they're ACTUALLY ridden. Moving
+// the Friday camp to Spiddal shifted a day boundary and left Derrigimlagh
+// telling the riders "Saturday" when it had become Friday — a checklist that
+// lies about when you bag a point is worse than no checklist.
+console.log('\n-- signature 15 day labels --')
+const departMs = new Date(data.meta.depart + 'T00:00:00').getTime()
+const dayLabel = (n) => {
+  const dt = new Date(departMs + (n - 1) * 86400000)
+  return dt.toDateString().slice(0, 3) + ' ' + dt.getDate()
+}
+let sigBad = 0
+for (const sg of data.signature) {
+  let di = -1
+  data.days.forEach((dy, i) => (dy.stops || []).forEach((st) => { if (st.sid === sg.stop) di = i }))
+  if (di < 0) { bad(`${sg.name}: stop "${sg.stop}" is not on any day`); sigBad++; continue }
+  const wantDay = String(di + 1).padStart(2, '0')
+  const wantDate = dayLabel(di + 1)
+  if (sg.day !== wantDay || sg.date !== wantDate) {
+    bad(`${sg.name}: says day ${sg.day} ${sg.date}, ridden day ${wantDay} ${wantDate}`)
+    sigBad++
+  }
+}
+if (!sigBad) ok(`all ${data.signature.length} signature points labelled with the day they're ridden`)
+
 console.log(fail ? `\nFAILED: ${fail} problem(s)` : '\nALL CHECKS PASSED — every day flows forward, 100% of the official line is planned')
 process.exit(fail ? 1 : 0)
