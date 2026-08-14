@@ -616,19 +616,6 @@ export const tripData: Trip = {
           "sid": "d4-mulranny-achill-sound"
         },
         {
-          "n": "Achill Atlantic Drive",
-          "d": "The cliff road round the south of the island — Cloughmore, the Minaun cliffs across the bay.",
-          "tags": [
-            "b",
-            "view"
-          ],
-          "kind": "waw",
-          "stopMin": 10,
-          "lat": 53.9,
-          "lon": -9.98,
-          "sid": "d4-achill-atlantic-drive"
-        },
-        {
           "n": "Keel",
           "d": "The strand, the pubs, the tent. Keem Bay is 5 miles on — saved for 08:00 tomorrow when the car park is empty and the light is on the cliffs.",
           "tags": [
@@ -679,6 +666,19 @@ export const tripData: Trip = {
           "lat": 53.968,
           "lon": -10.194,
           "sid": "d5-keem-bay-at-dawn"
+        },
+        {
+          "n": "Achill Atlantic Drive",
+          "d": "The cliff road round the south of the island — Dooega, the Ashleam Bay hairpin, Cloughmore. Ridden on the way off Achill this morning.",
+          "tags": [
+            "b",
+            "view"
+          ],
+          "kind": "waw",
+          "stopMin": 10,
+          "lat": 53.9,
+          "lon": -9.98,
+          "sid": "d5-achill-atlantic-drive"
         },
         {
           "n": "Mulranny → Newport",

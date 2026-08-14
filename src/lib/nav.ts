@@ -326,6 +326,11 @@ export function navStretch(
     // Skip drops a stop from the route.
     if (marks?.[markKey(di, si)] === 'cut') return
     if (skippedNames?.includes(st.n)) return
+    // Never pin the spot you are setting off FROM. An off-line extra whose
+    // stop is this leg's own start (Killary Harbour) was pinned after the
+    // rejoin pin, so the route left the stop, rejoined the Way, then doubled
+    // back to the stop before carrying on.
+    if (hav(from.lat, from.lon, st.lat, st.lon) < 0.4) return
     const km = nearestOnStretch(st.lat, st.lon, w[0], w[1])[2]
     if (st.kind === 'extra') {
       // Extras may sit behind the rider (riding back for one is legitimate).
