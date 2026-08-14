@@ -460,7 +460,7 @@ export function Home() {
                 <span style={{ width: 9, height: 9, borderRadius: '50%', background: c.rust, display: 'inline-block', animation: 'waw-blink 1.4s ease-in-out infinite', flex: '0 0 auto' }} />
                 <div style={{ fontFamily: font.display, fontWeight: 700, fontSize: 21, textTransform: 'uppercase', color: c.ink, lineHeight: 1.02, letterSpacing: '.01em' }}>{liveArea}</div>
               </div>
-              {liveNote && <div style={{ marginTop: 8, fontFamily: font.serif, fontSize: 13.5, color: c.inkBody2, lineHeight: 1.5 }}>“{liveNote}”</div>}
+              {liveNote && <div style={{ marginTop: 8, fontFamily: font.serif, fontSize: 13.5, color: c.inkBody2, lineHeight: 1.5 }}>{liveNote}</div>}
               <Photos photo={updates[0]?.photo} alt={`Photo from ${liveArea}`} maxHeight={220} />
             </div>
             {updates.length > 1 && (
@@ -499,7 +499,7 @@ export function Home() {
                 <div style={{ flex: 1, minWidth: 0, paddingBottom: 4 }}>
                   <div style={{ fontFamily: font.display, fontWeight: 600, fontSize: 13.5, textTransform: 'uppercase', color: c.ink, lineHeight: 1.15, letterSpacing: '.01em' }}>{u.loc}</div>
                   <div style={{ fontFamily: font.mono, fontSize: 8, color: c.inkFaintest, marginTop: 1 }}>{u.when}</div>
-                  {u.note && <div style={{ fontFamily: font.serif, fontSize: 12.5, color: c.inkMuted, lineHeight: 1.45, marginTop: 2 }}>“{u.note}”</div>}
+                  {u.note && <div style={{ fontFamily: font.serif, fontSize: 12.5, color: c.inkMuted, lineHeight: 1.45, marginTop: 2 }}>{u.note}</div>}
                   <Photos photo={u.photo} alt={`Photo from ${u.loc}`} maxHeight={180} />
                 </div>
               </div>
@@ -755,7 +755,7 @@ export function Home() {
                 <div style={{ fontFamily: font.display, fontWeight: 700, fontSize: 17, textTransform: 'uppercase', letterSpacing: '.01em', color: c.ink, lineHeight: 1.05 }}>
                   {p.name} {p.verb}
                 </div>
-                <div style={{ fontFamily: font.serif, fontSize: 14, color: c.inkBody2, lineHeight: 1.5, marginTop: 5 }}>“{p.msg}”</div>
+                <div style={{ fontFamily: font.serif, fontSize: 14, color: c.inkBody2, lineHeight: 1.5, marginTop: 5 }}>{p.msg}</div>
                 <ReplyRows replies={p.replies} fmt={relTime} />
                 <ReplyBox parentTs={p.ts} />
               </div>
