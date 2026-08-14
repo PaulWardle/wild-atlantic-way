@@ -184,7 +184,7 @@ function cornerWaypoints(lo: number, hi: number, max: number): Wp[] {
  *  they never chose (a pier at Broad Haven, a right turn west of Leenane), so
  *  corner pins in a spur are dropped unless a real stop sits there. Spurs are
  *  ridden because a stop says so, never because a sampled corner said so. */
-interface Spur { a: number; b: number }
+interface Spur { a: number; b: number; tip: Wp }
 let spurCache: Spur[] | null = null
 function spurs(): Spur[] {
   if (spurCache) return spurCache
@@ -196,12 +196,17 @@ function spurs(): Spur[] {
       if (span < 5) continue
       if (hav(cleanSpine[j][0], cleanSpine[j][1], cleanSpine[k][0], cleanSpine[k][1]) > 2) continue
       let far = 0
+      let ti = -1
       for (let m = j + 1; m < k; m++) {
         const d = hav(cleanSpine[j][0], cleanSpine[j][1], cleanSpine[m][0], cleanSpine[m][1])
-        if (d > far) far = d
+        if (d > far) { far = d; ti = m }
       }
-      if (far < 2.5) continue
-      out.push({ a: cleanSpine[j][2], b: cleanSpine[k][2] })
+      if (far < 2.5 || ti < 0) continue
+      out.push({
+        a: cleanSpine[j][2],
+        b: cleanSpine[k][2],
+        tip: { km: cleanSpine[ti][2], lat: cleanSpine[ti][0], lon: cleanSpine[ti][1] },
+      })
       j = k - 1
       break
     }
@@ -424,14 +429,23 @@ export function navStretch(
   })
   const clear = (p: Wp) => avoid.every((a) => hav(p.lat, p.lon, a[0], a[1]) > 2.5)
 
-  const cornerBudget = Math.max(0, 9 - kept.length - (exitPin ? 1 : 0))
-  // A corner pin inside an out-and-back spur sends the rider down a dead end
-  // they never chose. Only a real stop earns a spur.
-  const inSpur = (p: Wp) =>
-    spurs().some((sp) => p.km > sp.a + 0.5 && p.km < sp.b - 0.5) &&
-    !kept.some((k) => hav(k.lat, k.lon, p.lat, p.lon) < 3) &&
-    hav(dest[0], dest[1], p.lat, p.lon) > 3
-  let wps = [...(exitPin ? [exitPin] : []), ...cornerWaypoints(lo, hi, cornerBudget).filter((p) => clear(p) && !inSpur(p)), ...kept]
+  // EVERY INCH: an out-and-back spur inside this leg gets a pin at its tip,
+  // ahead of any corner pin in the budget. Corner sampling alone can miss a
+  // spur entirely — Google then drives straight past the turn and the rider
+  // loses that piece of the Way without ever being told. A tip is skipped only
+  // where a kept stop or the destination already covers it (no duplicate pin),
+  // or where the rider has cut/skipped the thing out there.
+  const tips = spurs()
+    .filter((sp) => sp.a >= lo - 0.5 && sp.b <= hi + 0.5)
+    .map((sp) => sp.tip)
+    .filter(
+      (t) =>
+        clear(t) &&
+        hav(dest[0], dest[1], t.lat, t.lon) > 2 &&
+        !kept.some((k) => hav(k.lat, k.lon, t.lat, t.lon) < 2),
+    )
+  const cornerBudget = Math.max(0, 9 - kept.length - tips.length - (exitPin ? 1 : 0))
+  let wps = [...(exitPin ? [exitPin] : []), ...tips, ...cornerWaypoints(lo, hi, cornerBudget).filter(clear), ...kept]
   if (isTransferDest) {
     // …but the last official miles before a transfer (the KINSALE FINISH on
     // day 9) must be pinned, or Google shortcuts the end of the Way on its
