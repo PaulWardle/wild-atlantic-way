@@ -289,6 +289,20 @@ export function dayPosition(
  * official line pinned in between, kept extras as priority pins. When the
  * rider's live chainage is known, pins start from THERE, not from the
  * previous checkpoint. */
+/** A navigable leg. `url` follows the official Way (pinned); `directUrl` is
+ *  the same destination with NO waypoints, for when you just want to get
+ *  there. `wayMi` is how far the pinned route actually runs — the Way loops
+ *  headlands, so it can be far longer than the direct road, and the rider
+ *  deserves to see that BEFORE tapping. */
+export interface NavLeg {
+  url: string
+  directUrl: string
+  mi: number
+  wayMi: number
+  pins: number
+  via: string[]
+}
+
 export function navStretch(
   di: number,
   from: Checkpoint,
@@ -296,7 +310,7 @@ export function navStretch(
   marks?: StopMarks,
   riderKm?: number | null,
   skippedNames?: string[],
-): { url: string; mi: number; via: string[] } {
+): NavLeg {
   const dy = T.days[di]
   const dest: [number, number] = [to.lat, to.lon]
   const startKm = riderKm != null ? riderKm : from.km
@@ -309,14 +323,15 @@ export function navStretch(
     ? Math.round(line * 0.6214) || 1
     : Math.round(Math.max(line, hav(from.lat, from.lon, to.lat, to.lon)) * 0.6214) || 1
   const w = dy?.wawKm
-  if (!w) return { url: gmapsUrl(dest, []), mi, via: [] }
+  const bare = gmapsUrl(dest, [])
+  if (!w) return { url: bare, directUrl: bare, mi, wayMi: mi, pins: 0, via: [] }
 
   // Clamp the pinned stretch to the official window — transfer hops (Larne →
   // Muff, Kinsale → Rosslare camp) fall outside it and go pin-free…
   const lo = Math.min(Math.max(w[0], startKm), w[1])
   const hi = Math.min(Math.max(w[0], to.km), w[1])
   const isTransferDest = to.km > w[1]
-  if (hi - lo < 2 && !isTransferDest) return { url: gmapsUrl(dest, []), mi, via: [] }
+  if (hi - lo < 2 && !isTransferDest) return { url: bare, directUrl: bare, mi, wayMi: mi, pins: 0, via: [] }
 
   const kept: Wp[] = []
   const via: string[] = []
@@ -361,7 +376,8 @@ export function navStretch(
   // (the Urris hills: pins landed on trackless hillside) Google "solves" the
   // impossible pins with a long detour. Kept biker loops still pin regardless.
   if (hi - lo <= 12 && kept.length === 0 && !isTransferDest) {
-    return { url: gmapsUrl(dest, exitPin ? [exitPin] : []), mi, via: [] }
+    const hop = exitPin ? [exitPin] : []
+    return { url: gmapsUrl(dest, hop), directUrl: bare, mi, wayMi: mi, pins: hop.length, via: [] }
   }
 
   // A cut or skipped stop must not haunt the route as a PIN either: the line's
@@ -402,5 +418,22 @@ export function navStretch(
     for (let k = 0; k < 9; k++) thinned.push(ordered[Math.round((k * (ordered.length - 1)) / 8)])
     ordered = thinned.filter((p, i) => thinned.indexOf(p) === i)
   }
-  return { url: gmapsUrl(dest, ordered), mi, via }
+  // How far the PINNED route actually runs. The Way loops headlands and rides
+  // dead-end spurs, so this is often far longer than the direct road — showing
+  // it stops the rider being ambushed by a route they didn't expect.
+  let wayKm = 0
+  let at: { lat: number; lon: number } = { lat: from.lat, lon: from.lon }
+  for (const p of ordered) {
+    wayKm += hav(at.lat, at.lon, p.lat, p.lon)
+    at = p
+  }
+  wayKm += hav(at.lat, at.lon, dest[0], dest[1])
+  return {
+    url: gmapsUrl(dest, ordered),
+    directUrl: bare,
+    mi,
+    wayMi: Math.max(mi, Math.round(wayKm * 0.6214)) || 1,
+    pins: ordered.length,
+    via,
+  }
 }
