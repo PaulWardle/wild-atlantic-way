@@ -434,7 +434,10 @@ export function navStretch(
   // where a kept stop or the destination already covers it (no duplicate pin),
   // or where the rider has cut/skipped the thing out there.
   const tips = spurs()
-    .filter((sp) => sp.a >= lo - 0.5 && sp.b <= hi + 0.5)
+    // The TIP has to fall in this leg — requiring the whole spur inside it
+    // silently dropped one that straddled a checkpoint, and with a tight pin
+    // budget no corner pin happened to land near it any more.
+    .filter((sp) => sp.tip.km > lo && sp.tip.km < hi)
     .map((sp) => sp.tip)
     .filter(
       (t) =>
@@ -442,7 +445,13 @@ export function navStretch(
         hav(dest[0], dest[1], t.lat, t.lon) > 2 &&
         !kept.some((k) => hav(k.lat, k.lon, t.lat, t.lon) < 2),
     )
-  const cornerBudget = Math.max(0, 9 - kept.length - tips.length - (exitPin ? 1 : 0))
+  // Google's app chokes on a long waypoint list — the rider ends up with a
+  // route that won't start, or silently loses stops. Keep the link short:
+  // spur tips and real stops always ride (that's every inch of the Way), and
+  // corner pins only fill what's left up to a handful. Fewer, better-placed
+  // corners beat a chain Google refuses to open.
+  const MAX_PINS = 4
+  const cornerBudget = Math.max(0, MAX_PINS - kept.length - tips.length - (exitPin ? 1 : 0))
   let wps = [...(exitPin ? [exitPin] : []), ...tips, ...cornerWaypoints(lo, hi, cornerBudget).filter(clear), ...kept]
   if (isTransferDest) {
     // …but the last official miles before a transfer (the KINSALE FINISH on
